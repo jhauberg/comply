@@ -15,8 +15,7 @@ import re
 
 from setuptools import setup
 
-
-VERSION_PATTERN = r'^__version__ = [\'"]([^\'"]*)[\'"]'
+from comply import VERSION_PATTERN
 
 
 def determine_version_or_exit() -> str:
