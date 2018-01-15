@@ -5,7 +5,9 @@
 Make your C follow the rules
 
 Usage:
+  comply <input>...
   comply -h | --help
+
   comply --version
 
 Options:
@@ -20,7 +22,10 @@ from docopt import docopt
 from pkg_resources import parse_version
 
 from comply import VERSION_PATTERN
+from comply.checker import check
 from comply.version import __version__
+
+from comply.rules import *
 
 
 def check_for_update():
@@ -63,7 +68,17 @@ def main():
 
     check_for_update()
 
-    print(arguments)
+    inputs = arguments['<input>']
+
+    rules = [
+        includes.RequireSymbols(),
+        includes.UnusedSymbol()
+    ]
+
+    for path in inputs:
+        check(path, rules)
+
+    print('finished')
 
 
 if __name__ == '__main__':
