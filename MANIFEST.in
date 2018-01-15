@@ -1,0 +1,7 @@
+# include additional files
+include README.md
+include LICENSE
+include requirements.txt
+
+# exclude pesky DS_Store files and compiled python scripts
+global-exclude .DS_Store *.py[co]
