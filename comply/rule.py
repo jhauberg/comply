@@ -18,7 +18,7 @@ class Rule:
             Can optionally be provided with a token of the text, if something in particular should stand out.
         """
 
-        return RuleOffender(self, None, None)
+        return RuleOffender(self, at, offending_text, token)
 
     def collect(self, text: str) -> list:
         """ Analyze a given text and return a list of any found rule offenders. """
@@ -29,10 +29,11 @@ class Rule:
 class RuleOffender:
     """ Represents an occurence of a broken rule. """
 
-    def __init__(self, which: Rule, where: (int, int), what: str):
+    def __init__(self, which: Rule, where: (int, int), what: str, token: str=None):
         self.which = which
         self.where = where
         self.what = what
+        self.token = token
 
     def __str__(self):
         message = '{0} -> {1} {2}'.format(self.which, self.where, self.what)
@@ -40,7 +41,7 @@ class RuleOffender:
         fix = self.which.suggestion
 
         if fix is not None:
-            message += '\n Fix: {0}'.format(fix)
+            message += '\n Fix: {0}'.format(fix.format(self.token))
 
         return message
 

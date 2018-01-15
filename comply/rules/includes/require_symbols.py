@@ -18,7 +18,7 @@ class RequireSymbols(Rule):
         where = at
         what = '\'{0}\''.format(truncated(offending_text))
 
-        return RuleOffender(which, where, what)
+        return RuleOffender(which, where, what, token)
 
     def collect(self, text: str) -> list:
         # match include statements and capture suffixed content, if any

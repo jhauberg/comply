@@ -16,14 +16,12 @@ class UnusedSymbol(Rule):
 
     def offend(self, at: (int, int), offending_text: str, token: str=None) -> RuleOffender:
         which = self
-        which.suggestion = which.suggestion.format(token)
-
         where = at
 
         what = '\'{0}\' in \'{1}\'' \
             .format(token, truncated(offending_text, ellipsize=Ellipsize.start))
 
-        return RuleOffender(which, where, what)
+        return RuleOffender(which, where, what, token)
 
     def collect(self, text: str) -> list:
         # match include statements and capture suffixed content, if any
