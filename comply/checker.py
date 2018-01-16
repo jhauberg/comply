@@ -2,6 +2,8 @@
 
 import os.path
 
+from comply.printer import print_offenders
+
 
 def check(path: str, rules: list):
     """ Run a rules check on the file found at path.
@@ -31,10 +33,7 @@ def check(path: str, rules: list):
     with open(path) as file:
         text = file.read()
 
-        offenders = []
-
         for rule in rules:
-            offenders.extend(rule.collect(text))
+            offenders = rule.collect(text)
 
-        for offender in offenders:
-            print(offender)
+            print_offenders(offenders)
