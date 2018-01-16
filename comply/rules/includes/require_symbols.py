@@ -16,11 +16,9 @@ class RequireSymbols(Rule):
                                  'Example: "#include <header.h> // symb_t, symbols_*"')
 
     def offend(self, at: (int, int), offending_text: str, token: str=None) -> RuleOffender:
-        which = self
-        where = at
         what = '\'{0}\''.format(truncated(offending_text))
 
-        return RuleOffender(which, where, what, token)
+        return super().offend(at, what, token)
 
     def collect(self, text: str) -> list:
         # match include statements and capture suffixed content, if any
