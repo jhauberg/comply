@@ -36,14 +36,15 @@ class RuleOffender:
         self.token = token
 
     def __str__(self):
-        message = '{0} -> {1} {2}'.format(self.which, self.where, self.what)
+        return '{0} -> {1} {2}'.format(self.which, self.where, self.what)
 
-        fix = self.which.suggestion
+    def solution(self) -> str:
+        suggestion = self.which.suggestion
 
-        if fix is not None:
-            message += '\n Fix: {0}'.format(fix.format(self.token))
+        if suggestion is None:
+            return ''
 
-        return message
+        return '{0}'.format(suggestion.format(self.token))
 
     @staticmethod
     def where(text: str, index: int) -> (int, int):
