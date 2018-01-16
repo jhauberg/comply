@@ -5,13 +5,15 @@ import re
 from comply.rule import Rule, RuleOffender
 from comply.util import truncated
 
+from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
+
 
 class RequireSymbols(Rule):
     def __init__(self):
         Rule.__init__(self, name='require-symbols',
                       description='Include statements should provide a list of the symbols they require.',
                       suggestion='Add a comment immediately after include statement, listing each required symbol. '
-                                 'Example: "#include <header.h> // symbol_t, other_symbol_t"')
+                                 'Example: "#include <header.h> // symb_t, symbols_*"')
 
     def offend(self, at: (int, int), offending_text: str, token: str=None) -> RuleOffender:
         which = self
@@ -22,7 +24,7 @@ class RequireSymbols(Rule):
 
     def collect(self, text: str) -> list:
         # match include statements and capture suffixed content, if any
-        pattern = r'#include\s+[<"].+?[>"](.*)'
+        pattern = INCLUDE_STMT_PATTERN + r'(.*)'
 
         offenders = []
 

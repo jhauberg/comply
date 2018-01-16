@@ -6,6 +6,7 @@ from comply.rule import Rule, RuleOffender
 from comply.util import truncated, Ellipsize
 
 from comply.rules.includes.require_symbols import is_symbol_list
+from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
 
 
 class UnusedSymbol(Rule):
@@ -25,7 +26,7 @@ class UnusedSymbol(Rule):
 
     def collect(self, text: str) -> list:
         # match include statements and capture suffixed content, if any
-        pattern = r'#include\s+[<"].+?[>"](.*)'
+        pattern = pattern = INCLUDE_STMT_PATTERN + r'(.*)'
 
         offenders = []
 
