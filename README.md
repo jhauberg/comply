@@ -8,7 +8,7 @@ Compilers do not usually care how you write your code. They're happy as long as 
 
 This project defines and applies some (very) opinionated and strict rules on best practices for writing readable and maintainable C. Following these rules will help enforce consistency throughout your project. You might not like some of them, but each has thought and reasoning behind it.
 
-Basically, `comply` is a style linter that scans and analyzes your code, looking for things that could be improved. It is _not_ a compiler- as such, it will not find errors in your code. It only provides suggestions on improvements; it never touches or changes your code.
+Basically, `comply` is a style compliance checker (or linter) that scans and analyzes your code, looking for things that could be improved. It is _not_ a compiler- as such, it will not find errors in your code. It only provides suggestions for improvements.
 
 You decide which rules are worth following. Just remember, consistency is key.
 
@@ -70,7 +70,15 @@ You can then go through all listed files and manually delete each one.
 When installed, you can run `comply` on the command line:
 
 ```console
-$ comply src/
+$ comply mylib.h mylib.c
+```
+
+You can provide `comply` with single files or entire directories.
+
+If provided with a directory, `comply` will automatically traverse the entire directory and run on each appropriate file found inside (also in sub-directories):
+
+```console
+$ comply mylib
 ```
 
 <details>
