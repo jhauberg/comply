@@ -52,6 +52,8 @@ class UnusedSymbol(Rule):
 
 
 def has_symbol_usage(symbol: str, text: str) -> bool:
+    # star matches any non-whitespace character
+    symbol = symbol.replace('*', '\S*?')
     # match any use of symbol as a stand-alone element
     pattern = r'\b{0}\b'.format(symbol)
 
