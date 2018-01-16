@@ -5,8 +5,14 @@ import os.path
 from comply.printer import print_offenders
 
 
+def supported_file_types() -> tuple:
+    """ Return all supported and recognized source filetypes. """
+
+    return '.h', '.c'
+
+
 def check(path: str, rules: list):
-    """ Run a rules check on the file found at path.
+    """ Run a rules check on the file found at path, if any.
 
         If the path points to a directory, a check is run on each subsequent filepath.
     """
@@ -24,8 +30,7 @@ def check(path: str, rules: list):
 
     filename, extension = os.path.splitext(path)
 
-    if ('.h' not in extension and
-        '.c' not in extension):
+    if extension not in supported_file_types():
         return
 
     print('checking \'{0}\''.format(path))
