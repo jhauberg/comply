@@ -14,7 +14,7 @@ You decide which rules are worth following. Just remember, consistency is key.
 
 Many of the rules, if not most, are based on [Malcolm Inglis' style guidelines](https://github.com/mcinglis/c-style).
 
-# Installation
+## Installation
 
 Install straight from the source:
 
@@ -65,7 +65,7 @@ You can then go through all listed files and manually delete each one.
 
 </details>
 
-# Usage
+## Usage
 
 When installed, you can run `comply` on the command line:
 
@@ -94,14 +94,14 @@ $ python -m comply path/to/src/
 
 </details>
 
-## Requirements
+### Requirements
 
 This project strives to keep dependencies at an absolute minimum.
 
   * Python 3.5+
   * [docopt](https://github.com/docopt/docopt) - provides a nicer command-line interface
 
-## Full usage
+### Full usage
 
 ```console
 Make your C follow the rules
@@ -116,6 +116,18 @@ Options:
   -h --help    Show program help
   --version    Show program version
 ```
+
+## Why make this?
+
+I wanted a strict style checker for my code, but wasn't able to find any that **1) was strict enough**, or **2) was usable right away without setup** and **3) did not rely on compiler libraries**.
+
+So I just started working on one. Turns out it's a fun project, and so I kept at it.
+
+But. This project is by no means a unique little snowflake. There's a bunch of alternatives.
+
+A downside to this checker is that the rules engine heavily relies on parsing and searching by Regex and is unlikely to ever be the fastest or best at its job- in theory, checkers utilizing compiler libraries should produce more reliable results.
+
+It does, however, work out great for my needs.
 
 ## License
 
