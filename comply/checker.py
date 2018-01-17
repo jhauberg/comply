@@ -38,7 +38,11 @@ def check(path: str, rules: list):
     with open(path) as file:
         text = file.read()
 
-        for rule in rules:
-            offenders = rule.collect(text)
+        violations = []
 
-            print_offenders(offenders, path)
+        for rule in rules:
+            violations.extend(rule.collect(text))
+
+        print('{0} violations found:'.format(len(violations)))
+
+        print_offenders(violations, path)
