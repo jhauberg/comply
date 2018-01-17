@@ -15,8 +15,8 @@ class SymbolListedNotUsed(Rule):
                       description='Unused symbol \'{0}\' should not be listed as required.',
                       suggestion='Remove symbol \'{0}\' from list.')
 
-    def representation(self, offender: 'RuleViolation' =None):
-        rep = super().representation(offender)
+    def reason(self, offender: 'RuleViolation' =None):
+        rep = super().reason(offender)
 
         symbol = offender.meta['symbol'] if 'symbol' in offender.meta.keys() else '???'
 

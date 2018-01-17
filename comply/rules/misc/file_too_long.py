@@ -12,8 +12,8 @@ class FileTooLong(Rule):
 
     max_lines = 600
 
-    def representation(self, offender: 'RuleViolation' =None):
-        rep = super().representation(offender)
+    def reason(self, offender: 'RuleViolation' =None):
+        rep = super().reason(offender)
 
         length = offender.meta['length'] if 'length' in offender.meta.keys() else 0
 

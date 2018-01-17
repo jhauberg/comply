@@ -20,7 +20,7 @@ def print_offenders(offenders: list, filepath: str, with_solutions: bool=True):
     solutions = OrderedDict() if with_solutions else None
 
     for offender in offenders:
-        rule = offender.which.representation(offender)
+        rule = offender.which.reason(offender)
 
         location = '{0}:{1}'.format(
             truncated(filepath, length=28, ellipsize=Ellipsize.middle), offender.where)

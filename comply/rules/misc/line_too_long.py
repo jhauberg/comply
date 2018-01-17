@@ -12,8 +12,8 @@ class LineTooLong(Rule):
 
     max_line_length = 80
 
-    def representation(self, offender: 'RuleViolation' =None):
-        rep = super().representation(offender)
+    def reason(self, offender: 'RuleViolation' =None):
+        rep = super().reason(offender)
 
         length = offender.meta['length'] if 'length' in offender.meta.keys() else 0
 

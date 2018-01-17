@@ -12,10 +12,10 @@ class Rule:
     def __str__(self):
         return '[{0}] {1}'.format(self.name, self.description)
 
-    def representation(self, offender: 'RuleViolation' = None):
-        """ Return a representation of this rule.
+    def reason(self, offender: 'RuleViolation' = None):
+        """ Return a reason for a violation of this rule.
 
-            Subclasses may override and implement special formatting in relation to an offender.
+            Subclasses may override and provide specific formatting in relation to a rule violation.
         """
 
         return str(self)
@@ -23,7 +23,7 @@ class Rule:
     def solution(self, offender: 'RuleViolation' =None):
         """ Return a solution for this rule.
 
-            Subclasses may override and implement special formatting in relation to an offender.
+            Subclasses may override and provide specific formatting in relation to a rule violation.
         """
 
         return self.suggestion
