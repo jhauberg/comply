@@ -30,6 +30,9 @@ class SymbolListedNotUsed(Rule):
         return sol.format(symbol)
 
     def violate(self, at: (int, int), offending_text: str, meta: dict=None) -> RuleViolation:
+        if self.strips_violating_text:
+            offending_text = offending_text.strip()
+
         what = '\'{0}\'' \
             .format(truncated(offending_text, ellipsize=Ellipsize.start))
 

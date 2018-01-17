@@ -21,10 +21,13 @@ class LineTooLong(Rule):
 
     def violate(self, at: (int, int), offending_text: str, meta: dict = None) -> RuleViolation:
         # insert cursor to indicate max line length
-        text = (offending_text[:LineTooLong.MAX] + '|' +
+        line = (offending_text[:LineTooLong.MAX] + '|' +
                 offending_text[LineTooLong.MAX:])
         # remove any trailing newlines to keep neat prints
-        offending_text = without_trailing_newline(text)
+        offending_text = without_trailing_newline(line)
+
+        if self.strips_violating_text:
+            offending_text = offending_text.strip()
 
         what = '\'{0}\''.format(
             truncated(offending_text, length=LineTooLong.MAX, ellipsize=Ellipsize.start))

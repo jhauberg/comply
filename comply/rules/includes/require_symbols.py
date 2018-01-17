@@ -16,6 +16,9 @@ class RequireSymbols(Rule):
                                  'Example: "#include <header.h> // symb_t, symbols_*"')
 
     def violate(self, at: (int, int), offending_text: str, meta: dict = None) -> RuleViolation:
+        if self.strips_violating_text:
+            offending_text = offending_text.strip()
+
         what = '\'{0}\''.format(truncated(offending_text))
 
         return super().violate(at, what, meta)

@@ -20,6 +20,9 @@ class FileTooLong(Rule):
         return rep.format(length, FileTooLong.MAX)
 
     def violate(self, at: (int, int), offending_text: str, meta: dict = None) -> RuleViolation:
+        if self.strips_violating_text:
+            offending_text = offending_text.strip()
+
         what = '\'{0}\''.format(truncated(offending_text))
 
         return super().violate(at, what, meta)
