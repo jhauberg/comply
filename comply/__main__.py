@@ -73,7 +73,8 @@ def main():
     rules = [
         includes.RequireSymbols(),
         includes.SymbolListedNotUsed(),
-        includes.SymbolUsedNotListed()
+        includes.SymbolUsedNotListed(),
+        misc.LineTooLong()
     ]
 
     for path in inputs:
