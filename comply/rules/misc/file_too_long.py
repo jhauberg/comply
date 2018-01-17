@@ -10,14 +10,14 @@ class FileTooLong(Rule):
                       description='File has too many lines ({0} > {1}).',
                       suggestion='Consider refactoring and splitting to separate units.')
 
-    max_lines = 600
+    MAX = 600
 
     def reason(self, offender: 'RuleViolation' =None):
         rep = super().reason(offender)
 
         length = offender.meta['length'] if 'length' in offender.meta.keys() else 0
 
-        return rep.format(length, self.max_lines)
+        return rep.format(length, FileTooLong.MAX)
 
     def violate(self, at: (int, int), offending_text: str, meta: dict = None) -> RuleViolation:
         what = '\'{0}\''.format(truncated(offending_text))
@@ -29,10 +29,10 @@ class FileTooLong(Rule):
 
         length = text.count('\n')
 
-        if length > self.max_lines:
+        if length > FileTooLong.MAX:
             lines = text.splitlines()  # without newlines
 
-            offending_line_index = self.max_lines
+            offending_line_index = FileTooLong.MAX
             offending_line = lines[offending_line_index]
 
             offender = self.violate(at=(offending_line_index, 1),
