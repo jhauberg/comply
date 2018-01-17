@@ -2,7 +2,7 @@
 
 import re
 
-from comply.rule import Rule, RuleOffender
+from comply.rule import Rule, RuleViolation
 from comply.util import truncated, Ellipsize
 
 from comply.rules.includes.require_symbols import is_symbol_list
@@ -15,25 +15,25 @@ class SymbolListedNotUsed(Rule):
                       description='Unused symbol \'{0}\' should not be listed as required.',
                       suggestion='Remove symbol \'{0}\' from list.')
 
-    def representation(self, offender: 'RuleOffender'=None):
+    def representation(self, offender: 'RuleViolation' =None):
         rep = super().representation(offender)
 
         symbol = offender.meta['symbol'] if 'symbol' in offender.meta.keys() else '???'
 
         return rep.format(symbol)
 
-    def solution(self, offender: 'RuleOffender'=None):
+    def solution(self, offender: 'RuleViolation' =None):
         sol = super().solution(offender)
 
         symbol = offender.meta['symbol'] if 'symbol' in offender.meta.keys() else '???'
 
         return sol.format(symbol)
 
-    def offend(self, at: (int, int), offending_text: str, meta: dict=None) -> RuleOffender:
+    def violate(self, at: (int, int), offending_text: str, meta: dict=None) -> RuleViolation:
         what = '\'{0}\'' \
             .format(truncated(offending_text, ellipsize=Ellipsize.start))
 
-        return super().offend(at, what, meta)
+        return super().violate(at, what, meta)
 
     def collect(self, text: str) -> list:
         # match include statements and capture suffixed content, if any
@@ -56,9 +56,9 @@ class SymbolListedNotUsed(Rule):
                     if not has_symbol_usage(symbol, text_after_usage):
                         offending_index = text.rindex(symbol, inclusion.start(), inclusion.end())
 
-                        offender = self.offend(at=RuleOffender.where(text, offending_index),
-                                               offending_text=inclusion.group(0),
-                                               meta={'symbol': symbol})
+                        offender = self.violate(at=RuleViolation.where(text, offending_index),
+                                                offending_text=inclusion.group(0),
+                                                meta={'symbol': symbol})
 
                         offenders.append(offender)
 

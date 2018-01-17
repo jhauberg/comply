@@ -2,7 +2,7 @@
 
 import re
 
-from comply.rule import Rule, RuleOffender
+from comply.rule import Rule, RuleViolation
 from comply.util import truncated
 
 from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
@@ -15,10 +15,10 @@ class RequireSymbols(Rule):
                       suggestion='Add a comment immediately after include statement, listing each required symbol. '
                                  'Example: "#include <header.h> // symb_t, symbols_*"')
 
-    def offend(self, at: (int, int), offending_text: str, meta: dict = None) -> RuleOffender:
+    def violate(self, at: (int, int), offending_text: str, meta: dict = None) -> RuleViolation:
         what = '\'{0}\''.format(truncated(offending_text))
 
-        return super().offend(at, what, meta)
+        return super().violate(at, what, meta)
 
     def collect(self, text: str) -> list:
         # match include statements and capture suffixed content, if any
@@ -30,8 +30,8 @@ class RequireSymbols(Rule):
             suffix = inclusion.group(1)
 
             if not is_symbol_list(suffix):
-                offender = self.offend(at=RuleOffender.where(text, inclusion.start()),
-                                       offending_text=inclusion.group(0))
+                offender = self.violate(at=RuleViolation.where(text, inclusion.start()),
+                                        offending_text=inclusion.group(0))
 
                 offenders.append(offender)
 

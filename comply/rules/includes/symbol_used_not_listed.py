@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from comply.rule import Rule, RuleOffender
+from comply.rule import Rule, RuleViolation
 
 
 class SymbolUsedNotListed(Rule):

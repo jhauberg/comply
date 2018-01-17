@@ -12,7 +12,7 @@ class Rule:
     def __str__(self):
         return '[{0}] {1}'.format(self.name, self.description)
 
-    def representation(self, offender: 'RuleOffender' = None):
+    def representation(self, offender: 'RuleViolation' = None):
         """ Return a representation of this rule.
 
             Subclasses may override and implement special formatting in relation to an offender.
@@ -20,7 +20,7 @@ class Rule:
 
         return str(self)
 
-    def solution(self, offender: 'RuleOffender'=None):
+    def solution(self, offender: 'RuleViolation' =None):
         """ Return a solution for this rule.
 
             Subclasses may override and implement special formatting in relation to an offender.
@@ -28,10 +28,10 @@ class Rule:
 
         return self.suggestion
 
-    def offend(self, at: (int, int), offending_text: str, meta: dict = None) -> 'RuleOffender':
+    def violate(self, at: (int, int), offending_text: str, meta: dict = None) -> 'RuleViolation':
         """ Return a rule offender originating from a chunk of text. """
 
-        return RuleOffender(self, at, offending_text, meta)
+        return RuleViolation(self, at, offending_text, meta)
 
     def collect(self, text: str) -> list:
         """ Analyze a given text and return a list of any found rule offenders. """
@@ -39,8 +39,8 @@ class Rule:
         return []
 
 
-class RuleOffender:
-    """ Represents an occurence of a broken rule. """
+class RuleViolation:
+    """ Represents an occurence of a violated rule. """
 
     def __init__(self, which: Rule, where: (int, int), what: str, meta: dict = None):
         self.which = which

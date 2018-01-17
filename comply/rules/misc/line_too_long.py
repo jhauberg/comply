@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from comply.rule import Rule, RuleOffender
+from comply.rule import Rule, RuleViolation
 from comply.util import truncated, Ellipsize
 
 
@@ -12,14 +12,14 @@ class LineTooLong(Rule):
 
     max_line_length = 80
 
-    def representation(self, offender: 'RuleOffender'=None):
+    def representation(self, offender: 'RuleViolation' =None):
         rep = super().representation(offender)
 
         length = offender.meta['length'] if 'length' in offender.meta.keys() else 0
 
         return rep.format(length, self.max_line_length)
 
-    def offend(self, at: (int, int), offending_text: str, meta: dict = None) -> RuleOffender:
+    def violate(self, at: (int, int), offending_text: str, meta: dict = None) -> RuleViolation:
         # insert cursor to indicate max line length
         text = (offending_text[:self.max_line_length] + '|' +
                 offending_text[self.max_line_length:])
@@ -29,7 +29,7 @@ class LineTooLong(Rule):
         what = '\'{0}\''.format(
             truncated(offending_text, length=self.max_line_length, ellipsize=Ellipsize.start))
 
-        return super().offend(at, what, meta)
+        return super().violate(at, what, meta)
 
     def collect(self, text: str) -> list:
         offenders = []
@@ -44,9 +44,9 @@ class LineTooLong(Rule):
             if characters_except_newline > self.max_line_length:
                 offending_index = index + self.max_line_length - 1
 
-                offender = self.offend(at=RuleOffender.where(text, offending_index),
-                                       offending_text=line,
-                                       meta={'length': characters_except_newline})
+                offender = self.violate(at=RuleViolation.where(text, offending_index),
+                                        offending_text=line,
+                                        meta={'length': characters_except_newline})
 
                 offenders.append(offender)
 

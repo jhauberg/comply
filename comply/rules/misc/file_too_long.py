@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from comply.rule import Rule, RuleOffender
+from comply.rule import Rule, RuleViolation
 from comply.util import truncated
 
 
@@ -12,17 +12,17 @@ class FileTooLong(Rule):
 
     max_lines = 600
 
-    def representation(self, offender: 'RuleOffender'=None):
+    def representation(self, offender: 'RuleViolation' =None):
         rep = super().representation(offender)
 
         length = offender.meta['length'] if 'length' in offender.meta.keys() else 0
 
         return rep.format(length, self.max_lines)
 
-    def offend(self, at: (int, int), offending_text: str, meta: dict = None) -> RuleOffender:
+    def violate(self, at: (int, int), offending_text: str, meta: dict = None) -> RuleViolation:
         what = '\'{0}\''.format(truncated(offending_text))
 
-        return super().offend(at, what, meta)
+        return super().violate(at, what, meta)
 
     def collect(self, text: str) -> list:
         offenders = []
@@ -35,9 +35,9 @@ class FileTooLong(Rule):
             offending_line_index = self.max_lines
             offending_line = lines[offending_line_index]
 
-            offender = self.offend(at=(offending_line_index, 1),
-                                   offending_text=offending_line,
-                                   meta={'length': length})
+            offender = self.violate(at=(offending_line_index, 1),
+                                    offending_text=offending_line,
+                                    meta={'length': length})
 
             offenders.append(offender)
 
