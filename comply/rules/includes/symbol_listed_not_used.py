@@ -12,8 +12,15 @@ from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
 class SymbolListedNotUsed(Rule):
     def __init__(self):
         Rule.__init__(self, name='symbol-listed-not-used',
-                      description='Unused symbols should not be listed as required.',
+                      description='Unused symbol \'{0}\' should not be listed as required.',
                       suggestion='Remove symbol \'{0}\' from list.')
+
+    def representation(self, offender: 'RuleOffender'=None):
+        rep = super().representation(offender)
+
+        symbol = offender.meta['symbol'] if 'symbol' in offender.meta.keys() else '???'
+
+        return rep.format(symbol)
 
     def solution(self, offender: 'RuleOffender'=None):
         sol = super().solution(offender)
@@ -23,10 +30,8 @@ class SymbolListedNotUsed(Rule):
         return sol.format(symbol)
 
     def offend(self, at: (int, int), offending_text: str, meta: dict=None) -> RuleOffender:
-        symbol = meta['symbol'] if 'symbol' in meta.keys() else '???'
-
-        what = '\'{0}\' in \'{1}\'' \
-            .format(symbol, truncated(offending_text, ellipsize=Ellipsize.start))
+        what = '\'{0}\'' \
+            .format(truncated(offending_text, ellipsize=Ellipsize.start))
 
         return super().offend(at, what, meta)
 
