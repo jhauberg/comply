@@ -2,6 +2,8 @@
 
 from collections import OrderedDict
 
+from comply.util import truncated, Ellipsize
+
 
 def without_duplicates(suggestions: OrderedDict) -> dict:
     unique_suggestions = {}
@@ -13,12 +15,18 @@ def without_duplicates(suggestions: OrderedDict) -> dict:
     return unique_suggestions
 
 
-def print_offenders(offenders: list, with_solutions: bool=True):
+def print_offenders(offenders: list, filepath: str, with_solutions: bool=True):
     offenses = []
     solutions = OrderedDict() if with_solutions else None
 
     for offender in offenders:
-        offense = str(offender)
+        rule = offender.which.representation(offender)
+
+        location = '{0}:{1}'.format(
+            truncated(filepath, length=28, ellipsize=Ellipsize.middle), offender.where)
+
+        offense = '{0} -> {1} {2}'.format(rule, location, offender.what)
+
         offenses.append(offense)
 
         if with_solutions:

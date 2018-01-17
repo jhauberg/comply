@@ -1,6 +1,6 @@
 # coding=utf-8
 
-import os.path
+import os
 
 from comply.printer import print_offenders
 
@@ -41,4 +41,4 @@ def check(path: str, rules: list):
         for rule in rules:
             offenders = rule.collect(text)
 
-            print_offenders(offenders)
+            print_offenders(offenders, path)

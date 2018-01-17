@@ -48,11 +48,6 @@ class RuleOffender:
         self.what = what
         self.meta = meta
 
-    def __str__(self):
-        rule_repr = self.which.representation(offender=self)
-
-        return '{0} -> {1} {2}'.format(rule_repr, self.where, self.what)
-
     @staticmethod
     def where(text: str, index: int) -> (int, int):
         """ Return the linenumber and column that a character index occurs in a text. """
