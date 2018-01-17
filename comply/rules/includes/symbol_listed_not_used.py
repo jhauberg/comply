@@ -49,7 +49,9 @@ class SymbolListedNotUsed(Rule):
                     text_after_usage = text[inclusion.end():]
 
                     if not has_symbol_usage(symbol, text_after_usage):
-                        offender = self.offend(at=RuleOffender.where(text, inclusion.start()),
+                        offending_index = text.rindex(symbol, inclusion.start(), inclusion.end())
+
+                        offender = self.offend(at=RuleOffender.where(text, offending_index),
                                                offending_text=inclusion.group(0),
                                                meta={'symbol': symbol})
 
