@@ -25,7 +25,7 @@ def print_offenders(offenders: list, filepath: str, with_solutions: bool=True):
         location = '{0}:{1}'.format(
             truncated(filepath, length=28, ellipsize=Ellipsize.middle), offender.where)
 
-        offense = '{0} -> {1} {2}'.format(rule, location, offender.what)
+        offense = '{0} {1} -> {2}'.format(location, offender.what, rule)
 
         offenses.append(offense)
 
