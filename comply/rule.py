@@ -12,11 +12,21 @@ class Rule:
     def __str__(self):
         return '[{0}] {1}'.format(self.name, self.description)
 
-    def solution(self, offender: 'RuleOffender'=None):
-        return self.suggestion
+    def representation(self, offender: 'RuleOffender' = None):
+        """ Return a representation of this rule.
 
-    def representation(self, offender: 'RuleOffender'=None):
+            Subclasses may override and implement special formatting in relation to an offender.
+        """
+
         return str(self)
+
+    def solution(self, offender: 'RuleOffender'=None):
+        """ Return a solution for this rule.
+
+            Subclasses may override and implement special formatting in relation to an offender.
+        """
+
+        return self.suggestion
 
     def offend(self, at: (int, int), offending_text: str, meta: dict = None) -> 'RuleOffender':
         """ Return a rule offender originating from a chunk of text. """
