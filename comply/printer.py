@@ -20,12 +20,14 @@ def print_offenders(offenders: list, filepath: str, with_solutions: bool=True):
     solutions = OrderedDict() if with_solutions else None
 
     for offender in offenders:
-        rule = offender.which.reason(offender)
+        reason = offender.which.reason(offender)
 
         location = '{0}:{1}'.format(
-            truncated(filepath, length=28, ellipsize=Ellipsize.middle), offender.where)
+            truncated(filepath, length=28, ellipsize=Ellipsize.middle),
+            offender.where)
 
-        offense = '{0} {1} -> {2}'.format(location, offender.what, rule)
+        offense = '{0} {1} -> [{2}] {3}'.format(
+            location, offender.what, offender.which.name, reason)
 
         offenses.append(offense)
 

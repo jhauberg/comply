@@ -9,16 +9,13 @@ class Rule:
         self.description = description
         self.suggestion = suggestion
 
-    def __str__(self):
-        return '[{0}] {1}'.format(self.name, self.description)
-
     def reason(self, offender: 'RuleViolation' = None):
         """ Return a reason for a violation of this rule.
 
             Subclasses may override and provide specific formatting in relation to a rule violation.
         """
 
-        return str(self)
+        return self.description
 
     def solution(self, offender: 'RuleViolation' =None):
         """ Return a solution for this rule.
