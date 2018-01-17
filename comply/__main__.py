@@ -74,7 +74,8 @@ def main():
         includes.RequireSymbols(),
         includes.SymbolListedNotUsed(),
         includes.SymbolUsedNotListed(),
-        misc.LineTooLong()
+        misc.LineTooLong(),
+        misc.FileTooLong()
     ]
 
     for path in inputs:
