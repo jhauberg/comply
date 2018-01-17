@@ -9,8 +9,5 @@ class SymbolUsedNotListed(Rule):
                       description='Used symbols should be listed as required.',
                       suggestion='Add symbol \'{0}\' to list.')
 
-    def offend(self, at: (int, int), offending_text: str, token: str=None) -> RuleOffender:
-        return super().offend(at, offending_text, token)
-
     def collect(self, text: str) -> list:
         return []

@@ -12,13 +12,16 @@ class Rule:
     def __str__(self):
         return '[{0}] {1}'.format(self.name, self.description)
 
-    def offend(self, at: (int, int), offending_text: str, token: str = None) -> 'RuleOffender':
-        """ Return a rule offender originating from a chunk of text.
+    def solution(self, offender: 'RuleOffender'=None):
+        return self.suggestion
 
-            Can optionally be provided with a token of the text, if something in particular should stand out.
-        """
+    def representation(self, offender: 'RuleOffender'=None):
+        return str(self)
 
-        return RuleOffender(self, at, offending_text, token)
+    def offend(self, at: (int, int), offending_text: str, meta: dict = None) -> 'RuleOffender':
+        """ Return a rule offender originating from a chunk of text. """
+
+        return RuleOffender(self, at, offending_text, meta)
 
     def collect(self, text: str) -> list:
         """ Analyze a given text and return a list of any found rule offenders. """
@@ -29,22 +32,16 @@ class Rule:
 class RuleOffender:
     """ Represents an occurence of a broken rule. """
 
-    def __init__(self, which: Rule, where: (int, int), what: str, token: str=None):
+    def __init__(self, which: Rule, where: (int, int), what: str, meta: dict = None):
         self.which = which
         self.where = where
         self.what = what
-        self.token = token
+        self.meta = meta
 
     def __str__(self):
-        return '{0} -> {1} {2}'.format(self.which, self.where, self.what)
+        rule_repr = self.which.representation(offender=self)
 
-    def solution(self) -> str:
-        suggestion = self.which.suggestion
-
-        if suggestion is None:
-            return ''
-
-        return '{0}'.format(suggestion.format(self.token))
+        return '{0} -> {1} {2}'.format(rule_repr, self.where, self.what)
 
     @staticmethod
     def where(text: str, index: int) -> (int, int):

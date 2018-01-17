@@ -22,7 +22,7 @@ def print_offenders(offenders: list, with_solutions: bool=True):
         offenses.append(offense)
 
         if with_solutions:
-            solutions[offense] = offender.solution()
+            solutions[offense] = offender.which.solution(offender)
 
     if with_solutions:
         solutions = without_duplicates(solutions)

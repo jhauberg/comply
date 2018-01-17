@@ -15,10 +15,10 @@ class RequireSymbols(Rule):
                       suggestion='Add a comment immediately after include statement, listing each required symbol. '
                                  'Example: "#include <header.h> // symb_t, symbols_*"')
 
-    def offend(self, at: (int, int), offending_text: str, token: str=None) -> RuleOffender:
+    def offend(self, at: (int, int), offending_text: str, meta: dict = None) -> RuleOffender:
         what = '\'{0}\''.format(truncated(offending_text))
 
-        return super().offend(at, what, token)
+        return super().offend(at, what, meta)
 
     def collect(self, text: str) -> list:
         # match include statements and capture suffixed content, if any

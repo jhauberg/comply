@@ -15,11 +15,20 @@ class SymbolListedNotUsed(Rule):
                       description='Unused symbols should not be listed as required.',
                       suggestion='Remove symbol \'{0}\' from list.')
 
-    def offend(self, at: (int, int), offending_text: str, token: str=None) -> RuleOffender:
-        what = '\'{0}\' in \'{1}\'' \
-            .format(token, truncated(offending_text, ellipsize=Ellipsize.start))
+    def solution(self, offender: 'RuleOffender'=None):
+        sol = super().solution(offender)
 
-        return super().offend(at, what, token)
+        symbol = offender.meta['symbol'] if 'symbol' in offender.meta.keys() else '???'
+
+        return sol.format(symbol)
+
+    def offend(self, at: (int, int), offending_text: str, meta: dict=None) -> RuleOffender:
+        symbol = meta['symbol'] if 'symbol' in meta.keys() else '???'
+
+        what = '\'{0}\' in \'{1}\'' \
+            .format(symbol, truncated(offending_text, ellipsize=Ellipsize.start))
+
+        return super().offend(at, what, meta)
 
     def collect(self, text: str) -> list:
         # match include statements and capture suffixed content, if any
@@ -42,7 +51,7 @@ class SymbolListedNotUsed(Rule):
                     if not has_symbol_usage(symbol, text_after_usage):
                         offender = self.offend(at=RuleOffender.where(text, inclusion.start()),
                                                offending_text=inclusion.group(0),
-                                               token=symbol)
+                                               meta={'symbol': symbol})
 
                         offenders.append(offender)
 
