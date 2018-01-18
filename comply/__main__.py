@@ -71,7 +71,7 @@ def main():
     inputs = arguments['<input>']
 
     rules = [
-        includes.RequireSymbols(),
+        includes.ListSymbols(),
         includes.SymbolListedNotUsed(),
         includes.SymbolUsedNotListed(),
         misc.LineTooLong(),

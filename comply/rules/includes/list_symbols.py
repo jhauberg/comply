@@ -8,11 +8,11 @@ from comply.util import truncated
 from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
 
 
-class RequireSymbols(Rule):
+class ListSymbols(Rule):
     def __init__(self):
-        Rule.__init__(self, name='require-symbols',
-                      description='Include statements should provide a list of the symbols they require.',
-                      suggestion='Add a comment immediately after include statement, listing each required symbol. '
+        Rule.__init__(self, name='list-symbols',
+                      description='Include statements should provide a list of the symbols they use.',
+                      suggestion='Add a comment immediately after include statement, listing each used symbol. '
                                  'Example: "#include <header.h> // symb_t, symbols_*"')
 
     def violate(self, at: (int, int), offending_text: str, meta: dict = None) -> RuleViolation:
