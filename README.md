@@ -87,6 +87,13 @@ If provided with a directory, `comply` will automatically traverse the entire di
 $ comply mylib
 ```
 
+Or use `.` to provide the current working directory as input:
+
+```console
+$ cd mylib
+$ comply .
+```
+
 <details>
   <summary><strong>Running without installing</strong></summary>
 
