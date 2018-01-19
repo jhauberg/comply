@@ -49,7 +49,7 @@ setup(
     author='Jacob Hauberg Hansen',
     author_email='jacob.hauberg@gmail.com',
     license='MIT',
-    packages=['comply', 'comply.rules', 'comply.rules.includes'],
+    packages=['comply', 'comply.rules', 'comply.rules.includes', 'comply.rules.misc'],
     include_package_data=True,
     platforms='any',
     install_requires=[
