@@ -10,15 +10,13 @@ Compilers do not usually care how you write your code. They're happy as long as 
 
 `comply` defines and applies some (very) opinionated and strict rules and conventions on best practices for writing C99 that is both readable and maintainable.
 
-Following these rules will help enforce consistency throughout your project. You might not like some of them, but each has thought and reasoning behind it.
+Following these rules will help enforce consistency throughout your project. You might not like some of them, but each has thought and reasoning behind it. Many of the rules, if not most, are based on [Malcolm Inglis' best practices](https://github.com/mcinglis/c-style).
 
-Many of the rules, if not most, are based on [Malcolm Inglis' best practices](https://github.com/mcinglis/c-style).
-
-You can read more about the thoughts behind each rule on the [project page](https://github.com/jhauberg/comply).
+You can read more about the thoughts behind each rule on the [project page](http://jhauberg.github.io/comply).
 
 **Improve your code**
 
-Basically, `comply` is a style compliance checker (or linter) that scans and analyzes your code, looking for things that could be improved. _It is not a compiler_- as such, it will not find errors in your code.
+`comply` is a style compliance checker (or linter) that scans and analyzes your code, looking for things that could be improved and providing suggestions. _It is not a compiler_- as such, it will not find errors in your code.
 
 It is recommended to always enable all warnings and errors that your compiler provides and run `comply` once your project compiles cleanly.
 
