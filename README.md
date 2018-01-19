@@ -6,15 +6,21 @@ I think we can all agree that opinions on this are numerous. You probably have o
 
 Compilers do not usually care how you write your code. They're happy as long as it does not contain errors. Humans, however, do (or at least, _should_) care. This project is for the humans.
 
-`comply` defines and applies some (very) opinionated and strict rules and conventions on best practices for writing C(99) that is both readable and maintainable. Following these rules will help enforce consistency throughout your project. You might not like some of them, but each has thought and reasoning behind it.
+**Strict style compliance**
 
-Basically, `comply` is a style compliance checker (or linter) that scans and analyzes your code, looking for things that could be improved. It is _not_ a compiler- as such, it will not find errors in your code. It will only provide suggestions for improvements.
+`comply` defines and applies some (very) opinionated and strict rules and conventions on best practices for writing C99 that is both readable and maintainable.
 
-You decide which rules are worth following. Just remember, consistency is key.
+Following these rules will help enforce consistency throughout your project. You might not like some of them, but each has thought and reasoning behind it. Many of the rules, if not most, are based on [Malcolm Inglis' best practices](https://github.com/mcinglis/c-style).
 
-Many of the rules, if not most, are based on [Malcolm Inglis' style guidelines](https://github.com/mcinglis/c-style).
+You can read more about the thoughts behind each rule on the [project page](http://jhauberg.github.io/comply).
 
-# Installation
+**Improve your code**
+
+`comply` is a style compliance checker (or linter) that scans and analyzes your code, looking for things that could be improved and providing suggestions. _It is not a compiler_- as such, it will not find errors in your code.
+
+It is recommended to always enable all warnings and errors that your compiler provides and run `comply` once your project compiles cleanly.
+
+## Installation
 
 Install straight from the source:
 
@@ -65,7 +71,7 @@ You can then go through all listed files and manually delete each one.
 
 </details>
 
-# Usage
+## Usage
 
 When installed, you can run `comply` on the command line:
 
@@ -94,14 +100,14 @@ $ python -m comply path/to/src/
 
 </details>
 
-## Requirements
+### Requirements
 
 This project strives to keep dependencies at an absolute minimum.
 
   * Python 3.5+
   * [docopt](https://github.com/docopt/docopt) - provides a nicer command-line interface
 
-## Full usage
+### Full usage
 
 ```console
 Make your C follow the rules
@@ -116,6 +122,18 @@ Options:
   -h --help    Show program help
   --version    Show program version
 ```
+
+## Why make this?
+
+I wanted a strict style checker for my code, but wasn't able to find any that **1) was strict enough**, or **2) was usable right away without setup** and **3) did not rely on compiler libraries**.
+
+So I just started working on one. Turns out it's a fun project, and so I kept at it.
+
+But. This project is by no means a unique little snowflake. There's a bunch of alternatives.
+
+A downside to this checker is that the rules engine heavily relies on parsing and searching by Regex and is unlikely to ever be the fastest or best at its job- in theory, checkers utilizing compiler libraries should produce more reliable results.
+
+It does, however, work out great for my needs.
 
 ## License
 

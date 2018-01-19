@@ -9,42 +9,52 @@ class Rule:
         self.description = description
         self.suggestion = suggestion
 
-    def __str__(self):
-        return '[{0}] {1}'.format(self.name, self.description)
+    def reason(self, offender: 'RuleViolation' = None):
+        """ Return a reason for a violation of this rule.
 
-    def offend(self, at: (int, int), offending_text: str, token: str = None) -> 'RuleOffender':
-        """ Return a rule offender originating from a chunk of text.
-
-            Can optionally be provided with a token of the text, if something in particular should stand out.
+            Subclasses may override and provide specific formatting in relation to a rule violation.
         """
 
-        return RuleOffender(self, at, offending_text, token)
+        return self.description
+
+    def solution(self, offender: 'RuleViolation' =None):
+        """ Return a solution for this rule.
+
+            Subclasses may override and provide specific formatting in relation to a rule violation.
+        """
+
+        return self.suggestion
+
+    def violate(self, at: (int, int), offending_text: str, meta: dict = None) -> 'RuleViolation':
+        """ Return a rule offender originating from a chunk of text. """
+
+        return RuleViolation(self, at, offending_text, meta)
 
     def collect(self, text: str) -> list:
         """ Analyze a given text and return a list of any found rule offenders. """
 
         return []
 
+    @property
+    def strips_violating_text(self) -> bool:
+        """ Determine whether a rule should strip violating text chunks.
 
-class RuleOffender:
-    """ Represents an occurence of a broken rule. """
+            Enabling this can reduce the length of output for some cases, but is not always
+            preferable for retaining context; e.g. it may be easier to locate a violation if the
+            chunk has not been manipulated too much.
+        """
 
-    def __init__(self, which: Rule, where: (int, int), what: str, token: str=None):
+        return True
+
+
+class RuleViolation:
+    """ Represents an occurence of a violated rule. """
+
+    def __init__(self, which: Rule, where: (int, int), what: str, meta: dict = None):
         self.which = which
         self.where = where
         self.what = what
-        self.token = token
-
-    def __str__(self):
-        return '{0} -> {1} {2}'.format(self.which, self.where, self.what)
-
-    def solution(self) -> str:
-        suggestion = self.which.suggestion
-
-        if suggestion is None:
-            return ''
-
-        return '{0}'.format(suggestion.format(self.token))
+        self.meta = meta
 
     @staticmethod
     def where(text: str, index: int) -> (int, int):

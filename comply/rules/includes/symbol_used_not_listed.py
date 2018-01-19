@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from comply.rule import Rule, RuleOffender
+from comply.rule import Rule, RuleViolation
 
 
 class SymbolUsedNotListed(Rule):
@@ -8,9 +8,6 @@ class SymbolUsedNotListed(Rule):
         Rule.__init__(self, name='symbol-used-not-listed',
                       description='Used symbols should be listed as required.',
                       suggestion='Add symbol \'{0}\' to list.')
-
-    def offend(self, at: (int, int), offending_text: str, token: str=None) -> RuleOffender:
-        return super().offend(at, offending_text, token)
 
     def collect(self, text: str) -> list:
         return []

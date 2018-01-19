@@ -2,24 +2,41 @@
 
 import re
 
-from comply.rule import Rule, RuleOffender
+from comply.rule import Rule, RuleViolation
 from comply.util import truncated, Ellipsize
 
-from comply.rules.includes.require_symbols import is_symbol_list
+from comply.rules.includes.list_symbols import is_symbol_list
 from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
 
 
 class SymbolListedNotUsed(Rule):
     def __init__(self):
         Rule.__init__(self, name='symbol-listed-not-used',
-                      description='Unused symbols should not be listed as required.',
+                      description='Unused symbol \'{0}\' should not be listed as required.',
                       suggestion='Remove symbol \'{0}\' from list.')
 
-    def offend(self, at: (int, int), offending_text: str, token: str=None) -> RuleOffender:
-        what = '\'{0}\' in \'{1}\'' \
-            .format(token, truncated(offending_text, ellipsize=Ellipsize.start))
+    def reason(self, offender: 'RuleViolation' =None):
+        rep = super().reason(offender)
 
-        return super().offend(at, what, token)
+        symbol = offender.meta['symbol'] if 'symbol' in offender.meta.keys() else '???'
+
+        return rep.format(symbol)
+
+    def solution(self, offender: 'RuleViolation' =None):
+        sol = super().solution(offender)
+
+        symbol = offender.meta['symbol'] if 'symbol' in offender.meta.keys() else '???'
+
+        return sol.format(symbol)
+
+    def violate(self, at: (int, int), offending_text: str, meta: dict=None) -> RuleViolation:
+        if self.strips_violating_text:
+            offending_text = offending_text.strip()
+
+        what = '\'{0}\'' \
+            .format(truncated(offending_text, ellipsize=Ellipsize.start))
+
+        return super().violate(at, what, meta)
 
     def collect(self, text: str) -> list:
         # match include statements and capture suffixed content, if any
@@ -40,9 +57,11 @@ class SymbolListedNotUsed(Rule):
                     text_after_usage = text[inclusion.end():]
 
                     if not has_symbol_usage(symbol, text_after_usage):
-                        offender = self.offend(at=RuleOffender.where(text, inclusion.start()),
-                                               offending_text=inclusion.group(0),
-                                               token=symbol)
+                        offending_index = text.rindex(symbol, inclusion.start(), inclusion.end())
+
+                        offender = self.violate(at=RuleViolation.where(text, offending_index),
+                                                offending_text=inclusion.group(0),
+                                                meta={'symbol': symbol})
 
                         offenders.append(offender)
 

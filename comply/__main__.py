@@ -71,9 +71,11 @@ def main():
     inputs = arguments['<input>']
 
     rules = [
-        includes.RequireSymbols(),
+        includes.ListSymbols(),
         includes.SymbolListedNotUsed(),
-        includes.SymbolUsedNotListed()
+        includes.SymbolUsedNotListed(),
+        misc.LineTooLong(),
+        misc.FileTooLong()
     ]
 
     for path in inputs:

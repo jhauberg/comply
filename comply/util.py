@@ -7,7 +7,7 @@ class Ellipsize:
     end = 2
 
 
-def truncated(text: str, length: int = 24, ellipsize: Ellipsize = Ellipsize.middle):
+def truncated(text: str, length: int = 40, ellipsize: Ellipsize = Ellipsize.middle):
     """ Return text truncated to exactly fit a given length.
 
         If text is already shorter than the target length, text returns as is.
