@@ -6,13 +6,21 @@ I think we can all agree that opinions on this are numerous. You probably have o
 
 Compilers do not usually care how you write your code. They're happy as long as it does not contain errors. Humans, however, do (or at least, _should_) care. This project is for the humans.
 
-`comply` defines and applies some (very) opinionated and strict rules and conventions on best practices for writing C(99) that is both readable and maintainable. Following these rules will help enforce consistency throughout your project. You might not like some of them, but each has thought and reasoning behind it.
+**Strict style compliance**
 
-Basically, `comply` is a style compliance checker (or linter) that scans and analyzes your code, looking for things that could be improved. It is _not_ a compiler- as such, it will not find errors in your code. It will only provide suggestions for improvements.
+`comply` defines and applies some (very) opinionated and strict rules and conventions on best practices for writing C99 that is both readable and maintainable.
 
-You decide which rules are worth following. Just remember, consistency is key.
+Following these rules will help enforce consistency throughout your project. You might not like some of them, but each has thought and reasoning behind it.
 
-Many of the rules, if not most, are based on [Malcolm Inglis' style guidelines](https://github.com/mcinglis/c-style).
+Many of the rules, if not most, are based on [Malcolm Inglis' best practices](https://github.com/mcinglis/c-style).
+
+You can read more about the thoughts behind each rule on the [project page](https://github.com/jhauberg/comply).
+
+**Improve your code**
+
+Basically, `comply` is a style compliance checker (or linter) that scans and analyzes your code, looking for things that could be improved. _It is not a compiler_- as such, it will not find errors in your code.
+
+It is recommended to always enable all warnings and errors that your compiler provides and run `comply` once your project compiles cleanly.
 
 ## Installation
 
