@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>comply</title>
+
+  <link rel="stylesheet" type="text/css" href="index.css">
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="Make your C comply to a set of strict style rules.">
+</head>
+
+<body>
+  <article>
+    <h1><strong>comply</strong></h1>
+    <p class="subtitle">Strict style compliance</p>
+    <section>
+      <div class="example" style="width: 50%;">
+        <p class="tip">
+          Use these listings as a general guideline during development or as a reference when fixing violations.
+        </p>
+        <br/>
+        <div class="indent">
+          <div class="jump-list-title">Jump to:</div>
+          <ul class="indent jump-list">
+            <li><a href="#include-statements">Include statements</a></li>
+            <li><a href="#misc">Miscellaneous</a></li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <p>
+          <tt>comply</tt> is an open-source project that helps you write better C.
+        </p>
+        <p>
+          This page provides a listing of each rule that <tt>comply</tt> will validate your code against when running its checks.
+        </p>
+        <br/>
+        <br/>
+        <p>
+          <a href="https://github.com/jhauberg/comply/archive/master.zip">Download</a>&nbsp;&nbsp;&nbsp;<a href="https://github.com/jhauberg/comply">View on GitHub</a>
+        </p>
+      </div>
+      <footer>
+        <p>
+          Rules are based on <strong><a href="https://github.com/jhauberg/comply/releases/tag/0.2.0">comply 0.2.0</a></strong> and was last edited on <strong>January 19th 2018</strong>
+        </p>
+      </footer>
+    </section>
+  
+    <hr>
+
+    <section>
+      <h2 id="include-statements">Include statements</h2>
+      <p>
+        Rules related to <tt>#include</tt> statements.
+      </p>
+      <table class="rules">
+        <thead>
+          <tr>
+            <th>Name</a></th>
+            <th>Description</th>
+            <th>Why is this important?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><p id="list-symbols"><tt>list-symbols</tt></p></td>
+            <td>
+              <p>Requires <tt>#include</tt> statements to be suffixed with a comma-separated list of all the symbols used from the included header or file.</p>
+              <pre>
+                <code class="bad">
+#include &lt;stdbool.h&gt;
+                </code>
+                <code class="good">
+#include &lt;stdbool.h&gt; // bool
+                </code>
+              </pre>
+              <p>You can indicate that you're using every symbol of a specific pattern by applying the star-character:</p>
+              <pre>
+                <code>
+// Using all symbols starting with 'mylib_'
+#include &lt;mylib.h&gt; // mylib_*
+                </code>
+              </pre>
+            </td>
+            <td><p class="reasoning">Helps in determining unused headers that could be removed and encourages use of smaller, more well-defined headers.</p><p class="reasoning">Fewer inclusions reduce complexity, so if an inclusion does not use any symbols, it should be removed.<br/><br/>If a symbol <em>is</em> used, but in a <em>different</em> source file, the inclusion should be moved to that file.</p></td>
+          </tr>
+          <tr>
+            <td><p><tt>symbol-listed-not-used</tt></p></td>
+            <td><p>Requires that any symbol listed as used by an <tt>#include</tt> statement should also be used in the same source file.</p><p><em>See <a href="#list-symbols"><tt>list-symbols</tt></a></em></p></td>
+            <td><p class="reasoning">Helps determining symbols that are no longer used, potentially leading to being able to remove the inclusion completely, improving maintainability.</p></td>
+          </tr>
+          <tr>
+            <td><p><tt>symbol-used-not-listed</tt></p></td>
+            <td><p>Requires that any used symbol be listed as used by an <tt>#include</tt> statement.</p><p><em>Not implemented as a check</em></p></td>
+            <td><p class="reasoning">Helps determining which symbols should be listed as used, which in turn improves maintainability.</p></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2 id="misc">Miscellaneous</h2>
+      <p>
+        Rules related to code in general.
+      </p>
+      <table class="rules">
+        <thead>
+          <tr>
+            <th>Name</a></th>
+            <th>Description</th>
+            <th>Why is this important?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><p><tt>line-too-long</tt></p></td>
+            <td><p>Requires lines to not exceed 80 characters.</p></td>
+            <td><p class="reasoning">Any line of code should fit on the screen it is being viewed on under any scenario; whether single file or side-by-side. Lines that are too long can be difficult to visually comprehend, and wrapping or scrolling makes it harder to read.<p/><p class="reasoning">Lines shorter than 80 characters fits on most viewers and will improve readability significantly.</p></td>
+          </tr>
+          <tr>
+            <td><p><tt>file-too-long</tt></p></td>
+            <td><p>Requires files to not exceed 600 lines.</p></td>
+            <td><p class="reasoning">Files that are very long can be difficult to comprehend and may indicate that the complexity of the code is too high.<p/><p class="reasoning">Considerations should be made whether code can be refactored or split up into smaller units.</p></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </article>
+  <p>
+    Made by <a href="https://github.com/jhauberg">Jacob Hauberg Hansen</a>. Page sources are <a href="https://github.com/jhauberg/comply/tree/master/docs">available on GitHub</a>.
+  </p>
+</body>
+
+</html>
