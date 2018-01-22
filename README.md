@@ -16,7 +16,7 @@ Compilers do not usually care how you write your code. They're happy as long as 
 
 **Strict style compliance**
 
-`comply` defines and applies some (very) opinionated and strict rules and conventions on best practices for writing C99 that is both readable and maintainable.
+`comply` defines and applies some (highly) opinionated and strict rules and conventions on best practices for writing C99 that is both readable and maintainable.
 
 Following these rules will help enforce consistency and improve maintainability throughout your project. You might not like some of them, but each has thought and reasoning behind it.
 
