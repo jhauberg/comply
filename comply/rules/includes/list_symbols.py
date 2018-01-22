@@ -23,7 +23,7 @@ class ListSymbols(Rule):
 
         return super().violate(at, what, meta)
 
-    def collect(self, text: str) -> list:
+    def collect(self, text: str, filename: str, extension: str) -> list:
         # match include statements and capture suffixed content, if any
         pattern = INCLUDE_STMT_PATTERN + r'(.*)'
 

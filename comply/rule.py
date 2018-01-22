@@ -30,7 +30,7 @@ class Rule:
 
         return RuleViolation(self, at, offending_text, meta)
 
-    def collect(self, text: str) -> list:
+    def collect(self, text: str, filename: str, extension: str) -> list:
         """ Analyze a given text and return a list of any found rule offenders. """
 
         return []

@@ -41,7 +41,7 @@ def check(path: str, rules: list):
         violations = []
 
         for rule in rules:
-            violations.extend(rule.collect(text))
+            violations.extend(rule.collect(text, filename, extension))
 
         print('{0} violations found:'.format(len(violations)))
 

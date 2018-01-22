@@ -9,5 +9,5 @@ class SymbolUsedNotListed(Rule):
                       description='Used symbols should be listed as required.',
                       suggestion='Add symbol \'{0}\' to list.')
 
-    def collect(self, text: str) -> list:
+    def collect(self, text: str, filename: str, extension: str) -> list:
         return []
