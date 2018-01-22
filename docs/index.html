@@ -44,7 +44,7 @@
       
       <footer>
         <p>
-          Rules are based on <strong><a href="https://github.com/jhauberg/comply/releases/tag/0.3.0">comply 0.3.0</a></strong> and was last edited on <strong>January 19th 2018</strong>
+          Rules are based on <strong><a href="https://github.com/jhauberg/comply/releases/tag/0.3.1">comply 0.3.1</a></strong> and was last edited on <strong>January 22th 2018</strong>
         </p>
       </footer>
     </section>
@@ -85,7 +85,13 @@
                 </code>
               </pre>
             </td>
-            <td><p class="reasoning">Helps in determining unused headers that could be removed and encourages use of smaller, more well-defined headers.</p><p class="reasoning">Fewer inclusions reduce complexity, so if an inclusion does not use any symbols, it should be removed.<br/><br/>If a symbol <em>is</em> used, but in a <em>different</em> source file, the inclusion should be moved to that file.</p></td>
+            <td><p class="reasoning">Helps in determining unused headers that could be removed and encourages use of smaller, more well-defined headers.</p><p class="reasoning">Fewer inclusions reduce complexity, so if an inclusion does not use any symbols, it should be removed.<br/><br/>If a symbol <em>is</em> used, but in a <em>different</em> source file, the inclusion should be moved to that file.</p>
+              <div class="references"><p><strong>References:</strong></p>
+                <ul class="indent">
+                  <li>Malcolm Inglis: <a href="https://github.com/mcinglis/c-style#comment-non-standard-library-includes-to-say-what-symbols-you-use-from-them"><em>c-style</em></a></li>
+              </ul>
+              </div>
+              </td>
           </tr>
           <tr>
             <td><p><tt>symbol-listed-not-used</tt></p></td>
@@ -118,7 +124,13 @@
           <tr>
             <td><p><tt>line-too-long</tt></p></td>
             <td><p>Requires lines to not exceed 80 characters.</p></td>
-            <td><p class="reasoning">Any line of code should fit on the screen it is being viewed on under any scenario; whether single file or side-by-side. Lines that are too long can be difficult to visually comprehend, and wrapping or scrolling makes it harder to read.<p/><p class="reasoning">Lines shorter than 80 characters fits on most viewers and will improve readability significantly.</p></td>
+            <td><p class="reasoning">Any line of code should fit on the screen it is being viewed on under any scenario; whether single file or side-by-side.<br/><br/>Lines that are too long can be difficult to visually comprehend, and wrapping or scrolling makes it harder to read.<p/><p class="reasoning">Lines shorter than 80 characters fits on most viewers and will improve readability significantly.</p>
+              <div class="references"><p><strong>References:</strong></p>
+                <ul class="indent">
+                  <li>Malcolm Inglis: <a href="https://github.com/mcinglis/c-style#never-have-more-than-79-characters-per-line"><em>c-style</em></a></li>
+              </ul>
+              </div>
+            </td>
           </tr>
           <tr>
             <td><p><tt>file-too-long</tt></p></td>
