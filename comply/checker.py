@@ -33,6 +33,8 @@ def check(path: str, rules: list):
     if extension not in supported_file_types():
         return
 
+    filename = os.path.basename(filename)
+
     print('checking \'{0}\''.format(path))
 
     with open(path) as file:
