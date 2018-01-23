@@ -30,6 +30,7 @@ class IncludeGuard(Rule):
         guard_name = filename.strip() + extension
 
         guard_name = guard_name.replace(' ', '_')
+        guard_name = guard_name.replace('-', '_')
         guard_name = guard_name.replace('.', '_')
 
         # match include statements and capture suffixed content, if any
