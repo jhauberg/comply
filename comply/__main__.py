@@ -15,6 +15,7 @@ Options:
   --version    Show program version
 """
 
+import os
 import re
 
 from docopt import docopt
@@ -80,9 +81,17 @@ def main():
         misc.FileTooLong()
     ]
 
-    for path in inputs:
-        check(path, rules)
+    violations = 0
+    files = 0
 
+    for path in inputs:
+        result = check(path, rules)
+
+        if result.checked:
+            files += result.files
+            violations += result.violations
+
+    print('{0} files checked resulting in {1} violations'.format(files, violations))
     print('finished')
 
 
