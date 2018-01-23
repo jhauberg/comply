@@ -114,7 +114,7 @@ You can also run `comply` without installing it.
 
 **1) By executing the supplied run script**
 
-From anywhere, simply execute `run.py` with the same arguments that you normally would `comply`. The script is found at the root of the project.
+From anywhere, simply execute [run.py](run.py) with the same arguments that you normally would `comply`. The script is found at the root of the project.
 
 ```console
 $ python path/to/comply/run.py src.h src.c --reporter=standard
@@ -163,7 +163,7 @@ For example, this would become:
 
 **2) Using script sources directly**
 
-If you prefer not installing `comply`, you can still use the phase described above. Just point to the `run.py` script instead of the installed executable:
+If you prefer not installing `comply`, you can still use the phase described above. Just point to the [run.py](run.py) script instead of an installed executable:
 
 ```console
 python path/to/comply/run.py ${SRCROOT} --reporter=xcode
