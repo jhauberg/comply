@@ -73,6 +73,11 @@ You can then go through all listed files and manually delete each one.
 
 </details>
 
+### Requirements
+
+- Python 3.5+
+- [docopt](https://github.com/docopt/docopt)
+
 ## Usage
 
 When installed, you can run `comply` on the command line:
@@ -109,12 +114,37 @@ $ python -m comply path/to/src/
 
 </details>
 
-### Requirements
+### Integrating with Xcode
 
-This project strives to keep dependencies at an absolute minimum.
+`comply` can be integrated as a *Run Script Build Phase* in Xcode to have violations reported directly in the IDE.
 
-  * Python 3.5+
-  * [docopt](https://github.com/docopt/docopt) - provides a nicer command-line interface
+First, figure out exactly where `comply` has been installed to:
+
+```console
+$ which comply
+```
+
+This should provide you with a path to the executable, e.g. something like:
+
+```console
+/Library/Frameworks/Python.framework/Versions/3.6/bin/comply
+```
+
+In Xcode, add a new *Run Script Phase*. Copy and paste below snippet into the script editor. Replace `<executable>` with the path to the `comply` executable that you just found.
+
+```console
+<executable> ${SRCROOT} --reporter=xcode
+```
+
+For example, this would become:
+
+```console
+/Library/Frameworks/Python.framework/Versions/3.6/bin/comply ${SRCROOT} --reporter=xcode
+```
+
+Now, every time you build, `comply` should be run on every file and directory within the root of your project. 
+
+You can change or add arguments as you like, but `--reporter=xcode` is required for violations to be displayed.
 
 ### Full usage
 
@@ -122,14 +152,14 @@ This project strives to keep dependencies at an absolute minimum.
 Make your C follow the rules
 
 Usage:
-  comply <input>...
+  comply <input>... [--reporter=<name>]
   comply -h | --help
-
   comply --version
 
 Options:
-  -h --help    Show program help
-  --version    Show program version
+  -r --reporter=<name>    Specify reported output [default: standard]
+  -h --help               Show program help
+  --version               Show program version
 ```
 
 ## Why make this?
