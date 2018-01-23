@@ -22,7 +22,7 @@ from docopt import docopt
 from pkg_resources import parse_version
 
 from comply import VERSION_PATTERN
-from comply.printer import Printer, XcodePrinter
+from comply.reporter import Reporter, XcodeReporter
 from comply.checker import check
 from comply.version import __version__
 
@@ -66,13 +66,13 @@ def compliance(files: int, violations: int) -> float:
     return 1.0 - (violations / (files + violations))
 
 
-def make_reporter(reporting_mode: str) -> Printer:
+def make_reporter(reporting_mode: str) -> Reporter:
     if reporting_mode == 'standard':
-        Printer(reports_solutions=True)
+        Reporter(reports_solutions=True)
     elif reporting_mode == 'xcode':
-        return XcodePrinter()
+        return XcodeReporter()
 
-    return Printer(reports_solutions=True)
+    return Reporter(reports_solutions=True)
 
 
 def main():
@@ -97,7 +97,7 @@ def main():
     violations = 0
     files = 0
 
-    reporting_mode = arguments['<--reporter>']
+    reporting_mode = arguments['--reporter']
     reporter = make_reporter(reporting_mode)
 
     for path in inputs:
@@ -107,7 +107,7 @@ def main():
             files += result.files
             violations += result.violations
 
-    if reporter is not XcodePrinter:
+    if reporter is not XcodeReporter:
         print('{0} files checked resulting in {1} violations'.format(files, violations))
         print('compliance score: {0:.2f}'.format(compliance(files, violations)))
         print('finished')

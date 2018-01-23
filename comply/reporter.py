@@ -7,7 +7,7 @@ from collections import OrderedDict
 from comply.util import truncated, Ellipsize
 
 
-class Printer:
+class Reporter:
     def __init__(self, reports_solutions: bool=True):
         self.reports_solutions = reports_solutions
 
@@ -46,9 +46,9 @@ class Printer:
         print()
 
 
-class XcodePrinter(Printer):
+class XcodeReporter(Reporter):
     def __init__(self):
-        Printer.__init__(self, reports_solutions=False)
+        Reporter.__init__(self, reports_solutions=False)
 
     def report_before_checking(self, path: str):
         pass

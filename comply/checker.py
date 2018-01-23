@@ -2,7 +2,7 @@
 
 import os
 
-from comply.printer import Printer
+from comply.reporter import Reporter
 
 
 class CheckResult:
@@ -18,7 +18,7 @@ def supported_file_types() -> tuple:
     return '.h', '.c'
 
 
-def check(path: str, rules: list, printer: Printer) -> CheckResult:
+def check(path: str, rules: list, reporter: Reporter) -> CheckResult:
     """ Run a rules check on the file found at path, if any.
 
         If the path points to a directory, a check is run on each subsequent filepath.
@@ -36,7 +36,7 @@ def check(path: str, rules: list, printer: Printer) -> CheckResult:
         for file in os.listdir(path):
             filepath = os.path.join(path, file)
 
-            file_result = check(filepath, rules, printer)
+            file_result = check(filepath, rules, reporter)
 
             if file_result.checked:
                 result.files += file_result.files
@@ -51,7 +51,7 @@ def check(path: str, rules: list, printer: Printer) -> CheckResult:
 
     filename = os.path.basename(filename)
 
-    printer.report_before_checking(path)
+    reporter.report_before_checking(path)
 
     with open(path) as file:
         text = file.read()
@@ -65,7 +65,7 @@ def check(path: str, rules: list, printer: Printer) -> CheckResult:
         result.files += 1
         result.violations += len(violations)
 
-        printer.report_before_reporting(violations)
-        printer.report(violations, path)
+        reporter.report_before_reporting(violations)
+        reporter.report(violations, path)
 
     return result
