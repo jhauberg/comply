@@ -62,6 +62,10 @@ def check_for_update():
         pass
 
 
+def compliance(files: int, violations: int) -> float:
+    return 1.0 - (violations / (files + violations))
+
+
 def main():
     """ Entry point for invoking the comply module. """
 
@@ -92,6 +96,7 @@ def main():
             violations += result.violations
 
     print('{0} files checked resulting in {1} violations'.format(files, violations))
+    print('compliance score: {0:.2f}'.format(compliance(files, violations)))
     print('finished')
 
 
