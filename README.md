@@ -104,9 +104,19 @@ $ comply .
 <details>
   <summary><strong>Running without installing</strong></summary>
 
-You can also run `comply` without installing it. However, in that case, you must execute the `comply` module as a script.
+You can also run `comply` without installing it.
 
-Assuming working directory is the root of the project, you go like this:
+**Executing the supplied run script**
+
+From anywhere, simply execute `run.py` with the same arguments that you normally would `comply`. The script is found at the root of the project.
+
+```console
+$ python path/to/comply/run.py src.h src.c --reporter=standard
+```
+
+**Executing module as a script**
+
+This requires the working directory to be at the root of the project.
 
 ```console
 $ python -m comply path/to/src/
