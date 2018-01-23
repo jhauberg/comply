@@ -74,6 +74,8 @@ def main():
         includes.ListSymbols(),
         includes.SymbolListedNotUsed(),
         includes.SymbolUsedNotListed(),
+        includes.IncludeGuard(),
+        includes.NoHeadersHeader(),
         misc.LineTooLong(),
         misc.FileTooLong()
     ]
