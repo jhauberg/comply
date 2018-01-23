@@ -98,7 +98,7 @@ def make_report(inputs: list, rules: list, reporter: Reporter):
             files += result.files
             violations += result.violations
 
-    if reporter is not XcodeReporter:
+    if not isinstance(reporter, XcodeReporter):
         print('{0} files checked resulting in {1} violations'.format(files, violations))
         print('compliance score: {0:.2f}'.format(compliance(files, violations)))
         print('finished')

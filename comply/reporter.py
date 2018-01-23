@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import os
+import sys
 
 from collections import OrderedDict
 
@@ -60,10 +61,12 @@ class XcodeReporter(Reporter):
         for violation in violations:
             absolute_path = os.path.abspath(path)
 
-            location = '{0}:{1}:{2}'.format(absolute_path, violation.where[0], violation.where[1])
+            location = '{0}:{1}:{2}:'.format(absolute_path, violation.where[0], violation.where[1])
             reason = '{0} [{1}]'.format(violation.which.reason(violation), violation.which.name)
 
-            print('{0} warning: {1}'.format(location, reason))
+            output = '{0} warning: {1}'.format(location, reason)
+
+            print(output, file=sys.stderr, flush=True)
 
 
 def without_duplicates(pairs: OrderedDict) -> dict:
