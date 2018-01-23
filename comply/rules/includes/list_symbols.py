@@ -15,7 +15,7 @@ class ListSymbols(Rule):
                       suggestion='Add a comment immediately after include statement, listing each used symbol. '
                                  'Example: "#include <header.h> // symb_t, symbols_*"')
 
-    def violate(self, at: (int, int), offending_text: str, meta: dict = None) -> RuleViolation:
+    def violate(self, at: (int, int), offending_text: str, meta: dict=None) -> RuleViolation:
         if self.strips_violating_text:
             offending_text = offending_text.strip()
 

@@ -14,7 +14,7 @@ class IncludeGuard(Rule):
                       description='Header files should define an include guard to prevent double inclusion.',
                       suggestion='Wrap your header inside an include guard named "{0}".')
 
-    def solution(self, offender: 'RuleViolation' =None):
+    def solution(self, offender: 'RuleViolation'=None):
         sol = super().solution(offender)
 
         symbol = offender.meta['guard'] if 'guard' in offender.meta.keys() else '???'

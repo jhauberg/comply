@@ -13,7 +13,7 @@ class NoHeadersHeader(Rule):
                       description='Header files should not include any other headers.',
                       suggestion='Replace "{0}" with a forward-declaration for each needed type.')
 
-    def solution(self, offender: 'RuleViolation' =None):
+    def solution(self, offender: 'RuleViolation'=None):
         sol = super().solution(offender)
 
         inclusion = offender.meta['inclusion'] if 'inclusion' in offender.meta.keys() else '???'
