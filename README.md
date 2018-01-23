@@ -33,6 +33,8 @@ $ python setup.py install
 <details>
   <summary><strong>It doesn't work</strong></summary>
 
+<br/>
+
 There's a few things that could go wrong during an install. If things didn't go as expected, check the following:
 
 **You may have more than one Python version installed**
@@ -62,6 +64,8 @@ export PYTHONPATH="${PYTHONPATH}/Library/Frameworks/Python.framework/Versions/3.
 
 <details>
   <summary><strong>Uninstalling</strong></summary>
+
+<br/>
 
 If you want to uninstall `comply` and make sure that you get rid of everything, you can run the installation again using the additional **--record** argument to save a list of all installed files:
 
@@ -103,7 +107,9 @@ $ comply .
 
 <details>
   <summary><strong>Running without installing</strong></summary>
+
 <br/>
+
 You can also run `comply` without installing it.
 
 **1) By executing the supplied run script**
