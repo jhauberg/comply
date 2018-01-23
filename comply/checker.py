@@ -53,7 +53,7 @@ def check(path: str, rules: list, reporter: Reporter) -> CheckResult:
 
     reporter.report_before_checking(path)
 
-    with open(path) as file:
+    with open(path, 'r', encoding='utf-8') as file:
         text = file.read()
 
         violations = []
