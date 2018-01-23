@@ -9,10 +9,10 @@ from comply.rules.includes.list_needed_symbols import is_symbol_list
 from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
 
 
-class SymbolListedNotUsed(Rule):
+class SymbolListedNotNeeded(Rule):
     def __init__(self):
-        Rule.__init__(self, name='symbol-listed-not-used',
-                      description='Unused symbol \'{0}\' should not be listed as required.',
+        Rule.__init__(self, name='symbol-listed-not-needed',
+                      description='Unused symbol \'{0}\' should not be listed as needed.',
                       suggestion='Remove symbol \'{0}\' from list.')
 
     def reason(self, offender: 'RuleViolation'=None):
