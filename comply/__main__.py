@@ -68,23 +68,15 @@ def compliance(files: int, violations: int) -> float:
 
 def make_reporter(reporting_mode: str) -> Reporter:
     if reporting_mode == 'standard':
-        Reporter(reports_solutions=True)
+        return Reporter(reports_solutions=True)
     elif reporting_mode == 'xcode':
         return XcodeReporter()
 
-    return Reporter(reports_solutions=True)
+    return Reporter()
 
 
-def main():
-    """ Entry point for invoking the comply module. """
-
-    arguments = docopt(__doc__, version='comply ' + __version__)
-
-    check_for_update()
-
-    inputs = arguments['<input>']
-
-    rules = [
+def make_rules() -> list:
+    return [
         includes.ListNeededSymbols(),
         includes.SymbolListedNotNeeded(),
         includes.SymbolNeededNotListed(),
@@ -94,11 +86,10 @@ def main():
         misc.FileTooLong()
     ]
 
+
+def make_report(inputs: list, rules: list, reporter: Reporter):
     violations = 0
     files = 0
-
-    reporting_mode = arguments['--reporter']
-    reporter = make_reporter(reporting_mode)
 
     for path in inputs:
         result = check(path, rules, reporter)
@@ -111,6 +102,23 @@ def main():
         print('{0} files checked resulting in {1} violations'.format(files, violations))
         print('compliance score: {0:.2f}'.format(compliance(files, violations)))
         print('finished')
+
+
+def main():
+    """ Entry point for invoking the comply module. """
+
+    arguments = docopt(__doc__, version='comply ' + __version__)
+
+    check_for_update()
+
+    rules = make_rules()
+
+    inputs = arguments['<input>']
+
+    reporting_mode = arguments['--reporter']
+    reporter = make_reporter(reporting_mode)
+
+    make_report(inputs, rules, reporter)
 
 
 if __name__ == '__main__':
