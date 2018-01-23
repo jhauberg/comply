@@ -67,7 +67,7 @@ export PYTHONPATH="${PYTHONPATH}/Library/Frameworks/Python.framework/Versions/3.
 
 <br/>
 
-If you want to uninstall `comply` and make sure that you get rid of everything, you can run the installation again using the additional **--record** argument to save a list of all installed files:
+If you want to uninstall `comply` and make sure that you get rid of everything, you can run the installation again using the additional `--record` argument to save a list of all installed files:
 
 ```console
 $ python setup.py install --record installed_files.txt
@@ -135,6 +135,8 @@ $ python -m comply path/to/src/
 
 `comply` can be integrated as a *Run Script Build Phase* in Xcode to have violations reported directly in the IDE.
 
+**1) Using installed executable (*recommended*)**
+
 First, figure out exactly where `comply` has been installed to:
 
 ```console
@@ -157,6 +159,14 @@ For example, this would become:
 
 ```console
 /Library/Frameworks/Python.framework/Versions/3.6/bin/comply ${SRCROOT} --reporter=xcode
+```
+
+**2) Using script sources directly**
+
+If you prefer not installing `comply`, you can still use the phase described above. Just point to the `run.py` script instead of the installed executable:
+
+```console
+python path/to/comply/run.py ${SRCROOT} --reporter=xcode
 ```
 
 Now, every time you build, `comply` should be run on every file and directory within the root of your project. 
