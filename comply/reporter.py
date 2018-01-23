@@ -8,7 +8,7 @@ from comply.util import truncated, Ellipsize
 
 
 class Reporter:
-    def __init__(self, reports_solutions: bool=True):
+    def __init__(self, reports_solutions: bool=False):
         self.reports_solutions = reports_solutions
 
     def report_before_checking(self, path: str):
