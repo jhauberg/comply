@@ -5,7 +5,7 @@ import re
 from comply.rule import Rule, RuleViolation
 from comply.util import truncated, Ellipsize
 
-from comply.rules.includes.list_symbols import is_symbol_list
+from comply.rules.includes.list_needed_symbols import is_symbol_list
 from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
 
 
