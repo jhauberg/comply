@@ -35,10 +35,10 @@ class FileTooLong(Rule):
         if length > FileTooLong.MAX:
             lines = text.splitlines()  # without newlines
 
-            offending_line_index = FileTooLong.MAX
-            offending_line = lines[offending_line_index - 1]
+            offending_line_index = len(lines) - 1
+            offending_line = lines[offending_line_index]
 
-            offender = self.violate(at=(offending_line_index, 0),
+            offender = self.violate(at=(offending_line_index + 1, 0),
                                     offending_text=offending_line,
                                     meta={'length': length})
 
