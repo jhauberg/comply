@@ -61,7 +61,13 @@ class XcodeReporter(Reporter):
         for violation in violations:
             absolute_path = os.path.abspath(path)
 
-            location = '{0}:{1}:{2}:'.format(absolute_path, violation.where[0], violation.where[1])
+            line, column = violation.where
+
+            if column > 0:
+                location = '{0}:{1}:{2}:'.format(absolute_path, line, column)
+            else:
+                location = '{0}:{1}:'.format(absolute_path, line)
+
             reason = '{0} [{1}]'.format(violation.which.reason(violation), violation.which.name)
 
             output = '{0} warning: {1}'.format(location, reason)
