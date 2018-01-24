@@ -11,7 +11,7 @@ class NoHeadersHeader(Rule):
     def __init__(self):
         Rule.__init__(self, name='no-headers-header',
                       description='Header files should not include any other headers.',
-                      suggestion='Replace "{0}" with a forward-declaration for each needed type.')
+                      suggestion='Replace \'{0}\' with a forward-declaration for each needed type.')
 
     def solution(self, offender: 'RuleViolation'=None):
         sol = super().solution(offender)
@@ -28,7 +28,9 @@ class NoHeadersHeader(Rule):
 
         pattern = INCLUDE_STMT_PATTERN
 
-        for inclusion in re.finditer(pattern, text):
+        inclusion = re.search(pattern, text)
+
+        if inclusion is not None:
             include_statement = inclusion.group(0)
 
             offender = self.violate(at=RuleViolation.where(text, inclusion.start()),
