@@ -1,3 +1,5 @@
+<img width="90" src="logo.png" alt="comply" align="left">
+
 # comply
 
 What constitutes well-written and readable C?
@@ -206,3 +208,5 @@ It does, however, work out great for my needs.
 ## License
 
 See [LICENSE](LICENSE)
+
+**Logo with courtesy of [game-icons.net](http://game-icons.net/lorc/originals/black-flag.html)**
