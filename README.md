@@ -1,4 +1,4 @@
-<img width="72" src="logo.png" alt="comply" align="left">
+<img width="90" src="logo.png" alt="comply" align="left">
 
 # comply
 
