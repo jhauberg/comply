@@ -102,7 +102,7 @@ If provided with a directory, `comply` will automatically traverse the entire di
 $ comply mylib
 ```
 
-Or use `.` to provide the current working directory as input:
+You can also just provide the current working directory as input:
 
 ```console
 $ cd mylib
@@ -209,4 +209,4 @@ It does, however, work out great for my needs.
 
 See [LICENSE](LICENSE)
 
-**Logo with courtesy of [game-icons.net](http://game-icons.net/lorc/originals/black-flag.html)**
+*Logo with courtesy of [game-icons.net](http://game-icons.net/lorc/originals/black-flag.html)*
