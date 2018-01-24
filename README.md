@@ -1,10 +1,10 @@
-<img width="90" src="logo.png" alt="comply" align="left">
+<img width="72" src="logo.png" alt="comply" align="left">
 
 # comply
 
-What constitutes well-written and readable C?
+<br/>
 
-What are the best practices one should apply?
+What are the best practices for well-written, readable and maintainable C?
 
 I think we can all agree that opinions on these topics are numerous. You probably have one too.
 
