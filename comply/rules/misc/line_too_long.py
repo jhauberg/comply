@@ -45,7 +45,7 @@ class LineTooLong(Rule):
             characters_except_newline = length - 1
 
             if characters_except_newline > LineTooLong.MAX:
-                offending_index = index + LineTooLong.MAX - 1
+                offending_index = index + LineTooLong.MAX
 
                 offender = self.violate(at=RuleViolation.where(text, offending_index),
                                         offending_text=line,
