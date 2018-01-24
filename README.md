@@ -12,6 +12,8 @@ Compilers do not usually care how you write your code. They're happy as long as 
 
 `comply` is a standard/style compliance checker (or linter) that uses static code analysis to look for things that could be improved. _It is not a compiler_- as such, it will not find errors in your code.
 
+![An example of reported rule violations in Xcode][example.png]
+
 *It is recommended to always enable all warnings and errors that your compiler provides and only use `comply` as a supplement.*
 
 **Strict style compliance**
@@ -151,13 +153,13 @@ This should provide you with a path to the executable, e.g. something like:
 
 In Xcode, add a new *Run Script Phase*. Copy and paste below snippet into the script editor. Replace `<executable>` with the path to the `comply` executable that you just found.
 
-```console
+```shell
 <executable> "${SRCROOT}" --reporter=xcode
 ```
 
 For example, this would become:
 
-```console
+```shell
 /Library/Frameworks/Python.framework/Versions/3.6/bin/comply "${SRCROOT}" --reporter=xcode
 ```
 
@@ -165,7 +167,7 @@ For example, this would become:
 
 If you prefer not installing `comply`, you can still use the phase described above. Just point to the [run.py](run.py) script instead of an installed executable:
 
-```console
+```shell
 python path/to/comply/run.py "${SRCROOT}" --reporter=xcode
 ```
 
