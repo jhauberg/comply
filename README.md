@@ -12,7 +12,7 @@ Compilers do not usually care how you write your code. They're happy as long as 
 
 `comply` is a standard/style compliance checker (or linter) that uses static code analysis to look for things that could be improved. _It is not a compiler_- as such, it will not find errors in your code.
 
-![An example of reported rule violations in Xcode][example.png]
+![](example.png "An example of reported rule violations in Xcode")
 
 *It is recommended to always enable all warnings and errors that your compiler provides and only use `comply` as a supplement.*
 
