@@ -33,7 +33,11 @@ class NoHeadersHeader(Rule):
         if inclusion is not None:
             include_statement = inclusion.group(0)
 
-            offender = self.violate(at=RuleViolation.where(text, inclusion.start()),
+            offending_index = inclusion.start()
+
+            where = RuleViolation.where(text, offending_index, at_beginning=True)
+
+            offender = self.violate(at=where,
                                     offending_text=include_statement,
                                     meta={'inclusion': include_statement})
 

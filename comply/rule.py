@@ -57,10 +57,14 @@ class RuleViolation:
         self.meta = meta
 
     @staticmethod
-    def where(text: str, index: int) -> (int, int):
+    def where(text: str, index: int, at_beginning: bool=False) -> (int, int):
         """ Return the linenumber and column that a character index occurs in a text. """
 
         line = text.count('\n', 0, index) + 1
-        offset = index - text.rfind('\n', 0, index)
 
-        return line, offset
+        if at_beginning:
+            column = 0
+        else:
+            column = index - text.rfind('\n', 0, index)
+
+        return line, column

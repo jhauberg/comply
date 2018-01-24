@@ -38,7 +38,7 @@ class FileTooLong(Rule):
             offending_line_index = FileTooLong.MAX
             offending_line = lines[offending_line_index - 1]
 
-            offender = self.violate(at=(offending_line_index, 1),
+            offender = self.violate(at=(offending_line_index, 0),
                                     offending_text=offending_line,
                                     meta={'length': length})
 

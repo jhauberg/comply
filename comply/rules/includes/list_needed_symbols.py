@@ -11,7 +11,7 @@ from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
 class ListNeededSymbols(Rule):
     def __init__(self):
         Rule.__init__(self, name='list-needed-symbols',
-                      description='Include statements should provide a list of the symbols they need.',
+                      description='Include statements should provide a list of the symbols needed.',
                       suggestion='Add a comment immediately after include statement, listing each needed symbol. '
                                  'Example: "#include <header.h> // symb_t"')
 
@@ -33,7 +33,11 @@ class ListNeededSymbols(Rule):
             suffix = inclusion.group(1)
 
             if not is_symbol_list(suffix):
-                offender = self.violate(at=RuleViolation.where(text, inclusion.start()),
+                offending_index = inclusion.start()
+
+                where = RuleViolation.where(text, offending_index, at_beginning=True)
+
+                offender = self.violate(at=where,
                                         offending_text=inclusion.group(0))
 
                 offenders.append(offender)
