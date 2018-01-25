@@ -11,7 +11,7 @@ from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
 class ListNeededSymbols(Rule):
     def __init__(self):
         Rule.__init__(self, name='list-needed-symbols',
-                      description='Include statements should provide a list of the symbols needed.',
+                      description='Include statements should indicate which symbols are needed.',
                       suggestion='Add a comment immediately after include statement, listing each needed symbol. '
                                  'Example: "#include <header.h> // symb_t"')
 
