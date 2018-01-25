@@ -167,7 +167,9 @@ For example, this would become:
 
 **2) Using script sources directly**
 
-If you prefer not installing `comply`, you can still use the phase described above. Just point to the [run.py](run.py) script instead of an installed executable:
+If you prefer not installing, you can still use the phase script described above. It can be useful to avoid installing if you're working on new features, or want to use a different fork.
+
+Just point to the [run.py](run.py) script instead of the installed executable:
 
 ```shell
 python path/to/comply/run.py "${SRCROOT}" --reporter=xcode
