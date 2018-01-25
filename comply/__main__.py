@@ -10,13 +10,12 @@ Usage:
   comply --version
 
 Options:
-  -r --reporter=<name>    Specify reported output [default: standard]
+  -r --reporter=<name>    Specify type of reported output [default: standard]
   -h --help               Show program help
   --version               Show program version
 """
 
 import re
-import math
 
 from docopt import docopt
 
