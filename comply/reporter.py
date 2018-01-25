@@ -28,7 +28,11 @@ class Reporter:
                 violation.where)
 
             reason = '[{0}] {1}'.format(violation.which.name, violation.which.reason(violation))
-            occurence = '{0} {1}'.format(location, violation.what)
+
+            if len(violation.what) > 0:
+                occurence = '{0} {1}'.format(location, violation.what)
+            else:
+                occurence = location
 
             occurences.append((occurence, reason))
 
