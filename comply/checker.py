@@ -6,9 +6,13 @@ from comply.reporter import Reporter
 
 
 class CheckResult:
-    def __init__(self, checked: bool, files: int=0, violations: int=0):
+    def __init__(self, checked: bool,
+                 files: int=0,
+                 files_with_violations: int=0,
+                 violations: int=0):
         self.checked = checked
         self.files = files
+        self.files_with_violations = files_with_violations
         self.violations = violations
 
 
@@ -40,6 +44,7 @@ def check(path: str, rules: list, reporter: Reporter) -> CheckResult:
 
             if file_result.checked:
                 result.files += file_result.files
+                result.files_with_violations += file_result.files_with_violations
                 result.violations += file_result.violations
 
         return result
@@ -62,8 +67,13 @@ def check(path: str, rules: list, reporter: Reporter) -> CheckResult:
             offenders = rule.collect(text, filename, extension)
             violations.extend(offenders)
 
+        number_of_violations = len(violations)
+
         result.files += 1
-        result.violations += len(violations)
+        result.violations += number_of_violations
+
+        if number_of_violations > 0:
+            result.files_with_violations += 1
 
         reporter.report_before_reporting(violations)
         reporter.report(violations, path)
