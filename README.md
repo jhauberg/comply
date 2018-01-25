@@ -1,24 +1,30 @@
+<img width="90" src="logo.png" alt="comply" align="left">
+
 # comply
 
-What constitutes well-written and readable C?
+<br/>
 
-I think we can all agree that opinions on this are numerous. You probably have one too.
+What are the best practices for well-written, readable and maintainable C?
+
+I think we can all agree that opinions on these topics are numerous. You probably have one too.
 
 Compilers do not usually care how you write your code. They're happy as long as it does not contain errors. Humans, however, do (or at least, _should_) care. This project is for the humans.
 
-**Strict style compliance**
-
-`comply` defines and applies some (very) opinionated and strict rules and conventions on best practices for writing C99 that is both readable and maintainable.
-
-Following these rules will help enforce consistency throughout your project. You might not like some of them, but each has thought and reasoning behind it. Many of the rules, if not most, are based on [Malcolm Inglis' best practices](https://github.com/mcinglis/c-style).
-
-You can read more about the thoughts behind each rule on the [project page](http://jhauberg.github.io/comply).
-
 **Improve your code**
 
-`comply` is a style compliance checker (or linter) that scans and analyzes your code, looking for things that could be improved and providing suggestions. _It is not a compiler_- as such, it will not find errors in your code.
+`comply` is a standard/style compliance checker (or linter) that uses static code analysis to look for things that could be improved. _It is not a compiler_- as such, it will not find errors in your code.
 
-It is recommended to always enable all warnings and errors that your compiler provides and run `comply` once your project compiles cleanly.
+![](example.png "An example of reported rule violations in Xcode")
+
+*It is recommended to always enable all warnings and errors that your compiler provides and only use `comply` as a supplement.*
+
+**Strict style compliance**
+
+`comply` defines and applies some (highly) opinionated and strict rules and conventions on best practices for writing C99 that is both readable and maintainable.
+
+Following these rules will help enforce consistency and improve maintainability throughout your project. You might not like some of them, but each has thought and reasoning behind it.
+
+You can read more about the thoughts behind each rule on the [project page](http://jhauberg.github.io/comply).
 
 ## Installation
 
@@ -30,6 +36,8 @@ $ python setup.py install
 
 <details>
   <summary><strong>It doesn't work</strong></summary>
+
+<br/>
 
 There's a few things that could go wrong during an install. If things didn't go as expected, check the following:
 
@@ -61,7 +69,9 @@ export PYTHONPATH="${PYTHONPATH}/Library/Frameworks/Python.framework/Versions/3.
 <details>
   <summary><strong>Uninstalling</strong></summary>
 
-If you want to uninstall `comply` and make sure that you get rid of everything, you can run the installation again using the additional **--record** argument to save a list of all installed files:
+<br/>
+
+If you want to uninstall `comply` and make sure that you get rid of everything, you can run the installation again using the additional `--record` argument to save a list of all installed files:
 
 ```console
 $ python setup.py install --record installed_files.txt
@@ -70,6 +80,11 @@ $ python setup.py install --record installed_files.txt
 You can then go through all listed files and manually delete each one.
 
 </details>
+
+### Requirements
+
+- Python 3.5+
+- [docopt](https://github.com/docopt/docopt)
 
 ## Usage
 
@@ -87,7 +102,7 @@ If provided with a directory, `comply` will automatically traverse the entire di
 $ comply mylib
 ```
 
-Or use `.` to provide the current working directory as input:
+You can also just provide the current working directory as input:
 
 ```console
 $ cd mylib
@@ -97,22 +112,72 @@ $ comply .
 <details>
   <summary><strong>Running without installing</strong></summary>
 
-You can also run `comply` without installing it. However, in that case, you must execute the `comply` module as a script.
+<br/>
 
-Assuming working directory is the root of the project, you go like this:
+You can also run `comply` without installing it.
+
+**1) By executing the supplied run script**
+
+From anywhere, simply execute [run.py](run.py) with the same arguments that you normally would `comply`. The script is found at the root of the project.
 
 ```console
+$ python path/to/comply/run.py src.h src.c --reporter=standard
+```
+
+**2) By executing the module as a script**
+
+This requires the working directory to be at the root of the project.
+
+```console
+$ cd path/to/comply
 $ python -m comply path/to/src/
 ```
 
 </details>
 
-### Requirements
+### Integrating with Xcode
 
-This project strives to keep dependencies at an absolute minimum.
+`comply` can be integrated as a *Run Script Build Phase* in Xcode to have violations reported directly in the IDE.
 
-  * Python 3.5+
-  * [docopt](https://github.com/docopt/docopt) - provides a nicer command-line interface
+**1) Using installed executable (*recommended*)**
+
+First, figure out exactly where `comply` has been installed to:
+
+```console
+$ which comply
+```
+
+This should provide you with a path to the executable, e.g. something like:
+
+```console
+/Library/Frameworks/Python.framework/Versions/3.6/bin/comply
+```
+
+In Xcode, add a new *Run Script Phase*. Copy and paste below snippet into the script editor. Replace `<executable>` with the path to the `comply` executable that you just found.
+
+```shell
+<executable> "${SRCROOT}" --reporter=xcode
+```
+
+For example, this would become:
+
+```shell
+/Library/Frameworks/Python.framework/Versions/3.6/bin/comply "${SRCROOT}" --reporter=xcode
+```
+
+**2) Using script sources directly**
+
+If you prefer not installing, you can still use the phase script described above. It can be useful to avoid installing if you're working on new features, or want to use a different fork.
+
+Just point to the [run.py](run.py) script instead of the installed executable:
+
+```shell
+python path/to/comply/run.py "${SRCROOT}" --reporter=xcode
+```
+
+Now, every time you build, `comply` should be run on every file and directory within the root of your project. 
+
+You can change or add arguments as you like, but `--reporter=xcode` is required for violations to be displayed.
 
 ### Full usage
 
@@ -120,14 +185,14 @@ This project strives to keep dependencies at an absolute minimum.
 Make your C follow the rules
 
 Usage:
-  comply <input>...
+  comply <input>... [--reporter=<name>]
   comply -h | --help
-
   comply --version
 
 Options:
-  -h --help    Show program help
-  --version    Show program version
+  -r --reporter=<name>    Specify reported output [default: standard]
+  -h --help               Show program help
+  --version               Show program version
 ```
 
 ## Why make this?
@@ -145,3 +210,5 @@ It does, however, work out great for my needs.
 ## License
 
 See [LICENSE](LICENSE)
+
+*Logo with courtesy of [game-icons.net](http://game-icons.net/lorc/originals/black-flag.html)*

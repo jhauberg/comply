@@ -5,14 +5,14 @@
 Make your C follow the rules
 
 Usage:
-  comply <input>...
+  comply <input>... [--reporter=<name>]
   comply -h | --help
-
   comply --version
 
 Options:
-  -h --help    Show program help
-  --version    Show program version
+  -r --reporter=<name>    Specify type of reported output [default: standard]
+  -h --help               Show program help
+  --version               Show program version
 """
 
 import re
@@ -22,6 +22,7 @@ from docopt import docopt
 from pkg_resources import parse_version
 
 from comply import VERSION_PATTERN
+from comply.reporter import Reporter, XcodeReporter
 from comply.checker import check
 from comply.version import __version__
 
@@ -61,6 +62,79 @@ def check_for_update():
         pass
 
 
+def compliance(files: int, files_total: int, violations: int) -> float:
+    if files == 0 or violations == 0:
+        return 1.0
+
+    f = files  # files with violations
+
+    min_f = 0
+    max_f = files_total
+
+    v = violations  # total violations
+
+    min_v = 0
+    max_v = v + f  # arbitrary max
+
+    vp = (v - min_v) / (max_v - min_v)
+    fp = (f - min_f) / (max_f - min_f)
+
+    # weigh files heavier than violations;
+    #  e.g. 100 violations in 1 file should score better than 100 violations over 2 files
+    v_weight = 0.4
+    f_weight = 0.6
+
+    v_score = vp * v_weight
+    f_score = fp * f_weight
+
+    score = 1.0 - (v_score + f_score)
+
+    return score
+
+
+def make_reporter(reporting_mode: str) -> Reporter:
+    if reporting_mode == 'standard':
+        return Reporter(reports_solutions=True)
+    elif reporting_mode == 'xcode':
+        return XcodeReporter()
+
+    return Reporter()
+
+
+def make_rules() -> list:
+    return [
+        includes.ListNeededSymbols(),
+        includes.SymbolListedNotNeeded(),
+        includes.SymbolNeededNotListed(),
+        includes.IncludeGuard(),
+        includes.NoHeadersHeader(),
+        misc.LineTooLong(),
+        misc.FileTooLong()
+    ]
+
+
+def make_report(inputs: list, rules: list, reporter: Reporter):
+    violations = 0
+    files = 0
+    files_with_violations = 0
+
+    for path in inputs:
+        result = check(path, rules, reporter)
+
+        if result.checked:
+            files += result.files
+            files_with_violations += result.files_with_violations
+            violations += result.violations
+
+    if not isinstance(reporter, XcodeReporter):
+        print('{0}/{1} files resulted in {2} violations'
+              .format(files_with_violations, files, violations))
+
+        print('compliance score: {0:.2f} ⚑'
+              .format(compliance(files_with_violations, files, violations)))
+        print('finished')
+
+
 def main():
     """ Entry point for invoking the comply module. """
 
@@ -68,20 +142,14 @@ def main():
 
     check_for_update()
 
+    rules = make_rules()
+
     inputs = arguments['<input>']
 
-    rules = [
-        includes.ListSymbols(),
-        includes.SymbolListedNotUsed(),
-        includes.SymbolUsedNotListed(),
-        misc.LineTooLong(),
-        misc.FileTooLong()
-    ]
+    reporting_mode = arguments['--reporter']
+    reporter = make_reporter(reporting_mode)
 
-    for path in inputs:
-        check(path, rules)
-
-    print('finished')
+    make_report(inputs, rules, reporter)
 
 
 if __name__ == '__main__':

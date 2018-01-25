@@ -5,24 +5,24 @@ import re
 from comply.rule import Rule, RuleViolation
 from comply.util import truncated, Ellipsize
 
-from comply.rules.includes.list_symbols import is_symbol_list
+from comply.rules.includes.list_needed_symbols import is_symbol_list
 from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
 
 
-class SymbolListedNotUsed(Rule):
+class SymbolListedNotNeeded(Rule):
     def __init__(self):
-        Rule.__init__(self, name='symbol-listed-not-used',
-                      description='Unused symbol \'{0}\' should not be listed as required.',
+        Rule.__init__(self, name='symbol-listed-not-needed',
+                      description='Unused symbol \'{0}\' should not be listed as needed.',
                       suggestion='Remove symbol \'{0}\' from list.')
 
-    def reason(self, offender: 'RuleViolation' =None):
+    def reason(self, offender: 'RuleViolation'=None):
         rep = super().reason(offender)
 
         symbol = offender.meta['symbol'] if 'symbol' in offender.meta.keys() else '???'
 
         return rep.format(symbol)
 
-    def solution(self, offender: 'RuleViolation' =None):
+    def solution(self, offender: 'RuleViolation'=None):
         sol = super().solution(offender)
 
         symbol = offender.meta['symbol'] if 'symbol' in offender.meta.keys() else '???'
@@ -38,7 +38,7 @@ class SymbolListedNotUsed(Rule):
 
         return super().violate(at, what, meta)
 
-    def collect(self, text: str) -> list:
+    def collect(self, text: str, filename: str, extension: str) -> list:
         # match include statements and capture suffixed content, if any
         pattern = INCLUDE_STMT_PATTERN + r'(.*)'
 

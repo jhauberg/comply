@@ -206,6 +206,19 @@ hr {
   width: 40%;
 } 
 
+.references {
+  margin-top: 1cm;
+  margin-left: .5cm;
+  margin-right: 1cm;
+  margin-bottom: 1cm;
+
+  font-size: .8em;
+}
+
+.references > ul {
+  margin-left: .5cm;
+}
+
 .tip {
   background-color: lightgoldenrodyellow;
   padding-left: .5cm;

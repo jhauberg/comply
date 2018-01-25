@@ -8,14 +8,14 @@ from comply.util import truncated
 from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
 
 
-class ListSymbols(Rule):
+class ListNeededSymbols(Rule):
     def __init__(self):
-        Rule.__init__(self, name='list-symbols',
-                      description='Include statements should provide a list of the symbols they use.',
-                      suggestion='Add a comment immediately after include statement, listing each used symbol. '
-                                 'Example: "#include <header.h> // symb_t, symbols_*"')
+        Rule.__init__(self, name='list-needed-symbols',
+                      description='Include statements should indicate which symbols are needed.',
+                      suggestion='Add a comment immediately after include statement, listing each needed symbol. '
+                                 'Example: "#include <header.h> // symb_t"')
 
-    def violate(self, at: (int, int), offending_text: str, meta: dict = None) -> RuleViolation:
+    def violate(self, at: (int, int), offending_text: str, meta: dict=None) -> RuleViolation:
         if self.strips_violating_text:
             offending_text = offending_text.strip()
 
@@ -23,7 +23,7 @@ class ListSymbols(Rule):
 
         return super().violate(at, what, meta)
 
-    def collect(self, text: str) -> list:
+    def collect(self, text: str, filename: str, extension: str) -> list:
         # match include statements and capture suffixed content, if any
         pattern = INCLUDE_STMT_PATTERN + r'(.*)'
 
@@ -33,7 +33,11 @@ class ListSymbols(Rule):
             suffix = inclusion.group(1)
 
             if not is_symbol_list(suffix):
-                offender = self.violate(at=RuleViolation.where(text, inclusion.start()),
+                offending_index = inclusion.start()
+
+                where = RuleViolation.where(text, offending_index, at_beginning=True)
+
+                offender = self.violate(at=where,
                                         offending_text=inclusion.group(0))
 
                 offenders.append(offender)

@@ -12,22 +12,23 @@ class FileTooLong(Rule):
 
     MAX = 600
 
-    def reason(self, offender: 'RuleViolation' =None):
+    def reason(self, offender: 'RuleViolation'=None):
         rep = super().reason(offender)
 
         length = offender.meta['length'] if 'length' in offender.meta.keys() else 0
 
         return rep.format(length, FileTooLong.MAX)
 
-    def violate(self, at: (int, int), offending_text: str, meta: dict = None) -> RuleViolation:
+    def violate(self, at: (int, int), offending_text: str, meta: dict=None) -> RuleViolation:
         if self.strips_violating_text:
             offending_text = offending_text.strip()
 
-        what = '\'{0}\''.format(truncated(offending_text))
+        if len(offending_text) > 0:
+            offending_text = '\'{0}\''.format(truncated(offending_text))
 
-        return super().violate(at, what, meta)
+        return super().violate(at, offending_text, meta)
 
-    def collect(self, text: str) -> list:
+    def collect(self, text: str, filename: str, extension: str) -> list:
         offenders = []
 
         length = text.count('\n')
@@ -35,10 +36,10 @@ class FileTooLong(Rule):
         if length > FileTooLong.MAX:
             lines = text.splitlines()  # without newlines
 
-            offending_line_index = FileTooLong.MAX
-            offending_line = lines[offending_line_index - 1]
+            offending_line_index = len(lines) - 1
+            offending_line = lines[offending_line_index]
 
-            offender = self.violate(at=(offending_line_index, 1),
+            offender = self.violate(at=(offending_line_index + 1, 0),
                                     offending_text=offending_line,
                                     meta={'length': length})
 
