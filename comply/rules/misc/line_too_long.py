@@ -23,14 +23,14 @@ class LineTooLong(Rule):
         # insert cursor to indicate max line length
         line = (offending_text[:LineTooLong.MAX] + '|' +
                 offending_text[LineTooLong.MAX:])
+
         # remove any trailing newlines to keep neat prints
-        offending_text = without_trailing_newline(line)
+        line = without_trailing_newline(line)
 
         if self.strips_violating_text:
-            offending_text = offending_text.strip()
+            line = line.strip()
 
-        what = '\'{0}\''.format(
-            truncated(offending_text, length=LineTooLong.MAX, ellipsize=Ellipsize.start))
+        what = '\'{0}\''.format(truncated(line))
 
         return super().violate(at, what, meta)
 
