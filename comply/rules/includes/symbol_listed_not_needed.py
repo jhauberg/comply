@@ -57,7 +57,7 @@ class SymbolListedNotNeeded(Rule):
                     text_after_usage = text[inclusion.end():]
 
                     if not has_symbol_usage(symbol, text_after_usage):
-                        offending_index = text.rindex(symbol, inclusion.start(), inclusion.end())
+                        offending_index = text.index(symbol, inclusion.start(1), inclusion.end())
 
                         offender = self.violate(at=RuleViolation.where(text, offending_index),
                                                 offending_text=inclusion.group(0),
