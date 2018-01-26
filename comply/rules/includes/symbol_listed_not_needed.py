@@ -34,7 +34,7 @@ class SymbolListedNotNeeded(Rule):
             offending_text = offending_text.strip()
 
         what = '\'{0}\'' \
-            .format(truncated(offending_text, ellipsize=Ellipsize.start))
+            .format(truncated(offending_text, options=Ellipsize.options(at=Ellipsize.start)))
 
         return super().violate(at, what, meta)
 

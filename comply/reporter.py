@@ -24,7 +24,7 @@ class Reporter:
 
         for violation in violations:
             location = '{0}:{1}'.format(
-                truncated(path, length=28, ellipsize=Ellipsize.middle),
+                truncated(path, length=28, options=Ellipsize.options(at=Ellipsize.middle)),
                 violation.where)
 
             reason = '[{0}] {1}'.format(violation.which.name, violation.which.reason(violation))

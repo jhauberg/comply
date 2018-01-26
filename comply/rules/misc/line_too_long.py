@@ -33,7 +33,7 @@ class LineTooLong(Rule):
             line = line.strip()
 
         what = '\'{0}\''.format(
-            truncated(line, ellipsize=Ellipsize.ends, from_index=insertion_index))
+            truncated(line, options=Ellipsize.options(at=Ellipsize.ends, index=insertion_index)))
 
         return super().violate(at, what, meta)
 
