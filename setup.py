@@ -15,14 +15,15 @@ import re
 
 from setuptools import setup
 
-from comply import VERSION_PATTERN
+from comply import VERSION_PATTERN, is_compatible
+
+
+if not is_compatible():
+    sys.exit('Python 3.5 or newer is required for installing and running comply')
 
 
 def determine_version_or_exit() -> str:
     """ Determine version identifier or exit the program. """
-
-    if sys.version_info < (3, 5):
-        sys.exit('Python 3.5 or newer is required for running comply')
 
     with open('comply/version.py') as file:
         version_contents = file.read()

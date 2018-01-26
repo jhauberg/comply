@@ -16,12 +16,13 @@ Options:
 """
 
 import re
+import sys
 
 from docopt import docopt
 
 from pkg_resources import parse_version
 
-from comply import VERSION_PATTERN
+from comply import VERSION_PATTERN, is_compatible, allow_unicode
 from comply.reporter import Reporter, XcodeReporter
 from comply.checker import check
 from comply.version import __version__
@@ -130,13 +131,21 @@ def make_report(inputs: list, rules: list, reporter: Reporter):
         print('{0}/{1} files resulted in {2} violations'
               .format(files_with_violations, files, violations))
 
-        print('compliance score: {0:.2f} ⚑'
-              .format(compliance(files_with_violations, files, violations)))
+        if allow_unicode():
+            print('compliance score: {0:.2f} ⚑'
+                  .format(compliance(files_with_violations, files, violations)))
+        else:
+            print('compliance score: {0:.2f}'
+                  .format(compliance(files_with_violations, files, violations)))
+
         print('finished')
 
 
 def main():
     """ Entry point for invoking the comply module. """
+
+    if not is_compatible():
+        sys.exit('Python 3.5 or newer is required for running comply')
 
     arguments = docopt(__doc__, version='comply ' + __version__)
 
