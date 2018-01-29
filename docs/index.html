@@ -45,7 +45,7 @@
       
       <footer>
         <p>
-          Rules are based on <strong><a href="https://github.com/jhauberg/comply/releases/tag/0.4.0">comply 0.4.1</a></strong> and was last edited on <strong>January 26th 2018</strong>
+          Rules are based on <strong><a href="https://github.com/jhauberg/comply/releases/tag/0.4.0">comply 0.4.1</a></strong> and was last edited on <strong>January 29th 2018</strong>
         </p>
       </footer>
     </section>
@@ -70,6 +70,8 @@
             <td><p id="list-needed-symbols"><tt>list-needed-symbols</tt></p></td>
             <td>
               <p>Requires <tt>#include</tt> statements to be suffixed with a comma-separated list of all the symbols needed from the included header or file.</p>
+              <details>
+                <summary><strong>Read more</strong></summary>
               <pre>
                 <code class="bad">
 #include &lt;stdbool.h&gt;
@@ -85,6 +87,7 @@
 #include &lt;mylib.h&gt; // mylib_*
                 </code>
               </pre>
+            </details>
             </td>
             <td><p class="reasoning">Helps in determining dependencies that are no longer needed and could be removed, and encourages use of smaller, more well-defined headers.</p>
               <p class="reasoning">Fewer dependencies reduce complexity, so if an inclusion does not need any symbols, it should be removed.<br/><br/>If a symbol is <em>expectedly</em> needed in a <em>different</em> source file, the inclusion should be moved to that file.</p>
@@ -108,6 +111,8 @@
           <tr>
             <td><p id="no-headers-header"><tt>no-headers-header</tt></p></td>
             <td><p>Requires that header files do not include any other headers.</p>
+              <details>
+                <summary><strong>Read more</strong></summary>
               <p>Instead, headers should provide forward-declarations of each needed type and let the implementation include any necessary headers.</p>
               <pre>
   <strong>mylib_header.h</strong>
@@ -127,6 +132,7 @@ struct attr_t;
 #endif
                 </code>
               </pre>
+              </details>
             </td>
             <td><p class="reasoning">Avoiding header inclusions helps with keeping compile times low.</p>
               <p class="reasoning">Forces source files to include <em>everything</em> needed. This might seem like it would be a big hassle- that's because it is. The benefit, however, is that a reader will immediately be aware of <em>all</em> dependencies of the specific unit.<br/><br/>It might even make you think a little bit harder about your design in general once the list grows annoyingly long.<br/><br/>Whenever possible, avoid dependencies.</p>
@@ -142,6 +148,8 @@ struct attr_t;
           <tr>
             <td><p><tt>include-guard</tt></p></td>
             <td><p>Requires that the contents of headers be wrapped in <em>include guards</em> named identically to the filename of the header.</p>
+              <details>
+                <summary><strong>Read more</strong></summary>
               <pre>
   <strong>mylib_header.h</strong>
                 <code class="bad">
@@ -161,6 +169,7 @@ struct attr_t;
               </pre>
               <p>
                 <em>Fully implementing and strictly enforcing <a href="#no-headers-header"><tt>no-headers-header</tt></a> actually makes this rule unnecessary.</em></p><p><em>Regardless, it is still advised to enforce it as a precaution against unruly includers.</em></p>
+              </details>
             </td>
             <td><p class="reasoning">Helps prevent double inclusion errors.</p></td>
           </tr>
