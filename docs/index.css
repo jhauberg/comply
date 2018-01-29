@@ -14,10 +14,14 @@ body {
   margin-right: auto;
 
   font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
-  font-size: 1.2rem;
+  font-size: 1.2em;
 
   background-color: white;
   color: #111;
+}
+
+details {
+  margin-bottom: .5cm;
 }
 
 abbr {
@@ -235,5 +239,5 @@ hr {
   padding-right: .5cm;
   padding-top: .4cm;
   padding-bottom: .3cm;
-  font-size: 1rem;
+  font-size: .85em;
 }
