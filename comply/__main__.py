@@ -127,18 +127,13 @@ def make_report(inputs: list, rules: list, reporter: Reporter):
             files_with_violations += result.files_with_violations
             violations += result.violations
 
-    if not isinstance(reporter, XcodeReporter):
-        print('{0}/{1} files resulted in {2} violations'
-              .format(files_with_violations, files, violations))
+    score = compliance(files_with_violations, files, violations)
+    score_format = '{0:.2f} ⚑' if allow_unicode() else '{0:.2f}'
 
-        if allow_unicode():
-            print('compliance score: {0:.2f} ⚑'
-                  .format(compliance(files_with_violations, files, violations)))
-        else:
-            print('compliance score: {0:.2f}'
-                  .format(compliance(files_with_violations, files, violations)))
+    score = score_format.format(score)
 
-        print('finished')
+    print('{2} violations generated from {0}/{1} files ({3})'
+          .format(files_with_violations, files, violations, score))
 
 
 def main():
