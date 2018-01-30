@@ -6,14 +6,20 @@ from comply.reporter import Reporter
 
 
 class CheckResult:
-    def __init__(self, checked: bool,
+    def __init__(self,
                  files: int=0,
                  files_with_violations: int=0,
                  violations: int=0):
-        self.checked = checked
         self.files = files
         self.files_with_violations = files_with_violations
         self.violations = violations
+
+    def __iadd__(self, other):
+        self.files += other.files
+        self.files_with_violations += other.files_with_violations
+        self.violations += other.violations
+
+        return self
 
 
 def supported_file_types() -> tuple:
@@ -22,37 +28,38 @@ def supported_file_types() -> tuple:
     return '.h', '.c'
 
 
-def check(path: str, rules: list, reporter: Reporter) -> CheckResult:
+def check(path: str, rules: list, reporter: Reporter) -> (CheckResult, bool):
     """ Run a rules check on the file found at path, if any.
 
         If the path points to a directory, a check is run on each subsequent filepath.
 
-        Return whether the path was checked, how many files were checked (if recursed through a
-        directory) and the number of violations encountered.
+        Return a result and whether the path was checked.
     """
 
-    if not os.path.exists(path):
-        return CheckResult(checked=False)
+    result = CheckResult()
 
-    result = CheckResult(checked=True)
+    if not os.path.exists(path):
+        return result, False
 
     if os.path.isdir(path):
+        checked_any = False
+
         for file in os.listdir(path):
             filepath = os.path.join(path, file)
 
-            file_result = check(filepath, rules, reporter)
+            file_result, checked = check(filepath, rules, reporter)
 
-            if file_result.checked:
-                result.files += file_result.files
-                result.files_with_violations += file_result.files_with_violations
-                result.violations += file_result.violations
+            if checked:
+                checked_any = True
 
-        return result
+                result += file_result
+
+        return result, checked_any
 
     filename, extension = os.path.splitext(path)
 
     if extension not in supported_file_types():
-        return CheckResult(checked=False)
+        return result, False
 
     filename = os.path.basename(filename)
 
@@ -78,4 +85,4 @@ def check(path: str, rules: list, reporter: Reporter) -> CheckResult:
         reporter.report_before_reporting(violations)
         reporter.report(violations, path)
 
-    return result
+    return result, True
