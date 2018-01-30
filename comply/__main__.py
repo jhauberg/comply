@@ -23,8 +23,9 @@ from docopt import docopt
 from pkg_resources import parse_version
 
 from comply import VERSION_PATTERN, is_compatible, allow_unicode
-from comply.reporter import Reporter, XcodeReporter
-from comply.checker import check
+from comply.reporter import Reporter, ClangReporter
+from comply.checker import check, CheckResult
+from comply.rule import Rule
 from comply.version import __version__
 
 from comply.rules import *
@@ -63,16 +64,17 @@ def check_for_update():
         pass
 
 
-def compliance(files: int, files_total: int, violations: int) -> float:
-    if files == 0 or violations == 0:
+def compliance(result: CheckResult) -> float:
+    """ Return the compliance score """
+
+    f = result.files_with_violations
+    v = result.violations
+
+    if f == 0 or v == 0:
         return 1.0
 
-    f = files  # files with violations
-
     min_f = 0
-    max_f = files_total
-
-    v = violations  # total violations
+    max_f = result.files
 
     min_v = 0
     max_v = v + f  # arbitrary max
@@ -93,17 +95,25 @@ def compliance(files: int, files_total: int, violations: int) -> float:
     return score
 
 
-def make_reporter(reporting_mode: str) -> Reporter:
+def make_reporter(reporting_mode: str, warning_if_unavailable: bool=False) -> Reporter:
+    """ Return a reporter appropriate for the mode. """
+
     if reporting_mode == 'standard':
         return Reporter(reports_solutions=True)
-    elif reporting_mode == 'xcode':
-        return XcodeReporter()
+    elif reporting_mode == 'clang':
+        return ClangReporter()
+
+    if warning_if_unavailable:
+        print('comply: reporting mode \'{0}\' not available. Defaulting to \'standard\'.'
+              .format(reporting_mode))
 
     return Reporter()
 
 
 def make_rules() -> list:
-    return [
+    """ Return a list of rules to run checks on. """
+
+    rules = [
         includes.ListNeededSymbols(),
         includes.SymbolListedNotNeeded(),
         includes.SymbolNeededNotListed(),
@@ -113,32 +123,27 @@ def make_rules() -> list:
         misc.FileTooLong()
     ]
 
+    return sorted(rules, key=lambda rule: rule.collection_hint)
+
 
 def make_report(inputs: list, rules: list, reporter: Reporter):
-    violations = 0
-    files = 0
-    files_with_violations = 0
+    """  Run checks and print a report. """
+
+    total = CheckResult()
 
     for path in inputs:
-        result = check(path, rules, reporter)
+        result, checked = check(path, rules, reporter)
 
-        if result.checked:
-            files += result.files
-            files_with_violations += result.files_with_violations
-            violations += result.violations
+        if checked:
+            total += result
 
-    if not isinstance(reporter, XcodeReporter):
-        print('{0}/{1} files resulted in {2} violations'
-              .format(files_with_violations, files, violations))
+    score = compliance(total)
+    score_format = '{0:.2f} ⚑' if allow_unicode() else '{0:.2f}'
 
-        if allow_unicode():
-            print('compliance score: {0:.2f} ⚑'
-                  .format(compliance(files_with_violations, files, violations)))
-        else:
-            print('compliance score: {0:.2f}'
-                  .format(compliance(files_with_violations, files, violations)))
+    score = score_format.format(score)
 
-        print('finished')
+    print('{2} violations generated from {0}/{1} files ({3})'
+          .format(total.files_with_violations, total.files, total.violations, score))
 
 
 def main():
@@ -156,7 +161,7 @@ def main():
     inputs = arguments['<input>']
 
     reporting_mode = arguments['--reporter']
-    reporter = make_reporter(reporting_mode)
+    reporter = make_reporter(reporting_mode, warning_if_unavailable=True)
 
     make_report(inputs, rules, reporter)
 

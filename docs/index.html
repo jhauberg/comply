@@ -45,7 +45,7 @@
       
       <footer>
         <p>
-          Rules are based on <strong><a href="https://github.com/jhauberg/comply/releases/tag/0.4.0">comply 0.4.1</a></strong> and was last edited on <strong>January 26th 2018</strong>
+          Rules are based on <strong><a href="https://github.com/jhauberg/comply/releases/tag/0.4.2">comply 0.4.2</a></strong> and was last edited on <strong>January 30th 2018</strong>
         </p>
       </footer>
     </section>
@@ -70,6 +70,8 @@
             <td><p id="list-needed-symbols"><tt>list-needed-symbols</tt></p></td>
             <td>
               <p>Requires <tt>#include</tt> statements to be suffixed with a comma-separated list of all the symbols needed from the included header or file.</p>
+              <details>
+                <summary><strong>Read more</strong></summary>
               <pre>
                 <code class="bad">
 #include &lt;stdbool.h&gt;
@@ -85,9 +87,10 @@
 #include &lt;mylib.h&gt; // mylib_*
                 </code>
               </pre>
+            </details>
             </td>
             <td><p class="reasoning">Helps in determining dependencies that are no longer needed and could be removed, and encourages use of smaller, more well-defined headers.</p>
-              <p class="reasoning">Fewer dependencies reduce complexity, so if an inclusion does not need any symbols, it should be removed.<br/><br/>If a symbol is <em>expectedly</em> needed in a <em>different</em> source file, the inclusion should be moved to that file.</p>
+              <p class="reasoning">Fewer dependencies reduce complexity, so if an inclusion does not need any symbols, it should be removed.<br/><br/>If a symbol is expectedly needed in a <em>different</em> source file, the inclusion should be moved to that file.</p>
               <div class="references"><p><strong>References:</strong></p>
                 <ul class="indent">
                   <li>Malcolm Inglis: <a href="https://github.com/mcinglis/c-style#comment-non-standard-library-includes-to-say-what-symbols-you-use-from-them"><em>c-style</em></a></li>
@@ -97,17 +100,23 @@
           </tr>
           <tr>
             <td><p><tt>symbol-listed-not-needed</tt></p></td>
-            <td><p>Requires that any symbol listed as needed by an <tt>#include</tt> statement should also be used in the same source file.</p><p><em>See <a href="#list-needed-symbols"><tt>list-needed-symbols</tt></a></em></p></td>
-            <td><p class="reasoning">Helps determining symbols that are no longer used, potentially leading to being able to remove the inclusion completely, improving maintainability.</p></td>
+            <td><p>Requires that any symbol listed as needed by an <tt>#include</tt> statement should also be used in the same source file.</p><br/>
+              <p><em>See <a href="#list-needed-symbols"><tt>list-needed-symbols</tt></a></em></p></td>
+            <td><p class="reasoning">Helps determining symbols that are no longer used, potentially leading to being able to remove the inclusion completely, reducing dependencies and improving maintainability.</p></td>
           </tr>
           <tr>
             <td><p><tt>symbol-needed-not-listed</tt></p></td>
-            <td><p>Requires that any used symbol be listed as needed by an <tt>#include</tt> statement.</p><p><em>Not available as a check</em></p></td>
-            <td><p class="reasoning">Helps determining which symbols should be listed as needed, which in turn improves maintainability.</p></td>
+            <td><p>Requires that any used symbol be listed as needed by an <tt>#include</tt> statement.</p><br/>
+              <p><em>This rule provides the fuel for <tt>symbol-listed-not-needed</tt>, but must be implemented by a human; it is not available as an automatic check.</em></p></td>
+            <td><p class="reasoning">If your code is using a symbol, but not explicitly telling where it got it from, you might have a hard time figuring out just how far your code reaches out.</p>
+              <p class="reasoning">By maintaining these lists obsessively you make it much easier for yourself, and others, to determine the actual dependencies of your code.</p>
+            </td>
           </tr>
           <tr>
             <td><p id="no-headers-header"><tt>no-headers-header</tt></p></td>
             <td><p>Requires that header files do not include any other headers.</p>
+              <details>
+                <summary><strong>Read more</strong></summary>
               <p>Instead, headers should provide forward-declarations of each needed type and let the implementation include any necessary headers.</p>
               <pre>
   <strong>mylib_header.h</strong>
@@ -127,13 +136,14 @@ struct attr_t;
 #endif
                 </code>
               </pre>
+              </details>
             </td>
             <td><p class="reasoning">Avoiding header inclusions helps with keeping compile times low.</p>
               <p class="reasoning">Forces source files to include <em>everything</em> needed. This might seem like it would be a big hassle- that's because it is. The benefit, however, is that a reader will immediately be aware of <em>all</em> dependencies of the specific unit.<br/><br/>It might even make you think a little bit harder about your design in general once the list grows annoyingly long.<br/><br/>Whenever possible, avoid dependencies.</p>
               <div class="references"><p><strong>References:</strong></p>
                 <ul class="indent">
                   <li>Our Machinery: <a href="http://ourmachinery.com/post/physical-design"><em>Physical Design</em></a></li>
-                  <li>Rob Pike: <a href="http://www.lysator.liu.se/c/pikestyle.html"><em>Notes on Programming in C</em></a></li>
+                  <li>Rob Pike: <a href="http://www.lysator.liu.se/c/pikestyle.html"><em>Notes on Programming in C</em></a> (bottom)</li>
                   <li>Malcolm Inglis: <a href="https://github.com/mcinglis/c-style#include-the-definition-of-everything-you-use"><em>c-style</em></a></li>
               </ul>
               </div>
@@ -142,6 +152,8 @@ struct attr_t;
           <tr>
             <td><p><tt>include-guard</tt></p></td>
             <td><p>Requires that the contents of headers be wrapped in <em>include guards</em> named identically to the filename of the header.</p>
+              <details>
+                <summary><strong>Read more</strong></summary>
               <pre>
   <strong>mylib_header.h</strong>
                 <code class="bad">
@@ -161,6 +173,7 @@ struct attr_t;
               </pre>
               <p>
                 <em>Fully implementing and strictly enforcing <a href="#no-headers-header"><tt>no-headers-header</tt></a> actually makes this rule unnecessary.</em></p><p><em>Regardless, it is still advised to enforce it as a precaution against unruly includers.</em></p>
+              </details>
             </td>
             <td><p class="reasoning">Helps prevent double inclusion errors.</p></td>
           </tr>

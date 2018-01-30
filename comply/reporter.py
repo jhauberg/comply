@@ -9,6 +9,8 @@ from comply.util import truncated, Ellipsize
 
 
 class Reporter:
+    """ Provides violation output (including suggestions) formatted for human readers. """
+
     def __init__(self, reports_solutions: bool=False):
         self.reports_solutions = reports_solutions
 
@@ -51,7 +53,9 @@ class Reporter:
         print()
 
 
-class XcodeReporter(Reporter):
+class ClangReporter(Reporter):
+    """ Provides violation output formatted in a Clang-like fashion. """
+
     def __init__(self):
         Reporter.__init__(self, reports_solutions=False)
 

@@ -156,13 +156,13 @@ This should provide you with a path to the executable, e.g. something like:
 In Xcode, add a new *Run Script Phase*. Copy and paste below snippet into the script editor. Replace `<executable>` with the path to the `comply` executable that you just found.
 
 ```shell
-<executable> "${SRCROOT}" --reporter=xcode
+<executable> "${SRCROOT}" --reporter=clang
 ```
 
 For example, this would become:
 
 ```shell
-/Library/Frameworks/Python.framework/Versions/3.6/bin/comply "${SRCROOT}" --reporter=xcode
+/Library/Frameworks/Python.framework/Versions/3.6/bin/comply "${SRCROOT}" --reporter=clang
 ```
 
 **2) Using script sources directly**
@@ -172,12 +172,12 @@ If you prefer not installing, you can still use the phase script described above
 Just point to the [run.py](run.py) script instead of the installed executable:
 
 ```shell
-python path/to/comply/run.py "${SRCROOT}" --reporter=xcode
+python path/to/comply/run.py "${SRCROOT}" --reporter=clang
 ```
 
 Now, every time you build, `comply` should be run on every file and directory within the root of your project. 
 
-You can change or add arguments as you like, but `--reporter=xcode` is required for violations to be displayed.
+You can change or add arguments as you like, but `--reporter=clang` is required for violations to be displayed.
 
 ### Full usage
 
