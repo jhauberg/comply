@@ -94,13 +94,17 @@ def compliance(result: CheckResult) -> float:
     return score
 
 
-def make_reporter(reporting_mode: str) -> Reporter:
+def make_reporter(reporting_mode: str, warning_if_unavailable: bool=False) -> Reporter:
     """ Return a reporter appropriate for the mode. """
 
     if reporting_mode == 'standard':
         return Reporter(reports_solutions=True)
     elif reporting_mode == 'clang':
         return ClangReporter()
+
+    if warning_if_unavailable:
+        print('comply: reporting mode \'{0}\' not available. Defaulting to \'standard\'.'
+              .format(reporting_mode))
 
     return Reporter()
 
@@ -154,7 +158,7 @@ def main():
     inputs = arguments['<input>']
 
     reporting_mode = arguments['--reporter']
-    reporter = make_reporter(reporting_mode)
+    reporter = make_reporter(reporting_mode, warning_if_unavailable=True)
 
     make_report(inputs, rules, reporter)
 
