@@ -36,6 +36,10 @@ class Rule:
         return []
 
     @property
+    def collection_hint(self) -> int:
+        return RuleViolation.MANY_PER_FILE
+
+    @property
     def strips_violating_text(self) -> bool:
         """ Determine whether a rule should strip violating text chunks.
 
@@ -49,6 +53,11 @@ class Rule:
 
 class RuleViolation:
     """ Represents an occurence of a violated rule. """
+
+    """ A hint to indicate that a violation typically only occur once per file. """
+    ONCE_PER_FILE = 0
+    """ A hint to indicate that a violation may occur more than once per file. """
+    MANY_PER_FILE = 1
 
     def __init__(self, which: Rule, where: (int, int), what: str, meta: dict = None):
         self.which = which

@@ -25,6 +25,7 @@ from pkg_resources import parse_version
 from comply import VERSION_PATTERN, is_compatible, allow_unicode
 from comply.reporter import Reporter, ClangReporter
 from comply.checker import check, CheckResult
+from comply.rule import Rule
 from comply.version import __version__
 
 from comply.rules import *
@@ -112,7 +113,7 @@ def make_reporter(reporting_mode: str, warning_if_unavailable: bool=False) -> Re
 def make_rules() -> list:
     """ Return a list of rules to run checks on. """
 
-    return [
+    rules = [
         includes.ListNeededSymbols(),
         includes.SymbolListedNotNeeded(),
         includes.SymbolNeededNotListed(),
@@ -121,6 +122,8 @@ def make_rules() -> list:
         misc.LineTooLong(),
         misc.FileTooLong()
     ]
+
+    return sorted(rules, key=lambda rule: rule.collection_hint)
 
 
 def make_report(inputs: list, rules: list, reporter: Reporter):

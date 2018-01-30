@@ -46,3 +46,7 @@ class FileTooLong(Rule):
             offenders.append(offender)
 
         return offenders
+
+    @property
+    def collection_hint(self):
+        return RuleViolation.ONCE_PER_FILE
