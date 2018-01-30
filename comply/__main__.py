@@ -23,7 +23,7 @@ from docopt import docopt
 from pkg_resources import parse_version
 
 from comply import VERSION_PATTERN, is_compatible, allow_unicode
-from comply.reporter import Reporter, XcodeReporter
+from comply.reporter import Reporter, ClangReporter
 from comply.checker import check
 from comply.version import __version__
 
@@ -96,8 +96,8 @@ def compliance(files: int, files_total: int, violations: int) -> float:
 def make_reporter(reporting_mode: str) -> Reporter:
     if reporting_mode == 'standard':
         return Reporter(reports_solutions=True)
-    elif reporting_mode == 'xcode':
-        return XcodeReporter()
+    elif reporting_mode == 'clang':
+        return ClangReporter()
 
     return Reporter()
 
