@@ -25,7 +25,6 @@ from pkg_resources import parse_version
 from comply import VERSION_PATTERN, is_compatible, allow_unicode
 from comply.reporter import Reporter, ClangReporter
 from comply.checker import check, CheckResult
-from comply.rule import Rule
 from comply.version import __version__
 
 from comply.rules import *
@@ -142,8 +141,8 @@ def make_report(inputs: list, rules: list, reporter: Reporter):
 
     score = score_format.format(score)
 
-    print('{2} violations generated from {0}/{1} files ({3})'
-          .format(total.files_with_violations, total.files, total.violations, score))
+    print('Found {2} violations from {0}/{1} files ({3})'.format(
+        total.files_with_violations, total.files, total.violations, score))
 
 
 def main():
@@ -151,6 +150,12 @@ def main():
 
     if not is_compatible():
         sys.exit('Python 3.5 or newer is required for running comply')
+
+    if allow_unicode() and sys.stdout.encoding != 'UTF-8':
+        sys.exit('Unsupported shell encoding \'{0}\'. '
+                 'Set environment variable PYTHONIOENCODING as UTF-8:\n'
+                 '\texport PYTHONIOENCODING=UTF-8'
+                 .format(sys.stdout.encoding))
 
     arguments = docopt(__doc__, version='comply ' + __version__)
 
