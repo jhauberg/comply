@@ -22,7 +22,7 @@ from docopt import docopt
 
 from pkg_resources import parse_version
 
-from comply import VERSION_PATTERN, is_compatible, allow_unicode
+from comply import VERSION_PATTERN, is_compatible, supports_unicode
 from comply.reporter import Reporter, ClangReporter
 from comply.checker import check, CheckResult
 from comply.version import __version__
@@ -137,7 +137,7 @@ def make_report(inputs: list, rules: list, reporter: Reporter):
             total += result
 
     score = compliance(total)
-    score_format = '{0:.2f} ⚑' if allow_unicode() else '{0:.2f}'
+    score_format = '{0:.2f} ⚑' if supports_unicode() else '{0:.2f}'
 
     score = score_format.format(score)
 
@@ -151,7 +151,7 @@ def main():
     if not is_compatible():
         sys.exit('Python 3.5 or newer is required for running comply')
 
-    if allow_unicode() and sys.stdout.encoding != 'UTF-8':
+    if supports_unicode() and sys.stdout.encoding != 'UTF-8':
         sys.exit('Unsupported shell encoding \'{0}\'. '
                  'Set environment variable PYTHONIOENCODING as UTF-8:\n'
                  '\texport PYTHONIOENCODING=UTF-8'
