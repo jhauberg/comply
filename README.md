@@ -156,12 +156,16 @@ This should provide you with a path to the executable, e.g. something like:
 In Xcode, add a new *Run Script Phase*. Copy and paste below snippet into the script editor. Replace `<executable>` with the path to the `comply` executable that you just found.
 
 ```shell
+export PYTHONIOENCODING=UTF-8
+
 <executable> "${SRCROOT}" --reporter=clang
 ```
 
 For example, this would become:
 
 ```shell
+export PYTHONIOENCODING=UTF-8
+
 /Library/Frameworks/Python.framework/Versions/3.6/bin/comply "${SRCROOT}" --reporter=clang
 ```
 
@@ -172,6 +176,8 @@ If you prefer not installing, you can still use the phase script described above
 Just point to the [run.py](run.py) script instead of the installed executable:
 
 ```shell
+export PYTHONIOENCODING=UTF-8
+
 python path/to/comply/run.py "${SRCROOT}" --reporter=clang
 ```
 
