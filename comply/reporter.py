@@ -1,7 +1,6 @@
 # coding=utf-8
 
 import os
-import sys
 
 from collections import OrderedDict
 
@@ -45,7 +44,9 @@ class Reporter:
             solutions = without_duplicates(solutions)
 
         for occurence, reason in occurences:
-            print('{0} -> {1}'.format(occurence, reason))
+            output = '{0} -> {1}'.format(occurence, reason)
+
+            print(output)
 
             if self.reports_solutions and occurence in solutions:
                 print(solutions[occurence])
@@ -77,10 +78,9 @@ class ClangReporter(Reporter):
                 location = '{0}:{1}:'.format(absolute_path, line)
 
             reason = '{0} [{1}]'.format(violation.which.reason(violation), violation.which.name)
-
             output = '{0} warning: {1}'.format(location, reason)
 
-            print(output, file=sys.stderr, flush=True)
+            print(output)
 
 
 def without_duplicates(pairs: OrderedDict) -> dict:
