@@ -69,7 +69,7 @@ class RuleViolation:
         self.meta = meta
 
     def __repr__(self):
-        return '{0} at \'{1}\''.format(self.which, self.what)
+        return '{0} at {1}'.format(self.which, self.what)
 
     @staticmethod
     def where(text: str, index: int, at_beginning: bool=False) -> (int, int):
