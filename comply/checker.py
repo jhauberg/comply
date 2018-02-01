@@ -82,7 +82,7 @@ def check(path: str, rules: list, reporter: Reporter) -> (CheckResult, bool):
         if number_of_violations > 0:
             result.files_with_violations += 1
 
-        reporter.report_before_reporting(violations)
-        reporter.report(violations, path)
+            reporter.report_before_reporting(violations)
+            reporter.report(violations, path)
 
     return result, True
