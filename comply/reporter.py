@@ -14,10 +14,10 @@ class Reporter:
         self.reports_solutions = reports_solutions
 
     def report_before_checking(self, path: str):
-        print('checking \'{0}\''.format(path))
+        print('checking \'{0}\'... '.format(truncated(path)), end='')
 
     def report_before_reporting(self, violations: list):
-        print('{0} violations found:'.format(len(violations)))
+        print('Found {0} violations'.format(len(violations)))
 
     def report(self, violations: list, path: str):
         occurences = []
@@ -25,7 +25,7 @@ class Reporter:
 
         for violation in violations:
             location = '{0}:{1}'.format(
-                truncated(path, length=28, options=Ellipsize.options(at=Ellipsize.middle)),
+                truncated(path, length=40, options=Ellipsize.options(at=Ellipsize.middle)),
                 violation.where)
 
             reason = '[{0}] {1}'.format(violation.which.name, violation.which.reason(violation))

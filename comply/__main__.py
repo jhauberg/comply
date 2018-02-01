@@ -141,7 +141,7 @@ def make_report(inputs: list, rules: list, reporter: Reporter):
 
     score = score_format.format(score)
 
-    print('Found {2} violations from {0}/{1} files ({3})'.format(
+    print('Found {2} violations in {0}/{1} files ({3})'.format(
         total.files_with_violations, total.files, total.violations, score))
 
 
