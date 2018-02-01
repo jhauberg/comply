@@ -13,7 +13,7 @@ def is_compatible() -> bool:
     return True
 
 
-def allow_unicode() -> bool:
+def supports_unicode() -> bool:
     if os.name == 'nt':
         # disable unicode stuff when running on Windows
         # https://www.python.org/dev/peps/pep-0528/
