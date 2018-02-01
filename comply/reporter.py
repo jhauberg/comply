@@ -4,20 +4,37 @@ import os
 
 from collections import OrderedDict
 
+from comply.printing import printdiag, printout
 from comply.util import truncated, Ellipsize
 
 
 class Reporter:
+    def __init__(self, is_verbose: bool=False):
+        self.is_verbose = is_verbose
+
+    def report_before_checking(self, path: str):
+        if self.is_verbose:
+            diag = 'Checking \'{0}\'... '.format(truncated(path))
+
+            printdiag(diag, end='')
+
+    def report_before_reporting(self, violations: list):
+        if self.is_verbose:
+            diag = 'Found {0} violations'.format(len(violations))
+
+            printdiag(diag, apply_prefix=False)
+
+    def report(self, violations: list, path: str):
+        printout('{0}: {1}'.format(path, violations))
+
+
+class StandardReporter(Reporter):
     """ Provides violation output (including suggestions) formatted for human readers. """
 
     def __init__(self, reports_solutions: bool=False):
+        Reporter.__init__(self)
+
         self.reports_solutions = reports_solutions
-
-    def report_before_checking(self, path: str):
-        print('checking \'{0}\'... '.format(truncated(path)), end='')
-
-    def report_before_reporting(self, violations: list):
-        print('Found {0} violations'.format(len(violations)))
 
     def report(self, violations: list, path: str):
         occurences = []
@@ -46,25 +63,14 @@ class Reporter:
         for occurence, reason in occurences:
             output = '{0} -> {1}'.format(occurence, reason)
 
-            print(output)
+            printout(output)
 
             if self.reports_solutions and occurence in solutions:
-                print(solutions[occurence])
-
-        print()
+                printout('> {0}'.format(solutions[occurence]))
 
 
 class ClangReporter(Reporter):
     """ Provides violation output formatted in a Clang-like fashion. """
-
-    def __init__(self):
-        Reporter.__init__(self, reports_solutions=False)
-
-    def report_before_checking(self, path: str):
-        pass
-
-    def report_before_reporting(self, violations: list):
-        pass
 
     def report(self, violations: list, path: str):
         for violation in violations:
@@ -80,7 +86,7 @@ class ClangReporter(Reporter):
             reason = '{0} [{1}]'.format(violation.which.reason(violation), violation.which.name)
             output = '{0} warning: {1}'.format(location, reason)
 
-            print(output)
+            printout(output)
 
 
 def without_duplicates(pairs: OrderedDict) -> dict:

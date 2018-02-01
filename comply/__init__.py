@@ -3,6 +3,8 @@
 import sys
 import os
 
+from comply.printing import printdiag
+
 VERSION_PATTERN = r'^__version__ = [\'"]([^\'"]*)[\'"]'
 
 
@@ -11,6 +13,13 @@ def is_compatible() -> bool:
         return False
 
     return True
+
+
+def exit_if_not_compatible():
+    if not is_compatible():
+        printdiag('Python 3.5 or newer required')
+
+        sys.exit(1)
 
 
 def supports_unicode() -> bool:

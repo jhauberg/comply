@@ -5,12 +5,13 @@
 Make your C follow the rules
 
 Usage:
-  comply <input>... [--reporter=<name>]
+  comply <input>... [--reporter=<name>] [--verbose]
   comply -h | --help
   comply --version
 
 Options:
   -r --reporter=<name>    Specify type of reported output [default: standard]
+  -v, --verbose           Show diagnostic messages
   -h --help               Show program help
   --version               Show program version
 """
@@ -22,8 +23,9 @@ from docopt import docopt
 
 from pkg_resources import parse_version
 
-from comply import VERSION_PATTERN, is_compatible, supports_unicode
-from comply.reporter import Reporter, ClangReporter
+from comply import VERSION_PATTERN, exit_if_not_compatible, supports_unicode
+from comply.reporter import Reporter, StandardReporter, ClangReporter
+from comply.printing import printdiag, diagnostics
 from comply.checker import check, CheckResult
 from comply.version import __version__
 
@@ -52,9 +54,8 @@ def check_for_update():
                 remote_version_identifier = matches.group(1)
 
                 if parse_version(__version__) < parse_version(remote_version_identifier):
-                    print('A newer version is available ({0})'.format(remote_version_identifier))
-                    # end with empty break
-                    print()
+                    printdiag('A newer version is available ({0})'
+                              .format(remote_version_identifier))
     except HTTPError:
         # fail silently
         pass
@@ -94,16 +95,15 @@ def compliance(result: CheckResult) -> float:
     return score
 
 
-def make_reporter(reporting_mode: str, warning_if_unavailable: bool=False) -> Reporter:
+def make_reporter(reporting_mode: str) -> Reporter:
     """ Return a reporter appropriate for the mode. """
 
     if reporting_mode == 'standard':
-        return Reporter(reports_solutions=True)
+        return StandardReporter(reports_solutions=True)
     elif reporting_mode == 'clang':
         return ClangReporter()
 
-    if warning_if_unavailable:
-        print('comply: reporting mode \'{0}\' not available. Defaulting to \'standard\'.'
+    printdiag('Reporting mode \'{0}\' not available.'
               .format(reporting_mode))
 
     return Reporter()
@@ -136,26 +136,32 @@ def make_report(inputs: list, rules: list, reporter: Reporter):
         if checked:
             total += result
 
-    score = compliance(total)
-    score_format = '{0:.2f} ⚑' if supports_unicode() else '{0:.2f}'
+    if reporter.is_verbose:
+        score = compliance(total)
+        score_format = '{0:.2f} ⚑' if supports_unicode() else '{0:.2f}'
 
-    score = score_format.format(score)
+        score = score_format.format(score)
 
-    print('Found {2} violations in {0}/{1} files ({3})'.format(
-        total.files_with_violations, total.files, total.violations, score))
+        printdiag('Found {2} violations in {0}/{1} files ({3})'
+                  .format(total.files_with_violations,
+                                 total.files,
+                                 total.violations,
+                                 score))
 
 
 def main():
     """ Entry point for invoking the comply module. """
 
-    if not is_compatible():
-        sys.exit('Python 3.5 or newer is required for running comply')
+    exit_if_not_compatible()
 
-    if supports_unicode() and sys.stdout.encoding != 'UTF-8':
-        sys.exit('Unsupported shell encoding \'{0}\'. '
-                 'Set environment variable PYTHONIOENCODING as UTF-8:\n'
-                 '\texport PYTHONIOENCODING=UTF-8'
-                 .format(sys.stdout.encoding))
+    if supports_unicode() and diagnostics.encoding != 'UTF-8':
+        printdiag('Unsupported shell encoding \'{0}\'. '
+                         'Set environment variable PYTHONIOENCODING as UTF-8:\n'
+                         '\texport PYTHONIOENCODING=UTF-8'
+                  .format(diagnostics.encoding))
+
+        sys.exit(1)
+        # note: could maybe do os.environ['PYTHONIOENCODING'] = 'UTF-8' instead??
 
     arguments = docopt(__doc__, version='comply ' + __version__)
 
@@ -166,7 +172,9 @@ def main():
     inputs = arguments['<input>']
 
     reporting_mode = arguments['--reporter']
-    reporter = make_reporter(reporting_mode, warning_if_unavailable=True)
+
+    reporter = make_reporter(reporting_mode)
+    reporter.is_verbose = arguments['--verbose']
 
     make_report(inputs, rules, reporter)
 

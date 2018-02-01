@@ -16,10 +16,12 @@ import re
 from setuptools import setup
 
 from comply import VERSION_PATTERN, is_compatible
-
+from comply.printing import printdiag
 
 if not is_compatible():
-    sys.exit('Python 3.5 or newer is required for installing and running comply')
+    printdiag('Python 3.5 or newer required')
+
+    sys.exit(1)
 
 
 def determine_version_or_exit() -> str:
@@ -34,7 +36,9 @@ def determine_version_or_exit() -> str:
 
             return version
 
-    sys.exit('Version could not be determined')
+    printdiag('Version could not be determined')
+
+    sys.exit(1)
 
 
 VERSION_IDENTIFIER = determine_version_or_exit()
