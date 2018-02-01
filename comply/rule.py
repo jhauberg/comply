@@ -9,6 +9,9 @@ class Rule:
         self.description = description
         self.suggestion = suggestion
 
+    def __repr__(self):
+        return '[{0}]'.format(self.name)
+
     def reason(self, offender: 'RuleViolation' = None):
         """ Return a reason for a violation of this rule.
 
@@ -64,6 +67,9 @@ class RuleViolation:
         self.where = where
         self.what = what
         self.meta = meta
+
+    def __repr__(self):
+        return '{0} at \'{1}\''.format(self.which, self.what)
 
     @staticmethod
     def where(text: str, index: int, at_beginning: bool=False) -> (int, int):
