@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import sys
+import os
 
 # note that the order of stdout and stderr output is mixed up in PyCharm console
 #  see https://youtrack.jetbrains.com/issue/IDEA-70016
@@ -48,3 +49,14 @@ def supports_unicode() -> bool:
 
     return True
 
+
+def supports_color(buffer) -> bool:
+    """ Determine whether an output buffer supports colored text. """
+
+    if sys.platform == 'win32' or 'ANSICON' in os.environ:
+        return False
+
+    if not buffer.isatty() and not hasattr(buffer, 'isatty'):
+        return False
+
+    return True
