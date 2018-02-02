@@ -40,8 +40,9 @@ class IncludeGuard(Rule):
         match = re.match(pattern, text)
 
         if match is None:
-            offender = self.violate(at=RuleViolation.where(text, 0),
-                                    offending_text='',
+            line, column = RuleViolation.where(text, 0)
+
+            offender = self.violate(at=(line, column),
                                     meta={'guard': guard_name})
 
             offenders.append(offender)

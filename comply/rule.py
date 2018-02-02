@@ -28,10 +28,10 @@ class Rule:
 
         return self.suggestion
 
-    def violate(self, at: (int, int), offending_text: str, meta: dict = None) -> 'RuleViolation':
+    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict = None) -> 'RuleViolation':
         """ Return a rule offender originating from a chunk of text. """
 
-        return RuleViolation(self, at, offending_text, meta)
+        return RuleViolation(self, at, offending_lines, meta)
 
     def collect(self, text: str, filename: str, extension: str) -> list:
         """ Analyze a given text and return a list of any found rule offenders. """
@@ -51,14 +51,14 @@ class RuleViolation:
     """ A hint to indicate that a violation may occur more than once per file. """
     MANY_PER_FILE = 1
 
-    def __init__(self, which: Rule, where: (int, int), what: str, meta: dict = None):
+    def __init__(self, which: Rule, where: (int, int), lines: list, meta: dict = None):
         self.which = which
         self.where = where
-        self.what = what
+        self.lines = lines
         self.meta = meta
 
     def __repr__(self):
-        return '{0} at {1}'.format(self.which, self.what)
+        return '{0} at {1}'.format(self.which, self.lines)
 
     @staticmethod
     def where(text: str, index: int, at_beginning: bool=False) -> (int, int):

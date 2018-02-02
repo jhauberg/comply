@@ -50,8 +50,12 @@ class SymbolListedNotNeeded(Rule):
                     if not has_symbol_usage(symbol, text_after_usage):
                         offending_index = text.index(symbol, inclusion.start(1), inclusion.end())
 
-                        offender = self.violate(at=RuleViolation.where(text, offending_index),
-                                                offending_text=inclusion.group(0),
+                        line, column = RuleViolation.where(text, offending_index)
+
+                        offending_line = (line, inclusion.group(0))
+
+                        offender = self.violate(at=(line, column),
+                                                offending_lines=[offending_line],
                                                 meta={'symbol': symbol})
 
                         offenders.append(offender)

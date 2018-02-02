@@ -36,10 +36,12 @@ class NoHeadersHeader(Rule):
 
             offending_index = inclusion.start()
 
-            where = RuleViolation.where(text, offending_index, at_beginning=True)
+            line, column = RuleViolation.where(text, offending_index, at_beginning=True)
 
-            offender = self.violate(at=where,
-                                    offending_text=include_statement,
+            offending_line = (line, include_statement)
+
+            offender = self.violate(at=(line, column),
+                                    offending_lines=[offending_line],
                                     meta={'inclusion': include_statement})
 
             offenders.append(offender)

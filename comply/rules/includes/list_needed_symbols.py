@@ -27,10 +27,12 @@ class ListNeededSymbols(Rule):
             if not is_symbol_list(suffix):
                 offending_index = inclusion.start()
 
-                where = RuleViolation.where(text, offending_index, at_beginning=True)
+                line, column = RuleViolation.where(text, offending_index, at_beginning=True)
 
-                offender = self.violate(at=where,
-                                        offending_text=inclusion.group(0))
+                offending_line = (line, inclusion.group(0))
+
+                offender = self.violate(at=(line, column),
+                                        offending_lines=[offending_line])
 
                 offenders.append(offender)
 

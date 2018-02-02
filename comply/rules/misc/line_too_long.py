@@ -19,17 +19,20 @@ class LineTooLong(Rule):
 
         return rep.format(length, LineTooLong.MAX)
 
-    def violate(self, at: (int, int), offending_text: str, meta: dict=None) -> RuleViolation:
+    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict=None) -> RuleViolation:
         # insert cursor to indicate max line length
         insertion_index = LineTooLong.MAX
 
-        line = (offending_text[:insertion_index] + '|' +
-                offending_text[insertion_index:])
+        # assume only one offending line
+        linenumber, line = offending_lines[0]
+
+        line = (line[:insertion_index] + '|' +
+                line[insertion_index:])
 
         # remove any trailing newlines to keep neat prints
         line = without_trailing_newline(line)
 
-        return super().violate(at, line, meta)
+        return super().violate(at, [(linenumber, line)], meta)
 
     def collect(self, text: str, filename: str, extension: str) -> list:
         offenders = []
@@ -44,8 +47,12 @@ class LineTooLong(Rule):
             if characters_except_newline > LineTooLong.MAX:
                 offending_index = index + LineTooLong.MAX
 
-                offender = self.violate(at=RuleViolation.where(text, offending_index),
-                                        offending_text=line,
+                linenumber, column = RuleViolation.where(text, offending_index)
+
+                offending_line = (linenumber, line)
+
+                offender = self.violate(at=(line, column),
+                                        offending_lines=[offending_line],
                                         meta={'length': characters_except_newline})
 
                 offenders.append(offender)

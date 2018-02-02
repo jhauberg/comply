@@ -27,11 +27,14 @@ class FileTooLong(Rule):
         if length > FileTooLong.MAX:
             lines = text.splitlines()  # without newlines
 
-            offending_line_index = len(lines) - 1
-            offending_line = lines[offending_line_index]
+            offending_line_index = FileTooLong.MAX
+            offending_lines = [(offending_line_index, lines[offending_line_index - 1]),
+                               (offending_line_index + 1, '---'),
+                               (offending_line_index + 1, lines[offending_line_index]),
+                               (offending_line_index + 2, lines[offending_line_index + 1])]
 
             offender = self.violate(at=(offending_line_index + 1, 0),
-                                    offending_text=offending_line,
+                                    offending_lines=offending_lines,
                                     meta={'length': length})
 
             offenders.append(offender)
