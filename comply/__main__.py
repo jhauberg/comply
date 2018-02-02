@@ -18,6 +18,7 @@ Options:
 
 import re
 import sys
+import datetime
 
 from docopt import docopt
 
@@ -125,28 +126,18 @@ def make_rules() -> list:
     return sorted(rules, key=lambda rule: rule.collection_hint)
 
 
-def make_report(inputs: list, rules: list, reporter: Reporter):
+def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
     """  Run checks and print a report. """
 
-    total = CheckResult()
+    report = CheckResult()
 
     for path in inputs:
         result, checked = check(path, rules, reporter)
 
         if checked:
-            total += result
+            report += result
 
-    if reporter.is_verbose:
-        score = compliance(total)
-        score_format = '{0:.2f} ⚑' if supports_unicode() else '{0:.2f}'
-
-        score = score_format.format(score)
-
-        printdiag('Found {2} violations in {0}/{1} files ({3})'
-                  .format(total.files_with_violations,
-                          total.files,
-                          total.violations,
-                          score))
+    return report
 
 
 def main():
@@ -163,9 +154,9 @@ def main():
         sys.exit(1)
         # note: could maybe do os.environ['PYTHONIOENCODING'] = 'UTF-8' instead??
 
-    arguments = docopt(__doc__, version='comply ' + __version__)
+    time_started_boot = datetime.datetime.now()
 
-    check_for_update()
+    arguments = docopt(__doc__, version='comply ' + __version__)
 
     rules = make_rules()
 
@@ -176,7 +167,38 @@ def main():
     reporter = make_reporter(reporting_mode)
     reporter.is_verbose = arguments['--verbose']
 
-    make_report(inputs, rules, reporter)
+    time_since_boot = datetime.datetime.now() - time_started_boot
+    time_started_report = datetime.datetime.now()
+
+    report = make_report(inputs, rules, reporter)
+
+    if reporter.is_verbose:
+        time_since_report = datetime.datetime.now() - time_started_report
+
+        boot_in_seconds = time_since_boot / datetime.timedelta(seconds=1)
+        report_in_seconds = time_since_report / datetime.timedelta(seconds=1)
+
+        total_time_taken = boot_in_seconds + report_in_seconds
+
+        printdiag('Analysis finished in {0:.1f} seconds '
+                  '({1:.2f}s to load rules, '
+                  '{2:.2f}s running checks)'
+                  .format(total_time_taken,
+                          boot_in_seconds,
+                          report_in_seconds))
+
+        score = compliance(report)
+        score_format = '{0:.2f} ⚑' if supports_unicode() else '{0:.2f}'
+
+        score = score_format.format(score)
+
+        printdiag('Found {2} violations in {0}/{1} files (scoring {3})'
+                  .format(report.files_with_violations,
+                          report.files,
+                          report.violations,
+                          score))
+
+    check_for_update()
 
 
 if __name__ == '__main__':
