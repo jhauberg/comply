@@ -15,14 +15,6 @@ class ListNeededSymbols(Rule):
                       suggestion='Add a comment immediately after include statement, listing each needed symbol. '
                                  'Example: "#include <header.h> // symb_t"')
 
-    def violate(self, at: (int, int), offending_text: str, meta: dict=None) -> RuleViolation:
-        if self.strips_violating_text:
-            offending_text = offending_text.strip()
-
-        what = '\'{0}\''.format(truncated(offending_text))
-
-        return super().violate(at, what, meta)
-
     def collect(self, text: str, filename: str, extension: str) -> list:
         # match include statements and capture suffixed content, if any
         pattern = INCLUDE_STMT_PATTERN + r'(.*)'

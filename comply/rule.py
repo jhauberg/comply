@@ -42,17 +42,6 @@ class Rule:
     def collection_hint(self) -> int:
         return RuleViolation.MANY_PER_FILE
 
-    @property
-    def strips_violating_text(self) -> bool:
-        """ Determine whether a rule should strip violating text chunks.
-
-            Enabling this can reduce the length of output for some cases, but is not always
-            preferable for retaining context; e.g. it may be easier to locate a violation if the
-            chunk has not been manipulated too much.
-        """
-
-        return True
-
 
 class RuleViolation:
     """ Represents an occurence of a violated rule. """

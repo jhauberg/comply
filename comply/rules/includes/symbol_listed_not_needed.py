@@ -29,15 +29,6 @@ class SymbolListedNotNeeded(Rule):
 
         return sol.format(symbol)
 
-    def violate(self, at: (int, int), offending_text: str, meta: dict=None) -> RuleViolation:
-        if self.strips_violating_text:
-            offending_text = offending_text.strip()
-
-        what = '\'{0}\'' \
-            .format(truncated(offending_text, options=Ellipsize.options(at=Ellipsize.start)))
-
-        return super().violate(at, what, meta)
-
     def collect(self, text: str, filename: str, extension: str) -> list:
         # match include statements and capture suffixed content, if any
         pattern = INCLUDE_STMT_PATTERN + r'(.*)'

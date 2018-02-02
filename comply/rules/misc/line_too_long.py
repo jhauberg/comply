@@ -29,13 +29,7 @@ class LineTooLong(Rule):
         # remove any trailing newlines to keep neat prints
         line = without_trailing_newline(line)
 
-        if self.strips_violating_text:
-            line = line.strip()
-
-        what = '\'{0}\''.format(
-            truncated(line, options=Ellipsize.options(at=Ellipsize.ends, index=insertion_index)))
-
-        return super().violate(at, what, meta)
+        return super().violate(at, line, meta)
 
     def collect(self, text: str, filename: str, extension: str) -> list:
         offenders = []

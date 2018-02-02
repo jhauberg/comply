@@ -19,15 +19,6 @@ class FileTooLong(Rule):
 
         return rep.format(length, FileTooLong.MAX)
 
-    def violate(self, at: (int, int), offending_text: str, meta: dict=None) -> RuleViolation:
-        if self.strips_violating_text:
-            offending_text = offending_text.strip()
-
-        if len(offending_text) > 0:
-            offending_text = '\'{0}\''.format(truncated(offending_text))
-
-        return super().violate(at, offending_text, meta)
-
     def collect(self, text: str, filename: str, extension: str) -> list:
         offenders = []
 

@@ -21,14 +21,6 @@ class NoHeadersHeader(Rule):
 
         return sol.format(inclusion)
 
-    def violate(self, at: (int, int), offending_text: str, meta: dict=None) -> RuleViolation:
-        if self.strips_violating_text:
-            offending_text = offending_text.strip()
-
-        what = '\'{0}\''.format(truncated(offending_text))
-
-        return super().violate(at, what, meta)
-
     def collect(self, text: str, filename: str, extension: str) -> list:
         offenders = []
 
