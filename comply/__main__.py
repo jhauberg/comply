@@ -100,7 +100,7 @@ def make_reporter(reporting_mode: str) -> Reporter:
     """ Return a reporter appropriate for the mode. """
 
     if reporting_mode == 'standard':
-        return StandardReporter(reports_solutions=True)
+        return StandardReporter()
     elif reporting_mode == 'clang':
         return ClangReporter()
 

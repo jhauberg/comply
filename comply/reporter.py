@@ -31,14 +31,9 @@ class Reporter:
 class StandardReporter(Reporter):
     """ Provides violation output (including suggestions) formatted for human readers. """
 
-    def __init__(self, reports_solutions: bool=False):
-        Reporter.__init__(self)
-
-        self.reports_solutions = reports_solutions
-
     def report(self, violations: list, path: str):
         occurences = []
-        solutions = OrderedDict() if self.reports_solutions else None
+        solutions = OrderedDict()
 
         for violation in violations:
             location = '{0}:{1}'.format(
@@ -54,18 +49,16 @@ class StandardReporter(Reporter):
 
             occurences.append((occurence, reason))
 
-            if self.reports_solutions:
-                solutions[occurence] = violation.which.solution(violation)
+            solutions[occurence] = violation.which.solution(violation)
 
-        if self.reports_solutions:
-            solutions = without_duplicates(solutions)
+        solutions = without_duplicates(solutions)
 
         for occurence, reason in occurences:
             output = '{0} -> {1}'.format(occurence, reason)
 
             printout(output)
 
-            if self.reports_solutions and occurence in solutions:
+            if occurence in solutions:
                 printout('> {0}'.format(solutions[occurence]))
 
 
