@@ -51,7 +51,7 @@ class LineTooLong(Rule):
 
                 offending_line = (linenumber, line)
 
-                offender = self.violate(at=(line, column),
+                offender = self.violate(at=(linenumber, column),
                                         offending_lines=[offending_line],
                                         meta={'length': characters_except_newline})
 
