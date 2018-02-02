@@ -39,8 +39,17 @@ def printout(text: str):
     print(result, file=results, flush=True)
 
 
+def is_windows_environment() -> bool:
+    return os.name == 'nt'
+
+
 def supports_unicode() -> bool:
     """ Determine whether the output buffers support unicode characters. """
+
+    if is_windows_environment():
+        # don't even try, just disable unicode stuff
+        # https://www.python.org/dev/peps/pep-0528/
+        return False
 
     required_encoding = 'UTF-8'
 

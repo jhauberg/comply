@@ -17,7 +17,6 @@ Options:
 """
 
 import re
-import sys
 import datetime
 
 from docopt import docopt
@@ -26,7 +25,7 @@ from pkg_resources import parse_version
 
 from comply import VERSION_PATTERN, exit_if_not_compatible
 from comply.reporter import Reporter, StandardReporter, ClangReporter
-from comply.printing import printdiag, diagnostics, supports_unicode
+from comply.printing import printdiag, diagnostics, supports_unicode, is_windows_environment
 from comply.checker import check, CheckResult
 from comply.version import __version__
 
@@ -146,14 +145,13 @@ def main():
     exit_if_not_compatible()
 
     if not supports_unicode():
-        printdiag('Unsupported shell encoding \'{0}\'. '
-                  'Set environment variable PYTHONIOENCODING as UTF-8:\n'
-                  '\texport PYTHONIOENCODING=UTF-8'
-                  .format(diagnostics.encoding),
-                  apply_prefix=True)
-
-        sys.exit(1)
-        # note: could maybe do os.environ['PYTHONIOENCODING'] = 'UTF-8' instead??
+        if not is_windows_environment():
+            # do not warn about this on Windows, as it probably won't work anyway
+            printdiag('Unsupported shell encoding \'{0}\'. '
+                      'Set environment variable PYTHONIOENCODING as UTF-8:\n'
+                      '\texport PYTHONIOENCODING=UTF-8'
+                      .format(diagnostics.encoding),
+                      apply_prefix=True)
 
     time_started_boot = datetime.datetime.now()
 
