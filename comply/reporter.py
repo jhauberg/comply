@@ -4,7 +4,9 @@ import os
 
 from collections import OrderedDict
 
-from comply.printing import printdiag, printout
+import comply.printing
+
+from comply.printing import printdiag, printout, supports_color
 from comply.util import truncated, Ellipsize
 
 
@@ -78,18 +80,39 @@ class StandardReporter(Reporter):
             results = []
 
             for violation in violations:
-                location = '{0} {1}'.format(
-                    truncated(path, length=40, options=Ellipsize.options(at=Ellipsize.middle)),
-                    violation.where)
+                location = '{0}:'.format(
+                    truncated(path, length=40, options=Ellipsize.options(at=Ellipsize.middle)))
 
                 why = '{0} [{1}]'.format(reason, violation.which.name)
                 solution = violation.which.solution(violation)
 
-                output = '{0} {1}\n{2}\n{3}'.format(location, why, violation.what, solution)
+
+                bold = '\x1b[1m' if supports_color(comply.printing.results) else ''
+                italic = '\x1b[3m' if supports_color(comply.printing.results) else ''
+                clear = '\x1b[0m' if supports_color(comply.printing.results) else ''
+
+                if len(violation.lines) > 0:
+                    context = ''
+
+                    for i, (linenumber, line) in enumerate(violation.lines):
+                        context += '{0}\t{i}{1}{cl}'.format(linenumber, line, i=italic, cl=clear)
+
+                        if i != len(violation.lines) - 1:
+                            context += '\n'
+
+                    output = '{0} {1}\n{2}\n{b}{3}{cl}'.format(location, why,
+                                                               context,
+                                                               solution,
+                                                               b=bold, cl=clear)
+                else:
+                    output = '{0} {1}\n{b}{2}{cl}'.format(location, why, solution,
+                                                          b=bold, cl=clear)
 
                 results.append(output)
 
             self.report_similar_results(results)
+
+        printout('')
 
 
 class ClangReporter(Reporter):
