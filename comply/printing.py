@@ -11,7 +11,7 @@ diagnostics = sys.stderr
 results = sys.stdout
 
 
-def printdiag(text: str, apply_prefix: bool=True, end: str=None):
+def printdiag(text: str, apply_prefix: bool=False, end: str=None):
     """ Print diagnostic output to the appropriate buffer.
 
         A diagnostic is output that is *not* directly related to the purpose of the program;
@@ -39,6 +39,7 @@ def printout(text: str):
 
 
 def supports_unicode() -> bool:
+    """ Determine whether the output buffers support unicode characters. """
 
     required_encoding = 'UTF-8'
 

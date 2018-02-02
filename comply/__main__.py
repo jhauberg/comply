@@ -55,8 +55,8 @@ def check_for_update():
                 remote_version_identifier = matches.group(1)
 
                 if parse_version(__version__) < parse_version(remote_version_identifier):
-                    printdiag('A newer version is available ({0})'
-                              .format(remote_version_identifier))
+                    printdiag('A newer version is available ({0} > {1})'
+                              .format(remote_version_identifier, __version__))
     except HTTPError:
         # fail silently
         pass
@@ -104,8 +104,8 @@ def make_reporter(reporting_mode: str) -> Reporter:
     elif reporting_mode == 'clang':
         return ClangReporter()
 
-    printdiag('Reporting mode \'{0}\' not available.'
-              .format(reporting_mode))
+    printdiag('Reporting mode \'{0}\' not available.'.format(reporting_mode),
+              apply_prefix=True)
 
     return Reporter()
 
@@ -149,7 +149,8 @@ def main():
         printdiag('Unsupported shell encoding \'{0}\'. '
                   'Set environment variable PYTHONIOENCODING as UTF-8:\n'
                   '\texport PYTHONIOENCODING=UTF-8'
-                  .format(diagnostics.encoding))
+                  .format(diagnostics.encoding),
+                  apply_prefix=True)
 
         sys.exit(1)
         # note: could maybe do os.environ['PYTHONIOENCODING'] = 'UTF-8' instead??

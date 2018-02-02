@@ -16,6 +16,6 @@ def is_compatible() -> bool:
 
 def exit_if_not_compatible():
     if not is_compatible():
-        printdiag('Python 3.5 or newer required')
+        printdiag('Python 3.5 or newer required', apply_prefix=True)
 
         sys.exit(1)

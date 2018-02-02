@@ -22,7 +22,7 @@ class Reporter:
         if self.is_verbose:
             diag = 'Found {0} violations'.format(len(violations))
 
-            printdiag(diag, apply_prefix=False)
+            printdiag(diag)
 
     def report(self, violations: list, path: str):
         printout('{0}: {1}'.format(path, violations))
