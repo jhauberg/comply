@@ -36,3 +36,14 @@ def printout(text: str):
     result = text
 
     print(result, file=results, flush=True)
+
+
+def supports_unicode() -> bool:
+
+    required_encoding = 'UTF-8'
+
+    if diagnostics.encoding != required_encoding or results.encoding != required_encoding:
+        return False
+
+    return True
+

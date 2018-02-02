@@ -23,9 +23,9 @@ from docopt import docopt
 
 from pkg_resources import parse_version
 
-from comply import VERSION_PATTERN, exit_if_not_compatible, supports_unicode
+from comply import VERSION_PATTERN, exit_if_not_compatible
 from comply.reporter import Reporter, StandardReporter, ClangReporter
-from comply.printing import printdiag, diagnostics
+from comply.printing import printdiag, diagnostics, supports_unicode
 from comply.checker import check, CheckResult
 from comply.version import __version__
 
@@ -144,9 +144,9 @@ def make_report(inputs: list, rules: list, reporter: Reporter):
 
         printdiag('Found {2} violations in {0}/{1} files ({3})'
                   .format(total.files_with_violations,
-                                 total.files,
-                                 total.violations,
-                                 score))
+                          total.files,
+                          total.violations,
+                          score))
 
 
 def main():
@@ -154,10 +154,10 @@ def main():
 
     exit_if_not_compatible()
 
-    if supports_unicode() and diagnostics.encoding != 'UTF-8':
+    if not supports_unicode():
         printdiag('Unsupported shell encoding \'{0}\'. '
-                         'Set environment variable PYTHONIOENCODING as UTF-8:\n'
-                         '\texport PYTHONIOENCODING=UTF-8'
+                  'Set environment variable PYTHONIOENCODING as UTF-8:\n'
+                  '\texport PYTHONIOENCODING=UTF-8'
                   .format(diagnostics.encoding))
 
         sys.exit(1)

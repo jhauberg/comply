@@ -1,7 +1,6 @@
 # coding=utf-8
 
 import sys
-import os
 
 from comply.printing import printdiag
 
@@ -20,12 +19,3 @@ def exit_if_not_compatible():
         printdiag('Python 3.5 or newer required')
 
         sys.exit(1)
-
-
-def supports_unicode() -> bool:
-    if os.name == 'nt':
-        # disable unicode stuff when running on Windows
-        # https://www.python.org/dev/peps/pep-0528/
-        return False
-
-    return True
