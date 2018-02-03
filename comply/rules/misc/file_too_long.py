@@ -41,6 +41,9 @@ class FileTooLong(Rule):
             lines = text.splitlines()  # without newlines
 
             offending_line_index = FileTooLong.MAX
+
+            assert len(lines) > offending_line_index + 1
+
             offending_lines = [(offending_line_index, lines[offending_line_index - 1]),
                                (offending_line_index + 1, lines[offending_line_index]),
                                (offending_line_index + 2, lines[offending_line_index + 1])]
