@@ -65,6 +65,7 @@ class Colors:
 
     strong = '\x1b[1m'
     emphasis = '\x1b[3m'
+    underlined = '\x1b[4m'
     vague = '\x1b[0;37m'
     bad = '\x1b[0;31m'
     good = '\x1b[0;32m'
@@ -90,6 +91,7 @@ if not Colors.is_supported(results):
     # note that we're assuming that diagnostics/stderr output is never colored
     Colors.strong = ''
     Colors.emphasis = ''
+    Colors.underlined = ''
     Colors.vague = ''
     Colors.clear = ''
     Colors.bad = ''
