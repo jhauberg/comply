@@ -5,13 +5,14 @@
 Make your C follow the rules
 
 Usage:
-  comply <input>... [--reporter=<name>] [--verbose]
+  comply <input>... [--reporter=<name>] [--verbose] [--strict]
   comply -h | --help
   comply --version
 
 Options:
   -r --reporter=<name>    Specify type of reported output [default: standard]
-  -v, --verbose           Show diagnostic messages
+  -s --strict             Show all violations (similar violations not suppressed)
+  -v --verbose            Show diagnostic messages
   -h --help               Show program help
   --version               Show program version
 """
@@ -164,6 +165,7 @@ def main():
     reporting_mode = arguments['--reporter']
 
     reporter = make_reporter(reporting_mode)
+    reporter.suppress_similar = not arguments['--strict']
     reporter.is_verbose = arguments['--verbose']
 
     time_since_boot = datetime.datetime.now() - time_started_boot
