@@ -114,6 +114,7 @@ class StandardReporter(Reporter):
                     context = ''
 
                     for i, (linenumber, line) in enumerate(violation.lines):
+                        line = line.expandtabs(4)
                         context += '{em}{0}{cl}\t{1}'.format(linenumber, line,
                                                              em=Colors.emphasis,
                                                              cl=Colors.clear)
