@@ -1,7 +1,8 @@
 # coding=utf-8
 
 from comply.rule import Rule, RuleViolation
-from comply.util import truncated
+
+from comply.printing import Colors
 
 
 class FileTooLong(Rule):
@@ -19,6 +20,18 @@ class FileTooLong(Rule):
 
         return rep.format(length, FileTooLong.MAX)
 
+    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict=None) -> RuleViolation:
+        breaker_linenumber, breaker_line = offending_lines[1]
+
+        offending_lines.insert(1, (breaker_linenumber, '---'))
+
+        for i, (linenumber, line) in enumerate(offending_lines):
+            if i > 0:
+                # mark breaker and everything below it
+                offending_lines[i] = (linenumber, Colors.bad + line + Colors.clear)
+
+        return super().violate(at, offending_lines, meta)
+
     def collect(self, text: str, filename: str, extension: str) -> list:
         offenders = []
 
@@ -29,7 +42,6 @@ class FileTooLong(Rule):
 
             offending_line_index = FileTooLong.MAX
             offending_lines = [(offending_line_index, lines[offending_line_index - 1]),
-                               (offending_line_index + 1, '---'),
                                (offending_line_index + 1, lines[offending_line_index]),
                                (offending_line_index + 2, lines[offending_line_index + 1])]
 

@@ -4,10 +4,8 @@ import os
 
 from collections import OrderedDict
 
-import comply.printing
-
-from comply.printing import printdiag, printout, supports_color
-from comply.util import truncated, Ellipsize
+from comply.printing import printdiag, printout, Colors
+from comply.util import truncated
 
 
 class Reporter:
@@ -15,7 +13,8 @@ class Reporter:
         self.suppress_similar = suppress_similar
         self.is_verbose = is_verbose
 
-    def group_by_reason(self, violations):
+    @staticmethod
+    def group_by_reason(violations):
         """ Return an ordered dict with violations grouped by their reason. """
 
         grouped = OrderedDict()
@@ -56,7 +55,7 @@ class Reporter:
                 if remaining > 0:
                     # note that this does not require verbosity flag; if a suppression does occur,
                     # it should always be mentioned
-                    printdiag('(...{0} more suppressed)'
+                    printdiag('\n(...{0} more suppressed)'
                               .format(remaining))
 
                 break
@@ -80,35 +79,35 @@ class StandardReporter(Reporter):
             results = []
 
             for violation in violations:
-                location = '{0}:'.format(
-                    truncated(path, length=40, options=Ellipsize.options(at=Ellipsize.middle)))
+                location = Colors.vague + '{0}:'.format(path) + Colors.clear
 
-                why = '{0} [{1}]'.format(reason, violation.which.name)
+                why = '{w}{0} {vague}[{1}]'.format(reason, violation.which.name,
+                                                   w=Colors.warn,
+                                                   vague=Colors.vague)
+                why = why + Colors.clear
+
                 solution = violation.which.solution(violation)
-
-
-                bold = '\x1b[1m' if supports_color(comply.printing.results) else ''
-                italic = '\x1b[3m' if supports_color(comply.printing.results) else ''
-                clear = '\x1b[0m' if supports_color(comply.printing.results) else ''
 
                 if len(violation.lines) > 0:
                     context = ''
 
                     for i, (linenumber, line) in enumerate(violation.lines):
-                        context += '{0}\t{i}{1}{cl}'.format(linenumber, line, i=italic, cl=clear)
+                        context += '{em}{0}{cl}\t{1}'.format(linenumber, line,
+                                                             em=Colors.emphasis,
+                                                             cl=Colors.clear)
 
                         if i != len(violation.lines) - 1:
                             context += '\n'
 
-                    output = '{0} {1}\n{2}\n{b}{3}{cl}'.format(location, why,
-                                                               context,
-                                                               solution,
-                                                               b=bold, cl=clear)
+                    output = '{1}\n{0}\n{2}\n{strong}{3}'.format(location, why,
+                                                                 context,
+                                                                 solution,
+                                                                 strong=Colors.strong)
                 else:
-                    output = '{0} {1}\n{b}{2}{cl}'.format(location, why, solution,
-                                                          b=bold, cl=clear)
+                    output = '{1}\n{0}\n{strong}{2}'.format(location, why, solution,
+                                                            strong=Colors.strong)
 
-                results.append(output)
+                results.append('\n' + output + Colors.clear)
 
             self.report_similar_results(results)
 

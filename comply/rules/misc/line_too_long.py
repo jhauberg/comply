@@ -1,7 +1,8 @@
 # coding=utf-8
 
 from comply.rule import Rule, RuleViolation
-from comply.util import truncated, Ellipsize
+
+from comply.printing import Colors
 
 
 class LineTooLong(Rule):
@@ -26,11 +27,8 @@ class LineTooLong(Rule):
         # assume only one offending line
         linenumber, line = offending_lines[0]
 
-        line = (line[:insertion_index] + '|' +
-                line[insertion_index:])
-
-        # remove any trailing newlines to keep neat prints
-        line = without_trailing_newline(line)
+        line = (line[:insertion_index] + Colors.bad + '|' +
+                line[insertion_index:] + Colors.clear)
 
         return super().violate(at, [(linenumber, line)], meta)
 
@@ -48,6 +46,9 @@ class LineTooLong(Rule):
                 offending_index = index + LineTooLong.MAX
 
                 linenumber, column = RuleViolation.where(text, offending_index)
+
+                # remove any trailing newlines to keep neat prints
+                line = without_trailing_newline(line)
 
                 offending_line = (linenumber, line)
 

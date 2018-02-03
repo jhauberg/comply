@@ -3,10 +3,11 @@
 import re
 
 from comply.rule import Rule, RuleViolation
-from comply.util import truncated, Ellipsize
 
 from comply.rules.includes.list_needed_symbols import is_symbol_list
 from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
+
+from comply.printing import Colors
 
 
 class SymbolListedNotNeeded(Rule):
@@ -29,6 +30,18 @@ class SymbolListedNotNeeded(Rule):
 
         return sol.format(symbol)
 
+    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict=None) -> RuleViolation:
+        # assume only one offending line
+        linenumber, line = offending_lines[0]
+
+        from_index, to_index = meta['range'] if 'range' in meta else (0, 0)
+
+        line = (line[:from_index] +
+                Colors.bad + line[from_index:to_index] + Colors.clear +
+                line[to_index:])
+
+        return super().violate(at, [(linenumber, line)], meta)
+
     def collect(self, text: str, filename: str, extension: str) -> list:
         # match include statements and capture suffixed content, if any
         pattern = INCLUDE_STMT_PATTERN + r'(.*)'
@@ -50,13 +63,15 @@ class SymbolListedNotNeeded(Rule):
                     if not has_symbol_usage(symbol, text_after_usage):
                         offending_index = text.index(symbol, inclusion.start(1), inclusion.end())
 
-                        line, column = RuleViolation.where(text, offending_index)
+                        linenumber, column = RuleViolation.where(text, offending_index)
 
-                        offending_line = (line, inclusion.group(0))
+                        line = inclusion.group(0)
+                        offending_line = (linenumber, line)
 
-                        offender = self.violate(at=(line, column),
+                        offender = self.violate(at=(linenumber, column),
                                                 offending_lines=[offending_line],
-                                                meta={'symbol': symbol})
+                                                meta={'symbol': symbol,
+                                                      'range': (column - 1, column - 1 + len(symbol))})
 
                         offenders.append(offender)
 

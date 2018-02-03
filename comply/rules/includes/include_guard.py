@@ -3,9 +3,6 @@
 import re
 
 from comply.rule import Rule, RuleViolation
-from comply.util import truncated
-
-from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
 
 
 class IncludeGuard(Rule):

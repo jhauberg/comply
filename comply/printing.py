@@ -59,13 +59,39 @@ def supports_unicode() -> bool:
     return True
 
 
-def supports_color(buffer) -> bool:
-    """ Determine whether an output buffer supports colored text. """
+class Colors:
+    # https://stackoverflow.com/questions/287871/print-in-terminal-with-colors/21786287#21786287
+    # https://askubuntu.com/questions/528928/how-to-do-underline-bold-italic-strikethrough-color-background-and-size-i
 
-    if sys.platform == 'win32' or 'ANSICON' in os.environ:
-        return False
+    strong = '\x1b[1m'
+    emphasis = '\x1b[3m'
+    vague = '\x1b[0;37m'
+    bad = '\x1b[0;31m'
+    good = '\x1b[0;32m'
+    warn = '\x1b[0;33m'
+    clear = '\x1b[0m'
 
-    if not buffer.isatty() and not hasattr(buffer, 'isatty'):
-        return False
+    @staticmethod
+    def is_supported(buffer) -> bool:
+        """ Determine whether an output buffer supports colored text. """
 
-    return True
+        if sys.platform == 'win32' or 'ANSICON' in os.environ:
+            return False
+
+        is_a_tty = buffer.isatty() and hasattr(buffer, 'isatty')
+
+        if not is_a_tty:
+            return False
+
+        return True
+
+
+if not Colors.is_supported(results):
+    # note that we're assuming that diagnostics/stderr output is never colored
+    Colors.strong = ''
+    Colors.emphasis = ''
+    Colors.vague = ''
+    Colors.clear = ''
+    Colors.bad = ''
+    Colors.good = ''
+    Colors.warn = ''

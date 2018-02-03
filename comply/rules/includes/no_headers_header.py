@@ -3,9 +3,9 @@
 import re
 
 from comply.rule import Rule, RuleViolation
-from comply.util import truncated
 
 from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
+from comply.printing import Colors
 
 
 class NoHeadersHeader(Rule):
@@ -20,6 +20,14 @@ class NoHeadersHeader(Rule):
         inclusion = offender.meta['inclusion'] if 'inclusion' in offender.meta.keys() else '???'
 
         return sol.format(inclusion)
+
+    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict = None):
+        # assume only one offending line
+        linenumber, line = offending_lines[0]
+
+        line = Colors.bad + line + Colors.clear
+
+        return super().violate(at, [(linenumber, line)], meta)
 
     def collect(self, text: str, filename: str, extension: str) -> list:
         offenders = []
