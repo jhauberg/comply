@@ -41,7 +41,10 @@ class Reporter:
 
     def report_before_reporting(self, violations: list):
         if self.is_verbose:
-            diag = 'Found {0} violations'.format(len(violations))
+            count = len(violations)
+
+            diag = 'Found {0} {1}'.format(
+                count, 'violation' if count == 1 else 'violations')
 
             printdiag(diag)
 
