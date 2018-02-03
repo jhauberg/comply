@@ -182,12 +182,14 @@ def main():
 
         total_time_taken = boot_in_seconds + report_in_seconds
 
-        printdiag('Analysis finished in {0:.1f} seconds '
-                  '({1:.2f}s to load rules, '
-                  '{2:.2f}s running checks)'
-                  .format(total_time_taken,
-                          boot_in_seconds,
-                          report_in_seconds))
+        if total_time_taken > 0.01:
+            time_diagnostic = 'Analysis finished in {0:.1f} seconds'.format(
+                total_time_taken)
+
+            time_diagnostic += ' ({0:.2f}s to load rules, {1:.2f}s running checks)'.format(
+                boot_in_seconds, report_in_seconds)
+
+            printdiag(time_diagnostic)
 
         score = compliance(report)
         score_format = '{0:.2f} ⚑' if supports_unicode() else '{0:.2f}'
