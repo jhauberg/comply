@@ -80,6 +80,12 @@ class StandardReporter(Reporter):
     """ Provides violation output (including suggestions) formatted for human readers. """
 
     def report(self, violations: list, path: str):
+        if comply.printing.results.isatty():
+            # add a newline for additional spacing from diagnostic (only when not piped)
+            printout('')
+
+        printout(Colors.underlined + '{0}:'.format(path) + Colors.clear)
+
         # group violations by reason so that we can suppress similar ones
         grouped = self.group_by_reason(violations)
 
@@ -107,13 +113,11 @@ class StandardReporter(Reporter):
                         if i != len(violation.lines) - 1:
                             context += '\n'
 
-                    output = '{1}\n{0}\n{2}\n{strong}{3}'.format(location, why,
-                                                                 context,
-                                                                 solution,
-                                                                 strong=Colors.strong)
-                else:
-                    output = '{1}\n{0}\n{strong}{2}'.format(location, why, solution,
+                    output = '{0}\n{1}\n{strong}{2}'.format(why, context, solution,
                                                             strong=Colors.strong)
+                else:
+                    output = '{0}\n{strong}{1}'.format(why, solution,
+                                                       strong=Colors.strong)
 
                 results.append('\n' + output + Colors.clear)
 
