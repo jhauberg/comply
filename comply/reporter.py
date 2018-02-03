@@ -80,11 +80,7 @@ class StandardReporter(Reporter):
     """ Provides violation output (including suggestions) formatted for human readers. """
 
     def report(self, violations: list, path: str):
-        if comply.printing.results.isatty():
-            # add a newline for additional spacing from diagnostic (only when not piped)
-            printout('')
-
-        printout(Colors.underlined + '{0}:'.format(path) + Colors.clear)
+        absolute_path = os.path.abspath(path)
 
         # group violations by reason so that we can suppress similar ones
         grouped = self.group_by_reason(violations)
@@ -93,7 +89,7 @@ class StandardReporter(Reporter):
             results = []
 
             for violation in violations:
-                location = Colors.vague + '{0}:'.format(path) + Colors.clear
+                location = Colors.vague + '{0}:'.format(absolute_path) + Colors.clear
 
                 why = '{w}{0} {vague}[{1}]'.format(reason, violation.which.name,
                                                    w=Colors.warn,
@@ -113,11 +109,11 @@ class StandardReporter(Reporter):
                         if i != len(violation.lines) - 1:
                             context += '\n'
 
-                    output = '{0}\n{1}\n{strong}{2}'.format(why, context, solution,
-                                                            strong=Colors.strong)
+                    output = '{0}\n{1}\n{2}\n{strong}{3}'.format(why, location, context, solution,
+                                                                 strong=Colors.strong)
                 else:
-                    output = '{0}\n{strong}{1}'.format(why, solution,
-                                                       strong=Colors.strong)
+                    output = '{0}\n{1}\n{strong}{2}'.format(why, location, solution,
+                                                            strong=Colors.strong)
 
                 results.append('\n' + output + Colors.clear)
 
@@ -130,6 +126,8 @@ class ClangReporter(Reporter):
     """ Provides violation output formatted in a Clang-like fashion. """
 
     def report(self, violations: list, path: str):
+        absolute_path = os.path.abspath(path)
+
         # group violations by reason so that we can suppress similar ones
         grouped = self.group_by_reason(violations)
 
@@ -137,8 +135,6 @@ class ClangReporter(Reporter):
             results = []
 
             for violation in violations:
-                absolute_path = os.path.abspath(path)
-
                 line, column = violation.where
 
                 if column > 0:
