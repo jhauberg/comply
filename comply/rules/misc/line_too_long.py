@@ -47,6 +47,8 @@ class LineTooLong(Rule):
 
                 linenumber, column = RuleViolation.where(text, offending_index)
 
+                assert column > LineTooLong.MAX
+
                 # remove any trailing newlines to keep neat prints
                 line = without_trailing_newline(line)
 
