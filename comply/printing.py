@@ -79,7 +79,11 @@ class Colors:
         if sys.platform == 'win32' or 'ANSICON' in os.environ:
             return False
 
-        is_a_tty = buffer.isatty() and hasattr(buffer, 'isatty')
+        # note: this is for testing purposes, as PyCharm console is not properly flagged
+        # when checking through isatty()/hasattr()
+        is_pycharm = 'PYCHARM' in os.environ
+
+        is_a_tty = is_pycharm or (buffer.isatty() and hasattr(buffer, 'isatty'))
 
         if not is_a_tty:
             return False
