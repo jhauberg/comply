@@ -4,6 +4,8 @@ import os
 
 from collections import OrderedDict
 
+import comply.printing
+
 from comply.printing import printdiag, printout, Colors
 from comply.util import truncated
 
@@ -41,7 +43,7 @@ class Reporter:
 
             printdiag(diag)
 
-    def report_similar_results(self, results: list):
+    def report_similar_results(self, results: list, prefix_if_suppressed: str=''):
         emitted = 0
 
         for result in results:
@@ -52,11 +54,17 @@ class Reporter:
             if self.suppress_similar and emitted >= self.suppress_after:
                 remaining = len(results) - emitted
 
-                if remaining > 0:
+                # if results are being piped or redirected, we don't need to emit a diagnostic
+                # todo: the better solution might be to just disable suppression entirely in this case
+                #       this would have the benefit of automatically avoiding this conditional and
+                #       remove confusion when not notifying (it might seem like results are "missing")
+                should_notify = comply.printing.results.isatty()
+
+                if remaining > 0 and should_notify:
                     # note that this does not require verbosity flag; if a suppression does occur,
                     # it should always be mentioned
-                    printdiag('\n(...{0} more suppressed)'
-                              .format(remaining))
+                    printdiag('{0}(...{1} more suppressed)'
+                              .format(prefix_if_suppressed, remaining))
 
                 break
 
@@ -109,7 +117,7 @@ class StandardReporter(Reporter):
 
                 results.append('\n' + output + Colors.clear)
 
-            self.report_similar_results(results)
+            self.report_similar_results(results, prefix_if_suppressed='\n')
 
         printout('')
 
