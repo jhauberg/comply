@@ -119,6 +119,7 @@ def make_rules() -> list:
         includes.SymbolNeededNotListed(),
         includes.IncludeGuard(),
         includes.NoHeadersHeader(),
+        misc.NoTabs(),
         misc.LineTooLong(),
         misc.FileTooLong()
     ]
