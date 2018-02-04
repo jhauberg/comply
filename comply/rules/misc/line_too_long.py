@@ -13,14 +13,14 @@ class LineTooLong(Rule):
 
     MAX = 80
 
-    def reason(self, offender: 'RuleViolation'=None):
+    def reason(self, offender: RuleViolation=None):
         rep = super().reason(offender)
 
         length = offender.meta['length'] if 'length' in offender.meta.keys() else 0
 
         return rep.format(length, LineTooLong.MAX)
 
-    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict=None) -> RuleViolation:
+    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict=None):
         # insert cursor to indicate max line length
         insertion_index = LineTooLong.MAX
 
@@ -32,7 +32,7 @@ class LineTooLong(Rule):
 
         return super().violate(at, [(linenumber, line)], meta)
 
-    def collect(self, text: str, filename: str, extension: str) -> list:
+    def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
         index = 0

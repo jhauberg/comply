@@ -11,14 +11,14 @@ class NoTabs(Rule):
                       description='Avoid tabs to keep consistent line lengths (found {0} tabs)',
                       suggestion='Replace each tab with spaces (typically 4).')
 
-    def reason(self, offender: 'RuleViolation'=None):
+    def reason(self, offender: RuleViolation=None):
         rep = super().reason(offender)
 
         count = offender.meta['count'] if 'count' in offender.meta else 0
 
         return rep.format(count)
 
-    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict=None) -> RuleViolation:
+    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict=None):
         # assume only one offending line
         linenumber, line = offending_lines[0]
 
@@ -31,7 +31,7 @@ class NoTabs(Rule):
 
         return super().violate(at, lines, meta)
 
-    def collect(self, text: str, filename: str, extension: str) -> list:
+    def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
         tabs_found = text.count('\t')

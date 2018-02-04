@@ -16,21 +16,21 @@ class SymbolListedNotNeeded(Rule):
                       description='Unused symbol \'{0}\' should not be listed as needed',
                       suggestion='Remove symbol \'{0}\' from list.')
 
-    def reason(self, offender: 'RuleViolation'=None):
+    def reason(self, offender: RuleViolation=None):
         rep = super().reason(offender)
 
         symbol = offender.meta['symbol'] if 'symbol' in offender.meta.keys() else '???'
 
         return rep.format(symbol)
 
-    def solution(self, offender: 'RuleViolation'=None):
+    def solution(self, offender: RuleViolation=None):
         sol = super().solution(offender)
 
         symbol = offender.meta['symbol'] if 'symbol' in offender.meta.keys() else '???'
 
         return sol.format(symbol)
 
-    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict=None) -> RuleViolation:
+    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict=None):
         # assume only one offending line
         linenumber, line = offending_lines[0]
 
@@ -42,7 +42,7 @@ class SymbolListedNotNeeded(Rule):
 
         return super().violate(at, [(linenumber, line)], meta)
 
-    def collect(self, text: str, filename: str, extension: str) -> list:
+    def collect(self, text: str, filename: str, extension: str):
         # match include statements and capture suffixed content, if any
         pattern = INCLUDE_STMT_PATTERN + r'(.*)'
 

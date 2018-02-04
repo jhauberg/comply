@@ -13,14 +13,14 @@ class FileTooLong(Rule):
 
     MAX = 600
 
-    def reason(self, offender: 'RuleViolation'=None):
+    def reason(self, offender: RuleViolation=None):
         rep = super().reason(offender)
 
         length = offender.meta['length'] if 'length' in offender.meta.keys() else 0
 
         return rep.format(length, FileTooLong.MAX)
 
-    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict=None) -> RuleViolation:
+    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict=None):
         breaker_linenumber, breaker_line = offending_lines[1]
 
         offending_lines.insert(1, (breaker_linenumber, '---'))
@@ -32,7 +32,7 @@ class FileTooLong(Rule):
 
         return super().violate(at, offending_lines, meta)
 
-    def collect(self, text: str, filename: str, extension: str) -> list:
+    def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
         length = text.count('\n')

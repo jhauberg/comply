@@ -22,7 +22,7 @@ class ListNeededSymbols(Rule):
 
         return super().violate(at, [(linenumber, line)], meta)
 
-    def collect(self, text: str, filename: str, extension: str) -> list:
+    def collect(self, text: str, filename: str, extension: str):
         # match include statements and capture suffixed content, if any
         pattern = INCLUDE_STMT_PATTERN + r'(.*)'
 

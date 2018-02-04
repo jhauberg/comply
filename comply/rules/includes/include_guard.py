@@ -11,14 +11,14 @@ class IncludeGuard(Rule):
                       description='Header files should define an include guard to prevent double inclusion',
                       suggestion='Wrap your header inside an include guard named "{0}".')
 
-    def solution(self, offender: 'RuleViolation'=None):
+    def solution(self, offender: RuleViolation=None):
         sol = super().solution(offender)
 
         symbol = offender.meta['guard'] if 'guard' in offender.meta.keys() else '???'
 
         return sol.format(symbol)
 
-    def collect(self, text: str, filename: str, extension: str) -> list:
+    def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
         if '.h' not in extension:
