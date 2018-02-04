@@ -8,7 +8,7 @@ from comply.printing import Colors
 class NoTabs(Rule):
     def __init__(self):
         Rule.__init__(self, name='no-tabs',
-                      description='Avoid tabs for alignment (found {0} tabs).',
+                      description='Avoid tabs to keep consistent line lengths (found {0} tabs).',
                       suggestion='Replace each tab with spaces (typically 4).')
 
     def reason(self, offender: 'RuleViolation'=None):
