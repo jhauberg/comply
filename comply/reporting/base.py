@@ -11,6 +11,12 @@ from comply.util.truncation import truncated
 
 
 class Reporter:
+    """ Represents the default reporting mode.
+
+        This is not typically used as an actual reporting mode, but instead
+        provides the base functions for specialized reporting modes.
+    """
+
     def __init__(self, suppress_similar: bool=True, is_verbose: bool=False):
         self.suppress_similar = suppress_similar
         self.is_verbose = is_verbose
@@ -32,6 +38,8 @@ class Reporter:
         return grouped
 
     def report_before_checking(self, path: str, encoding: str=None):
+        """ Print a diagnostic before initiating a check on a given file. """
+
         if self.is_verbose:
             normalized_path = os.path.normpath(path)
 
@@ -43,7 +51,13 @@ class Reporter:
 
             printdiag(diag, end='')
 
-    def report_before_reporting(self, violations: list):
+    def report_before_results(self, violations: list):
+        """ Print a diagnostic before reporting results.
+
+            This diagnostic should indicate the total number of violations collected; not
+            the number of results to print (some may be suppressed).
+        """
+
         if self.is_verbose:
             count = len(violations)
 
@@ -52,7 +66,11 @@ class Reporter:
 
             printdiag(diag)
 
-    def report_similar_results(self, results: list, prefix_if_suppressed: str=''):
+    def report_results(self, results: list, prefix_if_suppressed: str= ''):
+        """ Print each result (a formatted violation), suppressing
+            similar results if needed.
+        """
+
         emitted = 0
 
         for result in results:
@@ -78,8 +96,12 @@ class Reporter:
                 break
 
     def report(self, violations: list, path: str):
+        """ Print a report of collected violations for a given file. """
+
         printout('{0}: {1}'.format(path, violations))
 
     @property
     def suppress_after(self) -> int:
+        """ Return the number of similar violations emitted before being suppressed. """
+
         return 2

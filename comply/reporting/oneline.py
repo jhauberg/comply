@@ -6,9 +6,18 @@ from comply.reporting.base import Reporter
 
 
 class OneLineReporter(Reporter):
-    """ Provides violation output formatted in a Clang-like fashion. """
+    """ Provides reporting output formatted using one line per violation,
+        in a Clang, or GCC-like fashion.
+
+        Useful for lean reports or integration with editors.
+    """
 
     def report(self, violations: list, path: str):
+        """ Looks like:
+
+            /nethack/src/vision.c:1:81: warning: Line is too long (118 > 80) [line-too-long]
+        """
+
         absolute_path = os.path.abspath(path)
 
         # group violations by reason so that we can suppress similar ones
@@ -30,4 +39,4 @@ class OneLineReporter(Reporter):
 
                 results.append(output)
 
-            self.report_similar_results(results)
+            self.report_results(results)

@@ -9,7 +9,7 @@ from comply.util.truncation import truncated, Ellipsize
 
 
 class HumanReporter(Reporter):
-    """ Provides violation output (including suggestions) formatted for human readers. """
+    """ Provides reporting output (including suggestions) formatted for human readers. """
 
     def report(self, violations: list, path: str):
         # determine absolute path of file
@@ -63,6 +63,6 @@ class HumanReporter(Reporter):
 
                 results.append('\n' + output + Colors.clear)
 
-            self.report_similar_results(results, prefix_if_suppressed='\n')
+            self.report_results(results, prefix_if_suppressed='\n')
 
         printout('')

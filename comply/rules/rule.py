@@ -73,5 +73,7 @@ class Rule:
 
     @property
     def collection_hint(self) -> int:
+        """ Return a hint indicating how often this rule may be violated per file. """
+
         return RuleViolation.MANY_PER_FILE
 
