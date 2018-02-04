@@ -27,7 +27,7 @@ from pkg_resources import parse_version
 from comply import VERSION_PATTERN, exit_if_not_compatible
 from comply.reporter import Reporter, StandardReporter, OneLineReporter
 from comply.printing import printdiag, diagnostics, supports_unicode, is_windows_environment
-from comply.checker import check, CheckResult
+from comply.checking import check, CheckResult
 from comply.version import __version__
 
 from comply.rules import *
