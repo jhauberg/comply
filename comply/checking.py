@@ -2,7 +2,7 @@
 
 import os
 
-from comply.reporter import Reporter
+from comply.reporting import Reporter
 
 
 class CheckResult:

@@ -10,7 +10,7 @@ Usage:
   comply --version
 
 Options:
-  -r --reporter=<name>    Specify type of reported output [default: standard]
+  -r --reporter=<name>    Specify type of reported output [default: human]
   -s --strict             Show all violations (similar violations not suppressed)
   -v --verbose            Show diagnostic messages
   -h --help               Show program help
@@ -25,7 +25,8 @@ from docopt import docopt
 from pkg_resources import parse_version
 
 from comply import VERSION_PATTERN, exit_if_not_compatible
-from comply.reporter import Reporter, StandardReporter, OneLineReporter
+
+from comply.reporting import Reporter, OneLineReporter, HumanReporter
 from comply.printing import printdiag, diagnostics, supports_unicode, is_windows_environment
 from comply.checking import check, CheckResult
 from comply.version import __version__
@@ -99,8 +100,8 @@ def compliance(result: CheckResult) -> float:
 def make_reporter(reporting_mode: str) -> Reporter:
     """ Return a reporter appropriate for the mode. """
 
-    if reporting_mode == 'standard':
-        return StandardReporter()
+    if reporting_mode == 'human':
+        return HumanReporter()
     elif reporting_mode == 'oneline':
         return OneLineReporter()
 
