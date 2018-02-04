@@ -13,7 +13,7 @@ from comply.printing import Colors
 class SymbolListedNotNeeded(Rule):
     def __init__(self):
         Rule.__init__(self, name='symbol-listed-not-needed',
-                      description='Unused symbol \'{0}\' should not be listed as needed.',
+                      description='Unused symbol \'{0}\' should not be listed as needed',
                       suggestion='Remove symbol \'{0}\' from list.')
 
     def reason(self, offender: 'RuleViolation'=None):

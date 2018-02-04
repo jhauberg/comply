@@ -8,7 +8,7 @@ from comply.printing import Colors
 class LineTooLong(Rule):
     def __init__(self):
         Rule.__init__(self, name='line-too-long',
-                      description='Line is too long ({0} > {1}).',
+                      description='Line is too long ({0} > {1})',
                       suggestion='Use shorter names or split statements to multiple lines.')
 
     MAX = 80

@@ -8,7 +8,7 @@ from comply.rule import Rule, RuleViolation
 class IncludeGuard(Rule):
     def __init__(self):
         Rule.__init__(self, name='include-guard',
-                      description='Header files should define an include guard to prevent double inclusion.',
+                      description='Header files should define an include guard to prevent double inclusion',
                       suggestion='Wrap your header inside an include guard named "{0}".')
 
     def solution(self, offender: 'RuleViolation'=None):
