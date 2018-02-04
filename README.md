@@ -158,7 +158,7 @@ In Xcode, add a new *Run Script Phase*. Copy and paste below snippet into the sc
 ```shell
 export PYTHONIOENCODING=UTF-8
 
-<executable> "${SRCROOT}" --reporter=clang
+<executable> "${SRCROOT}" --reporter=oneline
 ```
 
 For example, this would become:
@@ -166,7 +166,7 @@ For example, this would become:
 ```shell
 export PYTHONIOENCODING=UTF-8
 
-/Library/Frameworks/Python.framework/Versions/3.6/bin/comply "${SRCROOT}" --reporter=clang
+/Library/Frameworks/Python.framework/Versions/3.6/bin/comply "${SRCROOT}" --reporter=oneline
 ```
 
 **2) Using script sources directly**
@@ -178,12 +178,12 @@ Just point to the [run.py](run.py) script instead of the installed executable:
 ```shell
 export PYTHONIOENCODING=UTF-8
 
-python path/to/comply/run.py "${SRCROOT}" --reporter=clang
+python path/to/comply/run.py "${SRCROOT}" --reporter=oneline
 ```
 
 Now, every time you build, `comply` should be run on every file and directory within the root of your project. 
 
-You can change or add arguments as you like, but `--reporter=clang` is required for violations to be displayed.
+You can change or add arguments as you like, but `--reporter=oneline` is required for violations to be displayed.
 
 ### Full usage
 

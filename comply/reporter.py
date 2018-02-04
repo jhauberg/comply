@@ -145,7 +145,7 @@ class StandardReporter(Reporter):
         printout('')
 
 
-class ClangReporter(Reporter):
+class OneLineReporter(Reporter):
     """ Provides violation output formatted in a Clang-like fashion. """
 
     def report(self, violations: list, path: str):

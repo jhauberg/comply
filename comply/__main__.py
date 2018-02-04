@@ -25,7 +25,7 @@ from docopt import docopt
 from pkg_resources import parse_version
 
 from comply import VERSION_PATTERN, exit_if_not_compatible
-from comply.reporter import Reporter, StandardReporter, ClangReporter
+from comply.reporter import Reporter, StandardReporter, OneLineReporter
 from comply.printing import printdiag, diagnostics, supports_unicode, is_windows_environment
 from comply.checker import check, CheckResult
 from comply.version import __version__
@@ -101,8 +101,8 @@ def make_reporter(reporting_mode: str) -> Reporter:
 
     if reporting_mode == 'standard':
         return StandardReporter()
-    elif reporting_mode == 'clang':
-        return ClangReporter()
+    elif reporting_mode == 'oneline':
+        return OneLineReporter()
 
     printdiag('Reporting mode \'{0}\' not available.'.format(reporting_mode),
               apply_prefix=True)
