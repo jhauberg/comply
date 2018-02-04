@@ -5,7 +5,7 @@ import os
 from comply.reporting.base import Reporter
 
 from comply.printing import printout, Colors
-from comply.util import truncated, Ellipsize
+from comply.util.truncation import truncated, Ellipsize
 
 
 class HumanReporter(Reporter):

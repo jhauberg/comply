@@ -7,7 +7,7 @@ from collections import OrderedDict
 import comply.printing
 
 from comply.printing import printdiag, printout
-from comply.util import truncated
+from comply.util.truncation import truncated
 
 
 class Reporter:
