@@ -2,7 +2,7 @@
 
 import re
 
-from comply.rule import Rule, RuleViolation
+from comply.rules import Rule, RuleViolation
 
 from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
 from comply.printing import Colors

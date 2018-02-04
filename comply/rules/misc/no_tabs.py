@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from comply.rule import Rule, RuleViolation
+from comply.rules import Rule, RuleViolation
 
 from comply.printing import Colors
 
