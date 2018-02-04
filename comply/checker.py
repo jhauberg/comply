@@ -63,16 +63,29 @@ def check(path: str, rules: list, reporter: Reporter) -> (CheckResult, bool):
 
     filename = os.path.basename(filename)
 
-    reporter.report_before_checking(path)
+    text = None
 
-    with open(path, 'r', encoding='utf-8') as file:
-        text = file.read()
+    default_encoding = 'utf-8'
 
-        violations = []
+    supported_encodings = [
+        default_encoding,
+        'windows-1252'
+    ]
 
-        for rule in rules:
-            offenders = rule.collect(text, filename, extension)
-            violations.extend(offenders)
+    for encoding in supported_encodings:
+        try:
+            with open(path, 'r', encoding=encoding) as file:
+                text = file.read()
+        except UnicodeDecodeError:
+            pass
+        else:
+            reporter.report_before_checking(
+                path, encoding=None if encoding is default_encoding else encoding)
+
+            break
+
+    if text is not None:
+        violations = collect(text, filename, extension, rules)
 
         number_of_violations = len(violations)
 
@@ -87,3 +100,13 @@ def check(path: str, rules: list, reporter: Reporter) -> (CheckResult, bool):
             reporter.report(violations, path)
 
     return result, True
+
+
+def collect(text: str, filename: str, extension: str, rules: list) -> list:
+    violations = []
+
+    for rule in rules:
+        offenders = rule.collect(text, filename, extension)
+        violations.extend(offenders)
+
+    return violations

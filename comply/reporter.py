@@ -31,11 +31,15 @@ class Reporter:
 
         return grouped
 
-    def report_before_checking(self, path: str):
+    def report_before_checking(self, path: str, encoding: str=None):
         if self.is_verbose:
             normalized_path = os.path.normpath(path)
 
-            diag = 'Checking \'{0}\'... '.format(truncated(normalized_path))
+            encoding = ' ({0})'.format(
+                encoding.upper()) if encoding is not None else ''
+
+            diag = 'Checking \'{0}\'{1}... '.format(
+                truncated(normalized_path), encoding)
 
             printdiag(diag, end='')
 
@@ -123,7 +127,7 @@ class StandardReporter(Reporter):
                         line = line.expandtabs(4)
 
                         context += Colors.emphasis + str(linenumber) + Colors.clear
-                        context += '\t{0}'.format(line)
+                        context += Colors.clear + '\t{0}'.format(line)
 
                         if i != len(violation.lines) - 1:
                             context += '\n'
