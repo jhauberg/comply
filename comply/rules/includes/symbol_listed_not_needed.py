@@ -30,9 +30,9 @@ class SymbolListedNotNeeded(Rule):
 
         return sol.format(symbol)
 
-    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict=None):
+    def violate(self, at: (int, int), lines: list=list(), meta: dict=None):
         # assume only one offending line
-        linenumber, line = offending_lines[0]
+        linenumber, line = lines[0]
 
         from_index, to_index = meta['range'] if 'range' in meta else (0, 0)
 
@@ -69,7 +69,7 @@ class SymbolListedNotNeeded(Rule):
                         offending_line = (linenumber, line)
 
                         offender = self.violate(at=(linenumber, column),
-                                                offending_lines=[offending_line],
+                                                lines=[offending_line],
                                                 meta={'symbol': symbol,
                                                       'range': (column - 1, column - 1 + len(symbol))})
 

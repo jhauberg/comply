@@ -21,9 +21,9 @@ class NoHeadersHeader(Rule):
 
         return sol.format(inclusion)
 
-    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict=None):
+    def violate(self, at: (int, int), lines: list=list(), meta: dict=None):
         # assume only one offending line
-        linenumber, line = offending_lines[0]
+        linenumber, line = lines[0]
 
         line = Colors.bad + line + Colors.clear
 
@@ -49,7 +49,7 @@ class NoHeadersHeader(Rule):
             offending_line = (line, include_statement)
 
             offender = self.violate(at=(line, column),
-                                    offending_lines=[offending_line],
+                                    lines=[offending_line],
                                     meta={'inclusion': include_statement})
 
             offenders.append(offender)

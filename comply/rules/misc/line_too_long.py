@@ -20,12 +20,12 @@ class LineTooLong(Rule):
 
         return rep.format(length, LineTooLong.MAX)
 
-    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict=None):
+    def violate(self, at: (int, int), lines: list=list(), meta: dict=None):
         # insert cursor to indicate max line length
         insertion_index = LineTooLong.MAX
 
         # assume only one offending line
-        linenumber, line = offending_lines[0]
+        linenumber, line = lines[0]
 
         line = (line[:insertion_index] + Colors.bad + '|' +
                 line[insertion_index:] + Colors.clear)
@@ -55,7 +55,7 @@ class LineTooLong(Rule):
                 offending_line = (linenumber, line)
 
                 offender = self.violate(at=(linenumber, column),
-                                        offending_lines=[offending_line],
+                                        lines=[offending_line],
                                         meta={'length': characters_except_newline})
 
                 offenders.append(offender)

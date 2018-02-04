@@ -18,9 +18,9 @@ class NoTabs(Rule):
 
         return rep.format(count)
 
-    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict=None):
+    def violate(self, at: (int, int), lines: list=list(), meta: dict=None):
         # assume only one offending line
-        linenumber, line = offending_lines[0]
+        linenumber, line = lines[0]
 
         line = line.replace('\t', Colors.bad + '~' + Colors.clear)
 
@@ -46,7 +46,7 @@ class NoTabs(Rule):
             offending_line = (linenumber, lines[linenumber - 1])
 
             offender = self.violate(at=(linenumber, column),
-                                    offending_lines=[offending_line],
+                                    lines=[offending_line],
                                     meta={'count': tabs_found})
 
             offenders.append(offender)

@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from typing import List
+from typing import List, Tuple
 
 
 class RuleViolation:
@@ -61,11 +61,10 @@ class Rule:
 
         return self.suggestion
 
-    # todo List[Tuple]
-    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict=None) -> RuleViolation:
+    def violate(self, at: (int, int), lines: List[Tuple[int, str]]=list(), meta: dict=None) -> RuleViolation:
         """ Return a rule offender originating from a chunk of text. """
 
-        return RuleViolation(self, at, offending_lines, meta)
+        return RuleViolation(self, at, lines, meta)
 
     def collect(self, text: str, filename: str, extension: str) -> List[RuleViolation]:
         """ Analyze a given text and return a list of any found rule offenders. """

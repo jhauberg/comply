@@ -14,9 +14,9 @@ class ListNeededSymbols(Rule):
                       description='Include statements should indicate which symbols are needed',
                       suggestion='Add a comment immediately after include statement, listing each needed symbol.')
 
-    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict = None):
+    def violate(self, at: (int, int), lines: list=list(), meta: dict=None):
         # assume only one offending line
-        linenumber, line = offending_lines[0]
+        linenumber, line = lines[0]
 
         line = line + Colors.good + ' // symbol_t, symbol_func_*' + Colors.clear
 
@@ -39,7 +39,7 @@ class ListNeededSymbols(Rule):
                 offending_line = (linenumber, inclusion.group(0))
 
                 offender = self.violate(at=(linenumber, column),
-                                        offending_lines=[offending_line])
+                                        lines=[offending_line])
 
                 offenders.append(offender)
 
