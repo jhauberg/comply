@@ -12,7 +12,7 @@ class Rule:
     def __repr__(self):
         return '[{0}]'.format(self.name)
 
-    def reason(self, offender: 'RuleViolation' = None):
+    def reason(self, offender: 'RuleViolation'=None):
         """ Return a reason for a violation of this rule.
 
             Subclasses may override and provide specific formatting in relation to a rule violation.
@@ -20,7 +20,7 @@ class Rule:
 
         return self.description
 
-    def solution(self, offender: 'RuleViolation' =None):
+    def solution(self, offender: 'RuleViolation'=None):
         """ Return a solution for this rule.
 
             Subclasses may override and provide specific formatting in relation to a rule violation.
@@ -28,7 +28,7 @@ class Rule:
 
         return self.suggestion
 
-    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict = None) -> 'RuleViolation':
+    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict=None) -> 'RuleViolation':
         """ Return a rule offender originating from a chunk of text. """
 
         return RuleViolation(self, at, offending_lines, meta)
@@ -51,7 +51,7 @@ class RuleViolation:
     """ A hint to indicate that a violation may occur more than once per file. """
     MANY_PER_FILE = 1
 
-    def __init__(self, which: Rule, where: (int, int), lines: list, meta: dict = None):
+    def __init__(self, which: Rule, where: (int, int), lines: list, meta: dict=None):
         self.which = which
         self.where = where
         self.lines = lines

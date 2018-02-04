@@ -21,7 +21,7 @@ class NoHeadersHeader(Rule):
 
         return sol.format(inclusion)
 
-    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict = None):
+    def violate(self, at: (int, int), offending_lines: list=list(), meta: dict=None):
         # assume only one offending line
         linenumber, line = offending_lines[0]
 
