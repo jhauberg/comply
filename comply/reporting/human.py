@@ -48,7 +48,7 @@ class HumanReporter(Reporter):
 
                     for i, (linenumber, line) in enumerate(violation.lines):
                         if linenumber is None:
-                            linenumber = 0
+                            linenumber = ''
 
                         line = line.expandtabs(4)
 
