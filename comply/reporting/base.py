@@ -2,10 +2,13 @@
 
 import os
 
+from typing import List
+
 from collections import OrderedDict
 
 import comply.printing
 
+from comply.rules import RuleViolation
 from comply.printing import printdiag, printout
 from comply.util.truncation import truncated
 
@@ -22,7 +25,7 @@ class Reporter:
         self.is_verbose = is_verbose
 
     @staticmethod
-    def group_by_reason(violations):
+    def group_by_reason(violations: List[RuleViolation]):
         """ Return an ordered dict with violations grouped by their reason. """
 
         grouped = OrderedDict()
@@ -51,7 +54,7 @@ class Reporter:
 
             printdiag(diag, end='')
 
-    def report_before_results(self, violations: list):
+    def report_before_results(self, violations: List[RuleViolation]):
         """ Print a diagnostic before reporting results.
 
             This diagnostic should indicate the total number of violations collected; not
@@ -66,7 +69,7 @@ class Reporter:
 
             printdiag(diag)
 
-    def report_results(self, results: list, prefix_if_suppressed: str= ''):
+    def report_results(self, results: List[str], prefix_if_suppressed: str= ''):
         """ Print each result (a formatted violation), suppressing
             similar results if needed.
         """
