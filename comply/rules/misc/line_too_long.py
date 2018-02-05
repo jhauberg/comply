@@ -14,11 +14,10 @@ class LineTooLong(Rule):
     MAX = 80
 
     def reason(self, violation: RuleViolation=None):
-        rep = super().reason(violation)
+        length = violation.meta['length'] if 'length' in violation.meta else 0
 
-        length = violation.meta['length'] if 'length' in violation.meta.keys() else 0
-
-        return rep.format(length, LineTooLong.MAX)
+        return super().reason(violation).format(
+            length, LineTooLong.MAX)
 
     def augment(self, violation: RuleViolation):
         # insert cursor to indicate max line length

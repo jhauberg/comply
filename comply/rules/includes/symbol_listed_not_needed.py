@@ -17,12 +17,12 @@ class SymbolListedNotNeeded(Rule):
                       suggestion='Remove symbol \'{0}\' from list.')
 
     def reason(self, violation: RuleViolation=None):
-        symbol = violation.meta['symbol'] if 'symbol' in violation.meta.keys() else '???'
+        symbol = violation.meta['symbol'] if 'symbol' in violation.meta else '???'
 
         return super().reason(violation).format(symbol)
 
     def solution(self, violation: RuleViolation=None):
-        symbol = violation.meta['symbol'] if 'symbol' in violation.meta.keys() else '???'
+        symbol = violation.meta['symbol'] if 'symbol' in violation.meta else '???'
 
         return super().solution(violation).format(symbol)
 

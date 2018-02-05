@@ -15,7 +15,7 @@ class NoHeadersHeader(Rule):
                       suggestion='Replace \'{0}\' with a forward-declaration for each needed type.')
 
     def solution(self, violation: RuleViolation=None):
-        inclusion = violation.meta['inclusion'] if 'inclusion' in violation.meta.keys() else '???'
+        inclusion = violation.meta['inclusion'] if 'inclusion' in violation.meta else '???'
 
         return super().solution(violation).format(inclusion)
 

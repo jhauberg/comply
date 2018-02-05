@@ -14,11 +14,9 @@ class NoTabs(Rule):
     TAB = '\t'
 
     def reason(self, violation: RuleViolation=None):
-        rep = super().reason(violation)
-
         count = violation.meta['count'] if 'count' in violation.meta else 0
 
-        return rep.format(count)
+        return super().reason(violation).format(count)
 
     def augment(self, violation: RuleViolation):
         # assume only one offending line

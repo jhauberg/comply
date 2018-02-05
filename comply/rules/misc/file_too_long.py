@@ -14,11 +14,10 @@ class FileTooLong(Rule):
     MAX = 600
 
     def reason(self, violation: RuleViolation=None):
-        rep = super().reason(violation)
+        length = violation.meta['length'] if 'length' in violation.meta else 0
 
-        length = violation.meta['length'] if 'length' in violation.meta.keys() else 0
-
-        return rep.format(length, FileTooLong.MAX)
+        return super().reason(violation).format(
+            length, FileTooLong.MAX)
 
     def augment(self, violation: RuleViolation):
         # assume offending line is the second one

@@ -12,7 +12,7 @@ class IncludeGuard(Rule):
                       suggestion='Wrap your header inside an include guard named "{0}".')
 
     def solution(self, violation: RuleViolation=None):
-        symbol = violation.meta['guard'] if 'guard' in violation.meta.keys() else '???'
+        symbol = violation.meta['guard'] if 'guard' in violation.meta else '???'
 
         return super().solution(violation).format(symbol)
 
