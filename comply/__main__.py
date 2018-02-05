@@ -5,13 +5,15 @@
 Make your C follow the rules
 
 Usage:
-  comply <input>... [--reporter=<name>] [--verbose] [--strict] [--check=<rule>]...
+  comply <input>... [--reporter=<name>] [--check=<rule>]... [--except=<rule>]...
+                    [--verbose] [--strict]
   comply -h | --help
   comply --version
 
 Options:
   -r --reporter=<name>    Specify type of reported output [default: human]
   -c --check=<rule>       Only run checks for a specific rule
+  -e --except=<rule>      Don't run checks for a specific rule
   -s --strict             Show all violations (similar violations not suppressed)
   -v --verbose            Show diagnostic messages
   -h --help               Show program help
@@ -81,7 +83,7 @@ def make_reporter(reporting_mode: str) -> Reporter:
     return Reporter()
 
 
-def make_rules(names: list) -> list:
+def make_rules(names: list, exceptions: list) -> list:
     """ Return a list of rules to run checks on. """
 
     rules = [
@@ -97,9 +99,16 @@ def make_rules(names: list) -> list:
     ]
 
     if len(names) > 0:
+        # only run checks for certain rules
         rules = [rule for rule
                  in rules
                  if rule.name in names]
+
+    if len(exceptions) > 0:
+        # don't run checks for certain rules
+        rules = [rule for rule
+                 in rules
+                 if rule.name not in exceptions]
 
     return sorted(rules, key=lambda rule: rule.collection_hint)
 
@@ -137,8 +146,9 @@ def main():
     arguments = docopt(__doc__, version='comply ' + __version__)
 
     checks = arguments['--check']
+    exceptions = arguments['--except']
 
-    rules = make_rules(checks)
+    rules = make_rules(checks, exceptions)
 
     reporting_mode = arguments['--reporter']
 
