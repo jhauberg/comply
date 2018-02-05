@@ -28,7 +28,7 @@ from comply import VERSION_PATTERN, exit_if_not_compatible
 
 from comply.reporting import Reporter, OneLineReporter, HumanReporter
 from comply.printing import printdiag, diagnostics, supports_unicode, is_windows_environment
-from comply.checking import check, CheckResult
+from comply.checking import check, compliance, CheckResult
 from comply.version import __version__
 
 from comply.rules import *
@@ -64,37 +64,6 @@ def check_for_update():
     except URLError:
         # fail silently
         pass
-
-
-def compliance(result: CheckResult) -> float:
-    """ Return the compliance score """
-
-    f = result.files_with_violations
-    v = result.violations
-
-    if f == 0 or v == 0:
-        return 1.0
-
-    min_f = 0
-    max_f = result.files
-
-    min_v = 0
-    max_v = v + f  # arbitrary max
-
-    vp = (v - min_v) / (max_v - min_v)
-    fp = (f - min_f) / (max_f - min_f)
-
-    # weigh files heavier than violations;
-    #  e.g. 100 violations in 1 file should score better than 100 violations over 2 files
-    v_weight = 0.4
-    f_weight = 0.6
-
-    v_score = vp * v_weight
-    f_score = fp * f_weight
-
-    score = 1.0 - (v_score + f_score)
-
-    return score
 
 
 def make_reporter(reporting_mode: str) -> Reporter:
