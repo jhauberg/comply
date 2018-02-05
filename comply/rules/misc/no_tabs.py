@@ -31,7 +31,7 @@ class NoTabs(Rule):
 
         if count > count_in_line:
             violation.lines = [
-                (0, Colors.emphasis + 'listing first occurrence:' + Colors.clear),
+                (None, Colors.emphasis + 'listing first occurrence:' + Colors.clear),
                 augmented_line
             ]
         else:
