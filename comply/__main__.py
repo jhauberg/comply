@@ -90,6 +90,7 @@ def make_rules() -> list:
         includes.IncludeGuard(),
         includes.NoHeadersHeader(),
         misc.NoTabs(),
+        misc.NoInvisibles(),
         misc.LineTooLong(),
         misc.FileTooLong()
     ]
