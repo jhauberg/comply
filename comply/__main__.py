@@ -5,12 +5,13 @@
 Make your C follow the rules
 
 Usage:
-  comply <input>... [--reporter=<name>] [--verbose] [--strict]
+  comply <input>... [--reporter=<name>] [--verbose] [--strict] [--check=<rule>]...
   comply -h | --help
   comply --version
 
 Options:
   -r --reporter=<name>    Specify type of reported output [default: human]
+  -c --check=<rule>       Only run checks for a specific rule
   -s --strict             Show all violations (similar violations not suppressed)
   -v --verbose            Show diagnostic messages
   -h --help               Show program help
@@ -80,7 +81,7 @@ def make_reporter(reporting_mode: str) -> Reporter:
     return Reporter()
 
 
-def make_rules() -> list:
+def make_rules(names: list) -> list:
     """ Return a list of rules to run checks on. """
 
     rules = [
@@ -94,6 +95,11 @@ def make_rules() -> list:
         misc.LineTooLong(),
         misc.FileTooLong()
     ]
+
+    if len(names) > 0:
+        rules = [rule for rule
+                 in rules
+                 if rule.name in names]
 
     return sorted(rules, key=lambda rule: rule.collection_hint)
 
@@ -115,6 +121,8 @@ def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
 def main():
     """ Entry point for invoking the comply module. """
 
+    time_started_boot = datetime.datetime.now()
+
     exit_if_not_compatible()
 
     if not supports_unicode():
@@ -126,19 +134,19 @@ def main():
                       .format(diagnostics.encoding),
                       apply_prefix=True)
 
-    time_started_boot = datetime.datetime.now()
-
     arguments = docopt(__doc__, version='comply ' + __version__)
 
-    rules = make_rules()
+    checks = arguments['--check']
 
-    inputs = arguments['<input>']
+    rules = make_rules(checks)
 
     reporting_mode = arguments['--reporter']
 
     reporter = make_reporter(reporting_mode)
     reporter.suppress_similar = not arguments['--strict']
     reporter.is_verbose = arguments['--verbose']
+
+    inputs = arguments['<input>']
 
     time_since_boot = datetime.datetime.now() - time_started_boot
     time_started_report = datetime.datetime.now()
