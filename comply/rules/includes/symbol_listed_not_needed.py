@@ -16,31 +16,27 @@ class SymbolListedNotNeeded(Rule):
                       description='Unused symbol \'{0}\' should not be listed as needed',
                       suggestion='Remove symbol \'{0}\' from list.')
 
-    def reason(self, offender: RuleViolation=None):
-        rep = super().reason(offender)
+    def reason(self, violation: RuleViolation=None):
+        symbol = violation.meta['symbol'] if 'symbol' in violation.meta.keys() else '???'
 
-        symbol = offender.meta['symbol'] if 'symbol' in offender.meta.keys() else '???'
+        return super().reason(violation).format(symbol)
 
-        return rep.format(symbol)
+    def solution(self, violation: RuleViolation=None):
+        symbol = violation.meta['symbol'] if 'symbol' in violation.meta.keys() else '???'
 
-    def solution(self, offender: RuleViolation=None):
-        sol = super().solution(offender)
+        return super().solution(violation).format(symbol)
 
-        symbol = offender.meta['symbol'] if 'symbol' in offender.meta.keys() else '???'
+    def augment(self, violation: RuleViolation):
+        from_index, to_index = violation.meta['range'] if 'range' in violation.meta else (0, 0)
 
-        return sol.format(symbol)
-
-    def violate(self, at: (int, int), lines: list=list(), meta: dict=None):
         # assume only one offending line
-        linenumber, line = lines[0]
+        linenumber, line = violation.lines[0]
 
-        from_index, to_index = meta['range'] if 'range' in meta else (0, 0)
+        augmented_line = (line[:from_index] +
+                          Colors.bad + line[from_index:to_index] + Colors.clear +
+                          line[to_index:])
 
-        line = (line[:from_index] +
-                Colors.bad + line[from_index:to_index] + Colors.clear +
-                line[to_index:])
-
-        return super().violate(at, [(linenumber, line)], meta)
+        violation.lines[0] = (linenumber, augmented_line)
 
     def collect(self, text: str, filename: str, extension: str):
         # match include statements and capture suffixed content, if any
@@ -66,6 +62,7 @@ class SymbolListedNotNeeded(Rule):
                         linenumber, column = RuleViolation.where(text, offending_index)
 
                         line = inclusion.group(0)
+
                         offending_line = (linenumber, line)
 
                         offender = self.violate(at=(linenumber, column),

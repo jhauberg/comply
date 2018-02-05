@@ -2,7 +2,7 @@
 
 from comply.rules import Rule, RuleViolation
 
-from comply.printing import Colors
+from comply.printing import Colors, supports_unicode
 
 
 class NoTabs(Rule):
@@ -11,33 +11,41 @@ class NoTabs(Rule):
                       description='Avoid tabs to keep consistent line lengths (found {0} tabs)',
                       suggestion='Replace each tab with spaces (typically 4).')
 
-    def reason(self, offender: RuleViolation=None):
-        rep = super().reason(offender)
+    TAB = '\t'
 
-        count = offender.meta['count'] if 'count' in offender.meta else 0
+    def reason(self, violation: RuleViolation=None):
+        rep = super().reason(violation)
+
+        count = violation.meta['count'] if 'count' in violation.meta else 0
 
         return rep.format(count)
 
-    def violate(self, at: (int, int), lines: list=list(), meta: dict=None):
+    def augment(self, violation: RuleViolation):
         # assume only one offending line
-        linenumber, line = lines[0]
+        linenumber, line = violation.lines[0]
 
-        line = line.replace('\t', Colors.bad + '~' + Colors.clear)
+        replacement_char = '⇥' if supports_unicode() else '~'
 
-        lines = [
-            (0, Colors.emphasis + 'listing first occurrence:' + Colors.clear),
-            (linenumber, line)
-        ]
+        augmented_line = (linenumber, line.replace(NoTabs.TAB, Colors.bad + replacement_char + Colors.clear))
 
-        return super().violate(at, lines, meta)
+        count = violation.meta['count'] if 'count' in violation.meta else 0
+        count_in_line = violation.meta['count_in_line'] if 'count_in_line' in violation.meta else 0
+
+        if count > count_in_line:
+            violation.lines = [
+                (0, Colors.emphasis + 'listing first occurrence:' + Colors.clear),
+                augmented_line
+            ]
+        else:
+            violation.lines[0] = augmented_line
 
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
-        tabs_found = text.count('\t')
+        tabs_found = text.count(NoTabs.TAB)
 
         if tabs_found > 0:
-            first_tab_index = text.find('\t')
+            first_tab_index = text.find(NoTabs.TAB)
 
             linenumber, column = RuleViolation.where(text, first_tab_index)
 
@@ -45,9 +53,12 @@ class NoTabs(Rule):
 
             offending_line = (linenumber, lines[linenumber - 1])
 
+            tabs_in_line = offending_line[1].count(NoTabs.TAB)
+
             offender = self.violate(at=(linenumber, column),
                                     lines=[offending_line],
-                                    meta={'count': tabs_found})
+                                    meta={'count': tabs_found,
+                                          'count_in_line': tabs_in_line})
 
             offenders.append(offender)
 

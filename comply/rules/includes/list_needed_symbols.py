@@ -14,13 +14,12 @@ class ListNeededSymbols(Rule):
                       description='Include statements should indicate which symbols are needed',
                       suggestion='Add a comment immediately after include statement, listing each needed symbol.')
 
-    def violate(self, at: (int, int), lines: list=list(), meta: dict=None):
+    def augment(self, violation: RuleViolation):
         # assume only one offending line
-        linenumber, line = lines[0]
+        linenumber, line = violation.lines[0]
 
-        line = line + Colors.good + ' // symbol_t, symbol_func_*' + Colors.clear
-
-        return super().violate(at, [(linenumber, line)], meta)
+        violation.lines[0] = (linenumber,
+                              line + Colors.good + ' // symbol_t, symbol_func_*' + Colors.clear)
 
     def collect(self, text: str, filename: str, extension: str):
         # match include statements and capture suffixed content, if any

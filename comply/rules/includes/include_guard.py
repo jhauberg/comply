@@ -11,12 +11,10 @@ class IncludeGuard(Rule):
                       description='Header files should define an include guard to prevent double inclusion',
                       suggestion='Wrap your header inside an include guard named "{0}".')
 
-    def solution(self, offender: RuleViolation=None):
-        sol = super().solution(offender)
+    def solution(self, violation: RuleViolation=None):
+        symbol = violation.meta['guard'] if 'guard' in violation.meta.keys() else '???'
 
-        symbol = offender.meta['guard'] if 'guard' in offender.meta.keys() else '???'
-
-        return sol.format(symbol)
+        return super().solution(violation).format(symbol)
 
     def collect(self, text: str, filename: str, extension: str):
         offenders = []

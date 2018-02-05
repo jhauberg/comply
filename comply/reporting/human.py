@@ -31,14 +31,17 @@ class HumanReporter(Reporter):
             results = []
 
             for violation in violations:
+                rule = violation.which
+                rule.augment(violation)
+
                 location = Colors.vague + '{0}:'.format(truncated_path) + Colors.clear
 
-                why = '{w}{0} {vague}[{1}]'.format(reason, violation.which.name,
+                why = '{w}{0} {vague}[{1}]'.format(reason, rule.name,
                                                    w=Colors.warn,
                                                    vague=Colors.vague)
                 why = why + Colors.clear
 
-                solution = violation.which.solution(violation)
+                solution = rule.solution(violation)
 
                 if len(violation.lines) > 0:
                     context = ''

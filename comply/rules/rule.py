@@ -11,7 +11,7 @@ class RuleViolation:
     """ A hint to indicate that a violation may occur more than once per file. """
     MANY_PER_FILE = 1
 
-    def __init__(self, which: 'Rule', where: (int, int), lines: list, meta: dict=None):
+    def __init__(self, which: 'Rule', where: (int, int), lines: List[Tuple[int, str]], meta: dict=None):
         self.which = which
         self.where = where
         self.lines = lines
@@ -22,7 +22,10 @@ class RuleViolation:
 
     @staticmethod
     def where(text: str, index: int, at_beginning: bool=False) -> (int, int):
-        """ Return the linenumber and column that a character index occurs in a text. """
+        """ Return the linenumber and column at which a character index occur in a text.
+
+            Column is set to 0 if at_beginning is True.
+        """
 
         line = text.count('\n', 0, index) + 1
 
@@ -45,35 +48,49 @@ class Rule:
     def __repr__(self):
         return '[{0}]'.format(self.name)
 
-    def reason(self, offender: RuleViolation=None):
-        """ Return a reason for a violation of this rule.
+    def reason(self, violation: RuleViolation=None):
+        """ Return a reason for why a given violation occurred.
 
-            Subclasses may override and provide specific formatting in relation to a rule violation.
+            Subclasses may override and provide specific formatting.
         """
 
         return self.description
 
-    def solution(self, offender: RuleViolation=None):
-        """ Return a solution for this rule.
+    def solution(self, violation: RuleViolation=None):
+        """ Return a solution for fixing a given violation.
 
-            Subclasses may override and provide specific formatting in relation to a rule violation.
+            Subclasses may override and provide specific formatting.
         """
 
         return self.suggestion
 
+    def augment(self, violation: RuleViolation):
+        """ Augment a violation to improve hints of its occurrence.
+
+            Subclasses may override and provide custom augments.
+        """
+
+        pass
+
     def violate(self, at: (int, int), lines: List[Tuple[int, str]]=list(), meta: dict=None) -> RuleViolation:
-        """ Return a rule offender originating from a chunk of text. """
+        """ Return a rule violation originating from a chunk of text. """
 
         return RuleViolation(self, at, lines, meta)
 
     def collect(self, text: str, filename: str, extension: str) -> List[RuleViolation]:
-        """ Analyze a given text and return a list of any found rule offenders. """
+        """ Analyze a given text and return a list of any found rule offenders.
+
+            Subclasses should override and provide rule-specific collection logic.
+        """
 
         return []
 
     @property
     def collection_hint(self) -> int:
-        """ Return a hint indicating how often this rule may be violated per file. """
+        """ Return a hint indicating how often this rule may be violated per file.
+
+            For example, some rule violations can only occur once per file; others more than once.
+        """
 
         return RuleViolation.MANY_PER_FILE
 

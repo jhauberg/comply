@@ -13,24 +13,24 @@ class LineTooLong(Rule):
 
     MAX = 80
 
-    def reason(self, offender: RuleViolation=None):
-        rep = super().reason(offender)
+    def reason(self, violation: RuleViolation=None):
+        rep = super().reason(violation)
 
-        length = offender.meta['length'] if 'length' in offender.meta.keys() else 0
+        length = violation.meta['length'] if 'length' in violation.meta.keys() else 0
 
         return rep.format(length, LineTooLong.MAX)
 
-    def violate(self, at: (int, int), lines: list=list(), meta: dict=None):
+    def augment(self, violation: RuleViolation):
         # insert cursor to indicate max line length
         insertion_index = LineTooLong.MAX
 
         # assume only one offending line
-        linenumber, line = lines[0]
+        linenumber, line = violation.lines[0]
 
-        line = (line[:insertion_index] + Colors.bad + '|' +
-                line[insertion_index:] + Colors.clear)
+        breaker_line = (line[:insertion_index] + Colors.bad + '|' +
+                        line[insertion_index:] + Colors.clear)
 
-        return super().violate(at, [(linenumber, line)], meta)
+        violation.lines[0] = (linenumber, breaker_line)
 
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
@@ -66,6 +66,8 @@ class LineTooLong(Rule):
 
 
 def without_trailing_newline(text: str) -> str:
+    """ Return new text by removing any trailing newline. """
+
     if text.endswith('\r\n'):
         return text[:-2]
 

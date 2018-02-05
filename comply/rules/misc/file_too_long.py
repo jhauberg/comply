@@ -13,24 +13,23 @@ class FileTooLong(Rule):
 
     MAX = 600
 
-    def reason(self, offender: RuleViolation=None):
-        rep = super().reason(offender)
+    def reason(self, violation: RuleViolation=None):
+        rep = super().reason(violation)
 
-        length = offender.meta['length'] if 'length' in offender.meta.keys() else 0
+        length = violation.meta['length'] if 'length' in violation.meta.keys() else 0
 
         return rep.format(length, FileTooLong.MAX)
 
-    def violate(self, at: (int, int), lines: list=list(), meta: dict=None):
-        breaker_linenumber, breaker_line = lines[1]
+    def augment(self, violation: RuleViolation):
+        # assume offending line is the second one
+        breaker_linenumber, breaker_line = violation.lines[1]
+        # add breaker just above offending line
+        violation.lines.insert(1, (breaker_linenumber, '---'))
 
-        lines.insert(1, (breaker_linenumber, '---'))
-
-        for i, (linenumber, line) in enumerate(lines):
+        for i, (linenumber, line) in enumerate(violation.lines):
             if i > 0:
                 # mark breaker and everything below it
-                lines[i] = (linenumber, Colors.bad + line + Colors.clear)
-
-        return super().violate(at, lines, meta)
+                violation.lines[i] = (linenumber, Colors.bad + line + Colors.clear)
 
     def collect(self, text: str, filename: str, extension: str):
         offenders = []

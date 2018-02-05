@@ -14,20 +14,16 @@ class NoHeadersHeader(Rule):
                       description='Header files should not include any other headers',
                       suggestion='Replace \'{0}\' with a forward-declaration for each needed type.')
 
-    def solution(self, offender: RuleViolation=None):
-        sol = super().solution(offender)
+    def solution(self, violation: RuleViolation=None):
+        inclusion = violation.meta['inclusion'] if 'inclusion' in violation.meta.keys() else '???'
 
-        inclusion = offender.meta['inclusion'] if 'inclusion' in offender.meta.keys() else '???'
+        return super().solution(violation).format(inclusion)
 
-        return sol.format(inclusion)
-
-    def violate(self, at: (int, int), lines: list=list(), meta: dict=None):
+    def augment(self, violation: RuleViolation):
         # assume only one offending line
-        linenumber, line = lines[0]
+        linenumber, line = violation.lines[0]
 
-        line = Colors.bad + line + Colors.clear
-
-        return super().violate(at, [(linenumber, line)], meta)
+        violation.lines[0] = (linenumber, Colors.bad + line + Colors.clear)
 
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
