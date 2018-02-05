@@ -4,6 +4,8 @@ import re
 
 from comply.rules import Rule, RuleViolation
 
+from comply.printing import Colors
+
 
 class IncludeGuard(Rule):
     def __init__(self):
@@ -12,9 +14,19 @@ class IncludeGuard(Rule):
                       suggestion='Wrap your header inside an include guard named "{0}".')
 
     def solution(self, violation: RuleViolation=None):
-        symbol = violation.meta['guard'] if 'guard' in violation.meta else '???'
+        guard = violation.meta['guard'] if 'guard' in violation.meta else '???'
 
-        return super().solution(violation).format(symbol)
+        return super().solution(violation).format(guard)
+
+    def augment(self, violation: RuleViolation):
+        guard = violation.meta['guard'] if 'guard' in violation.meta else '???'
+
+        violation.lines = [
+            (0, Colors.good + '#ifndef {0}'.format(guard) + Colors.clear),
+            (1, Colors.good + '#define {0}'.format(guard) + Colors.clear),
+            (2, '...'),
+            (3, Colors.good + '#endif' + Colors.clear)
+        ]
 
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
