@@ -2,28 +2,26 @@
 
 import re
 
-from comply.rule import Rule, RuleViolation
-from comply.util import truncated
+from comply.rules import Rule, RuleViolation
 
 from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
+from comply.printing import Colors
 
 
 class ListNeededSymbols(Rule):
     def __init__(self):
         Rule.__init__(self, name='list-needed-symbols',
-                      description='Include statements should indicate which symbols are needed.',
-                      suggestion='Add a comment immediately after include statement, listing each needed symbol. '
-                                 'Example: "#include <header.h> // symb_t"')
+                      description='Include statements should indicate which symbols are needed',
+                      suggestion='Add a comment immediately after include statement, listing each needed symbol.')
 
-    def violate(self, at: (int, int), offending_text: str, meta: dict=None) -> RuleViolation:
-        if self.strips_violating_text:
-            offending_text = offending_text.strip()
+    def augment(self, violation: RuleViolation):
+        # assume only one offending line
+        linenumber, line = violation.lines[0]
 
-        what = '\'{0}\''.format(truncated(offending_text))
+        violation.lines[0] = (linenumber,
+                              line + Colors.good + ' // symbol_t, symbol_func_*' + Colors.clear)
 
-        return super().violate(at, what, meta)
-
-    def collect(self, text: str, filename: str, extension: str) -> list:
+    def collect(self, text: str, filename: str, extension: str):
         # match include statements and capture suffixed content, if any
         pattern = INCLUDE_STMT_PATTERN + r'(.*)'
 
@@ -35,10 +33,12 @@ class ListNeededSymbols(Rule):
             if not is_symbol_list(suffix):
                 offending_index = inclusion.start()
 
-                where = RuleViolation.where(text, offending_index, at_beginning=True)
+                linenumber, column = RuleViolation.where(text, offending_index, at_beginning=True)
 
-                offender = self.violate(at=where,
-                                        offending_text=inclusion.group(0))
+                offending_line = (linenumber, inclusion.group(0))
+
+                offender = self.violate(at=(linenumber, column),
+                                        lines=[offending_line])
 
                 offenders.append(offender)
 

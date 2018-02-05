@@ -1,34 +1,36 @@
 # coding=utf-8
 
-from comply.rule import Rule, RuleViolation
-from comply.util import truncated
+from comply.rules import Rule, RuleViolation
+
+from comply.printing import Colors
 
 
 class FileTooLong(Rule):
     def __init__(self):
         Rule.__init__(self, name='file-too-long',
-                      description='File has too many lines ({0} > {1}).',
+                      description='File has too many lines ({0} > {1})',
                       suggestion='Consider refactoring and splitting to separate units.')
 
     MAX = 600
 
-    def reason(self, offender: 'RuleViolation'=None):
-        rep = super().reason(offender)
+    def reason(self, violation: RuleViolation=None):
+        length = violation.meta['length'] if 'length' in violation.meta else 0
 
-        length = offender.meta['length'] if 'length' in offender.meta.keys() else 0
+        return super().reason(violation).format(
+            length, FileTooLong.MAX)
 
-        return rep.format(length, FileTooLong.MAX)
+    def augment(self, violation: RuleViolation):
+        # assume offending line is the second one
+        breaker_linenumber, breaker_line = violation.lines[1]
+        # add breaker just above offending line
+        violation.lines.insert(1, (breaker_linenumber, '---'))
 
-    def violate(self, at: (int, int), offending_text: str, meta: dict=None) -> RuleViolation:
-        if self.strips_violating_text:
-            offending_text = offending_text.strip()
+        for i, (linenumber, line) in enumerate(violation.lines):
+            if i > 0:
+                # mark breaker and everything below it
+                violation.lines[i] = (linenumber, Colors.bad + line + Colors.clear)
 
-        if len(offending_text) > 0:
-            offending_text = '\'{0}\''.format(truncated(offending_text))
-
-        return super().violate(at, offending_text, meta)
-
-    def collect(self, text: str, filename: str, extension: str) -> list:
+    def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
         length = text.count('\n')
@@ -36,11 +38,16 @@ class FileTooLong(Rule):
         if length > FileTooLong.MAX:
             lines = text.splitlines()  # without newlines
 
-            offending_line_index = len(lines) - 1
-            offending_line = lines[offending_line_index]
+            offending_line_index = FileTooLong.MAX
+
+            assert len(lines) > offending_line_index + 1
+
+            offending_lines = [(offending_line_index, lines[offending_line_index - 1]),
+                               (offending_line_index + 1, lines[offending_line_index]),
+                               (offending_line_index + 2, lines[offending_line_index + 1])]
 
             offender = self.violate(at=(offending_line_index + 1, 0),
-                                    offending_text=offending_line,
+                                    lines=offending_lines,
                                     meta={'length': length})
 
             offenders.append(offender)

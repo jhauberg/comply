@@ -1,43 +1,37 @@
 # coding=utf-8
 
-from comply.rule import Rule, RuleViolation
-from comply.util import truncated, Ellipsize
+from comply.rules import Rule, RuleViolation
+
+from comply.printing import Colors
 
 
 class LineTooLong(Rule):
     def __init__(self):
         Rule.__init__(self, name='line-too-long',
-                      description='Line is too long ({0} > {1}).',
+                      description='Line is too long ({0} > {1})',
                       suggestion='Use shorter names or split statements to multiple lines.')
 
     MAX = 80
 
-    def reason(self, offender: 'RuleViolation'=None):
-        rep = super().reason(offender)
+    def reason(self, violation: RuleViolation=None):
+        length = violation.meta['length'] if 'length' in violation.meta else 0
 
-        length = offender.meta['length'] if 'length' in offender.meta.keys() else 0
+        return super().reason(violation).format(
+            length, LineTooLong.MAX)
 
-        return rep.format(length, LineTooLong.MAX)
-
-    def violate(self, at: (int, int), offending_text: str, meta: dict=None) -> RuleViolation:
+    def augment(self, violation: RuleViolation):
         # insert cursor to indicate max line length
         insertion_index = LineTooLong.MAX
 
-        line = (offending_text[:insertion_index] + '|' +
-                offending_text[insertion_index:])
+        # assume only one offending line
+        linenumber, line = violation.lines[0]
 
-        # remove any trailing newlines to keep neat prints
-        line = without_trailing_newline(line)
+        breaker_line = (line[:insertion_index] + Colors.bad + '|' +
+                        line[insertion_index:] + Colors.clear)
 
-        if self.strips_violating_text:
-            line = line.strip()
+        violation.lines[0] = (linenumber, breaker_line)
 
-        what = '\'{0}\''.format(
-            truncated(line, options=Ellipsize.options(at=Ellipsize.ends, index=insertion_index)))
-
-        return super().violate(at, what, meta)
-
-    def collect(self, text: str, filename: str, extension: str) -> list:
+    def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
         index = 0
@@ -50,8 +44,17 @@ class LineTooLong(Rule):
             if characters_except_newline > LineTooLong.MAX:
                 offending_index = index + LineTooLong.MAX
 
-                offender = self.violate(at=RuleViolation.where(text, offending_index),
-                                        offending_text=line,
+                linenumber, column = RuleViolation.where(text, offending_index)
+
+                assert column > LineTooLong.MAX
+
+                # remove any trailing newlines to keep neat prints
+                line = without_trailing_newline(line)
+
+                offending_line = (linenumber, line)
+
+                offender = self.violate(at=(linenumber, column),
+                                        lines=[offending_line],
                                         meta={'length': characters_except_newline})
 
                 offenders.append(offender)
@@ -62,6 +65,8 @@ class LineTooLong(Rule):
 
 
 def without_trailing_newline(text: str) -> str:
+    """ Return new text by removing any trailing newline. """
+
     if text.endswith('\r\n'):
         return text[:-2]
 

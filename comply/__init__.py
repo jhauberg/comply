@@ -1,7 +1,8 @@
 # coding=utf-8
 
 import sys
-import os
+
+from comply.printing import printdiag
 
 VERSION_PATTERN = r'^__version__ = [\'"]([^\'"]*)[\'"]'
 
@@ -13,10 +14,8 @@ def is_compatible() -> bool:
     return True
 
 
-def supports_unicode() -> bool:
-    if os.name == 'nt':
-        # disable unicode stuff when running on Windows
-        # https://www.python.org/dev/peps/pep-0528/
-        return False
+def exit_if_not_compatible():
+    if not is_compatible():
+        printdiag('Python 3.5 or newer required', apply_prefix=True)
 
-    return True
+        sys.exit(1)

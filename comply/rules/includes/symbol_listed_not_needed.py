@@ -2,43 +2,43 @@
 
 import re
 
-from comply.rule import Rule, RuleViolation
-from comply.util import truncated, Ellipsize
+from comply.rules import Rule, RuleViolation
 
 from comply.rules.includes.list_needed_symbols import is_symbol_list
 from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
+
+from comply.printing import Colors
 
 
 class SymbolListedNotNeeded(Rule):
     def __init__(self):
         Rule.__init__(self, name='symbol-listed-not-needed',
-                      description='Unused symbol \'{0}\' should not be listed as needed.',
+                      description='Unused symbol \'{0}\' should not be listed as needed',
                       suggestion='Remove symbol \'{0}\' from list.')
 
-    def reason(self, offender: 'RuleViolation'=None):
-        rep = super().reason(offender)
+    def reason(self, violation: RuleViolation=None):
+        symbol = violation.meta['symbol'] if 'symbol' in violation.meta else '???'
 
-        symbol = offender.meta['symbol'] if 'symbol' in offender.meta.keys() else '???'
+        return super().reason(violation).format(symbol)
 
-        return rep.format(symbol)
+    def solution(self, violation: RuleViolation=None):
+        symbol = violation.meta['symbol'] if 'symbol' in violation.meta else '???'
 
-    def solution(self, offender: 'RuleViolation'=None):
-        sol = super().solution(offender)
+        return super().solution(violation).format(symbol)
 
-        symbol = offender.meta['symbol'] if 'symbol' in offender.meta.keys() else '???'
+    def augment(self, violation: RuleViolation):
+        from_index, to_index = violation.meta['range'] if 'range' in violation.meta else (0, 0)
 
-        return sol.format(symbol)
+        # assume only one offending line
+        linenumber, line = violation.lines[0]
 
-    def violate(self, at: (int, int), offending_text: str, meta: dict=None) -> RuleViolation:
-        if self.strips_violating_text:
-            offending_text = offending_text.strip()
+        augmented_line = (line[:from_index] +
+                          Colors.bad + line[from_index:to_index] + Colors.clear +
+                          line[to_index:])
 
-        what = '\'{0}\'' \
-            .format(truncated(offending_text, options=Ellipsize.options(at=Ellipsize.start)))
+        violation.lines[0] = (linenumber, augmented_line)
 
-        return super().violate(at, what, meta)
-
-    def collect(self, text: str, filename: str, extension: str) -> list:
+    def collect(self, text: str, filename: str, extension: str):
         # match include statements and capture suffixed content, if any
         pattern = INCLUDE_STMT_PATTERN + r'(.*)'
 
@@ -59,9 +59,16 @@ class SymbolListedNotNeeded(Rule):
                     if not has_symbol_usage(symbol, text_after_usage):
                         offending_index = text.index(symbol, inclusion.start(1), inclusion.end())
 
-                        offender = self.violate(at=RuleViolation.where(text, offending_index),
-                                                offending_text=inclusion.group(0),
-                                                meta={'symbol': symbol})
+                        linenumber, column = RuleViolation.where(text, offending_index)
+
+                        line = inclusion.group(0)
+
+                        offending_line = (linenumber, line)
+
+                        offender = self.violate(at=(linenumber, column),
+                                                lines=[offending_line],
+                                                meta={'symbol': symbol,
+                                                      'range': (column - 1, column - 1 + len(symbol))})
 
                         offenders.append(offender)
 

@@ -45,7 +45,7 @@
       
       <footer>
         <p>
-          Rules are based on <strong><a href="https://github.com/jhauberg/comply/releases/tag/0.4.2">comply 0.4.2</a></strong> and was last edited on <strong>January 30th 2018</strong>
+          Rules are based on <strong><a href="https://github.com/jhauberg/comply/releases/tag/0.5.0">comply 0.5.0</a></strong> and was last edited on <strong>February 5th 2018</strong>
         </p>
       </footer>
     </section>
@@ -210,6 +210,23 @@ struct attr_t;
             <td><p><tt>file-too-long</tt></p></td>
             <td><p>Requires files to not exceed 600 lines.</p></td>
             <td><p class="reasoning">Files that are very long can be difficult to comprehend and may indicate that the complexity of the code is too high.<p/><p class="reasoning">Considerations should be made whether code can be refactored or split up into smaller units.</p></td>
+          </tr>
+          <tr>
+            <td><p><tt>no-tabs</tt></p></td>
+            <td><p>Requires that files contain no tabs.</p></td>
+            <td><p class="reasoning">Similar to the reasoning behind <tt>line-too-long</tt>, tabs can have varying amount of indentation and will cause inconsistent line lengths depending on the viewer.</p>
+              <div class="references"><p><strong>References:</strong></p>
+                <ul class="indent">
+                  <li>Malcolm Inglis: <a href="https://github.com/mcinglis/c-style#we-cant-get-tabs-right-so-use-spaces-everywhere"><em>c-style</em></a></li>
+              </ul>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><p><tt>no-invisibles</tt></p></td>
+            <td><p>Requires that files contain no invisible characters.</p></td>
+            <td><p class="reasoning">Invisible characters serve no purpose unless escaped and used as a literal.</p>
+            </td>
           </tr>
         </tbody>
       </table>

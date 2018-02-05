@@ -158,7 +158,7 @@ In Xcode, add a new *Run Script Phase*. Copy and paste below snippet into the sc
 ```shell
 export PYTHONIOENCODING=UTF-8
 
-<executable> "${SRCROOT}" --reporter=clang
+<executable> "${SRCROOT}" --reporter=oneline
 ```
 
 For example, this would become:
@@ -166,7 +166,7 @@ For example, this would become:
 ```shell
 export PYTHONIOENCODING=UTF-8
 
-/Library/Frameworks/Python.framework/Versions/3.6/bin/comply "${SRCROOT}" --reporter=clang
+/Library/Frameworks/Python.framework/Versions/3.6/bin/comply "${SRCROOT}" --reporter=oneline
 ```
 
 **2) Using script sources directly**
@@ -178,12 +178,12 @@ Just point to the [run.py](run.py) script instead of the installed executable:
 ```shell
 export PYTHONIOENCODING=UTF-8
 
-python path/to/comply/run.py "${SRCROOT}" --reporter=clang
+python path/to/comply/run.py "${SRCROOT}" --reporter=oneline
 ```
 
 Now, every time you build, `comply` should be run on every file and directory within the root of your project. 
 
-You can change or add arguments as you like, but `--reporter=clang` is required for violations to be displayed.
+You can change or add arguments as you like, but `--reporter=oneline` is required for violations to be displayed.
 
 ### Full usage
 
@@ -191,12 +191,17 @@ You can change or add arguments as you like, but `--reporter=clang` is required 
 Make your C follow the rules
 
 Usage:
-  comply <input>... [--reporter=<name>]
+  comply <input>... [--reporter=<name>] [--check=<rule>]... [--except=<rule>]...
+                    [--verbose] [--strict]
   comply -h | --help
   comply --version
 
 Options:
-  -r --reporter=<name>    Specify type of reported output [default: standard]
+  -r --reporter=<name>    Specify type of reported output [default: human]
+  -c --check=<rule>       Only run checks for a specific rule
+  -e --except=<rule>      Don't run checks for a specific rule
+  -s --strict             Show all violations (similar violations not suppressed)
+  -v --verbose            Show diagnostic messages
   -h --help               Show program help
   --version               Show program version
 ```
