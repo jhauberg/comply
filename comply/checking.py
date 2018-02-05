@@ -2,10 +2,15 @@
 
 import os
 
+from typing import List
+
 from comply.reporting import Reporter
+from comply.rules import Rule, RuleViolation
 
 
 class CheckResult:
+    """ Represents the result of running a check on one or more files. """
+
     def __init__(self,
                  files: int=0,
                  files_with_violations: int=0,
@@ -28,8 +33,8 @@ def supported_file_types() -> tuple:
     return '.h', '.c'
 
 
-def check(path: str, rules: list, reporter: Reporter) -> (CheckResult, bool):
-    """ Run a rules check on the file found at path, if any.
+def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, bool):
+    """ Run a check on the file found at path, if any.
 
         If the path points to a directory, a check is run on each subsequent filepath.
 
@@ -102,11 +107,14 @@ def check(path: str, rules: list, reporter: Reporter) -> (CheckResult, bool):
     return result, True
 
 
-def collect(text: str, filename: str, extension: str, rules: list) -> list:
+def collect(text: str, filename: str, extension: str, rules: List[Rule]) -> List[RuleViolation]:
+    """ Return a list of all collected violations in a text. """
+
     violations = []
 
     for rule in rules:
         offenders = rule.collect(text, filename, extension)
+
         violations.extend(offenders)
 
     return violations
