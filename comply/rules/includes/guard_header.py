@@ -7,9 +7,9 @@ from comply.rules import Rule, RuleViolation
 from comply.printing import Colors
 
 
-class IncludeGuard(Rule):
+class GuardHeader(Rule):
     def __init__(self):
-        Rule.__init__(self, name='include-guard',
+        Rule.__init__(self, name='guard-header',
                       description='Header files should define an include guard to prevent double inclusion',
                       suggestion='Wrap your header inside an include guard named "{0}".')
 

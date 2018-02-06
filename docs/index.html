@@ -113,7 +113,7 @@
             </td>
           </tr>
           <tr>
-            <td><p id="no-headers-header"><tt>no-headers-header</tt></p></td>
+            <td><p id="no-headers-in-header"><tt>no-headers-in-header</tt></p></td>
             <td><p>Requires that header files do not include any other headers.</p>
               <details>
                 <summary><strong>Read more</strong></summary>
@@ -150,7 +150,7 @@ struct attr_t;
             </td>
           </tr>
           <tr>
-            <td><p><tt>include-guard</tt></p></td>
+            <td><p><tt>guard-header</tt></p></td>
             <td><p>Requires that the contents of headers be wrapped in <em>include guards</em> named identically to the filename of the header.</p>
               <details>
                 <summary><strong>Read more</strong></summary>
@@ -172,7 +172,7 @@ struct attr_t;
                 </code>
               </pre>
               <p>
-                <em>Fully implementing and strictly enforcing <a href="#no-headers-header"><tt>no-headers-header</tt></a> actually makes this rule unnecessary.</em></p><p><em>Regardless, it is still advised to enforce it as a precaution against unruly includers.</em></p>
+                <em>Fully implementing and strictly enforcing <a href="#no-headers-in-header"><tt>no-headers-in-header</tt></a> actually makes this rule unnecessary.</em></p><p><em>Regardless, it is still advised to enforce it as a precaution against unruly includers.</em></p>
               </details>
             </td>
             <td><p class="reasoning">Helps prevent double inclusion errors.</p></td>

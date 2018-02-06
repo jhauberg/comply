@@ -8,9 +8,9 @@ from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
 from comply.printing import Colors
 
 
-class NoHeadersHeader(Rule):
+class NoHeadersInHeader(Rule):
     def __init__(self):
-        Rule.__init__(self, name='no-headers-header',
+        Rule.__init__(self, name='no-headers-in-header',
                       description='Header files should not include any other headers',
                       suggestion='Replace \'{0}\' with a forward-declaration for each needed type.')
 
