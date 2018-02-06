@@ -92,6 +92,7 @@ def make_rules(names: list, exceptions: list) -> list:
         includes.SymbolNeededNotListed(),
         includes.IncludeGuard(),
         includes.NoHeadersHeader(),
+        misc.NoConsecutiveBlanks(),
         misc.NoTabs(),
         misc.NoInvisibles(),
         misc.LineTooLong(),
