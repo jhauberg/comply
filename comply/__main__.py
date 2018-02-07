@@ -39,7 +39,6 @@ from comply.rules import *
 
 def check_for_update():
     """ Determine whether a newer version is available remotely. """
-
     from urllib.request import urlopen
     from urllib.error import URLError, HTTPError
 
@@ -59,8 +58,8 @@ def check_for_update():
                 remote_version_identifier = matches.group(1)
 
                 if parse_version(__version__) < parse_version(remote_version_identifier):
-                    printdiag('A newer version is available ({0} > {1})'
-                              .format(remote_version_identifier, __version__))
+                    printdiag('A newer version is available ({0})'.format(
+                        remote_version_identifier))
     except HTTPError:
         # fail silently
         pass
@@ -92,6 +91,7 @@ def make_rules(names: list, exceptions: list) -> list:
         includes.SymbolNeededNotListed(),
         includes.GuardHeader(),
         includes.NoHeadersInHeader(),
+        functions.NoRedundantConst(),
         misc.NoConsecutiveBlanks(),
         misc.NoTabs(),
         misc.NoInvisibles(),

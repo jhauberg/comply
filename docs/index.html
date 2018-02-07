@@ -26,6 +26,7 @@
           <div class="jump-list-title">Jump to:</div>
           <ul class="indent jump-list">
             <li><a href="#include-statements">Include statements</a></li>
+            <li><a href="#functions">Functions</a></li>
             <li><a href="#misc">Miscellaneous</a></li>
           </ul>
         </div>
@@ -176,6 +177,31 @@ struct attr_t;
               </details>
             </td>
             <td><p class="reasoning">Helps prevent double inclusion errors.</p></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2 id="misc">Functions</h2>
+      <p>
+        Rules related to functions; including prototypes and implementations.
+      </p>
+      <table class="rules">
+        <thead>
+          <tr>
+            <th>Name</a></th>
+            <th>Description</th>
+            <th>Why is this important?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><p><tt>no-redundant-const</tt></p></td>
+            <td><p>Parameter names in function prototypes should not be marked const as that is an implementation detail.</p>
+            todo: read more examples</td>
+            <td><p class="reasoning">A parameter name might be marked as const in its function prototype, but an implementation does <em>not</em> have to make it so.</p>
+            </td>
           </tr>
         </tbody>
       </table>

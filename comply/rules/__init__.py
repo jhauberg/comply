@@ -6,5 +6,6 @@ __all__ = [
     "Rule",
     "RuleViolation",
     "includes",
+    "functions",
     "misc"
 ]

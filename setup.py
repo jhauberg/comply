@@ -59,6 +59,7 @@ setup(
               'comply.reporting',
               'comply.rules',
               'comply.rules.includes',
+              'comply.rules.functions',
               'comply.rules.misc'],
     include_package_data=True,
     platforms='any',
