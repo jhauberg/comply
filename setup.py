@@ -58,6 +58,7 @@ setup(
               'comply.util',
               'comply.reporting',
               'comply.rules',
+              'comply.rules.comments',
               'comply.rules.includes',
               'comply.rules.functions',
               'comply.rules.misc'],
