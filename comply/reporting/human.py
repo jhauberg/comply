@@ -32,6 +32,7 @@ class HumanReporter(Reporter):
 
             for violation in violations:
                 rule = violation.which
+
                 rule.augment(violation)
 
                 location = Colors.vague + '{0}:'.format(truncated_path) + Colors.clear

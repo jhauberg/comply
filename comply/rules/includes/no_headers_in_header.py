@@ -4,7 +4,7 @@ import re
 
 from comply.rules import Rule, RuleViolation
 
-from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
+from comply.rules.includes.pattern import INCLUDE_PATTERN
 from comply.printing import Colors
 
 
@@ -31,7 +31,7 @@ class NoHeadersInHeader(Rule):
         if '.h' not in extension:
             return offenders
 
-        pattern = INCLUDE_STMT_PATTERN
+        pattern = INCLUDE_PATTERN
 
         inclusion = re.search(pattern, text)
 

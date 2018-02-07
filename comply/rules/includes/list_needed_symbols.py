@@ -4,7 +4,7 @@ import re
 
 from comply.rules import Rule, RuleViolation
 
-from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
+from comply.rules.includes.pattern import INCLUDE_PATTERN
 from comply.printing import Colors
 
 
@@ -23,7 +23,7 @@ class ListNeededSymbols(Rule):
 
     def collect(self, text: str, filename: str, extension: str):
         # match include statements and capture suffixed content, if any
-        pattern = INCLUDE_STMT_PATTERN + r'(.*)'
+        pattern = INCLUDE_PATTERN + r'(.*)'
 
         offenders = []
 
