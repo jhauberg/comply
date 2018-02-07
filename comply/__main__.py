@@ -92,7 +92,7 @@ def make_rules(names: list, exceptions: list) -> list:
         includes.GuardHeader(),
         includes.NoHeadersInHeader(),
         functions.NoRedundantConst(),
-        misc.NoConsecutiveBlanks(),
+        misc.TooManyBlanks(),
         misc.NoTabs(),
         misc.NoInvisibles(),
         misc.LineTooLong(),

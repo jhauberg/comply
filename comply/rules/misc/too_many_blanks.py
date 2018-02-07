@@ -5,11 +5,14 @@ from comply.rules import Rule, RuleViolation
 from comply.printing import Colors
 
 
-class NoConsecutiveBlanks(Rule):
+class TooManyBlanks(Rule):
     def __init__(self):
-        Rule.__init__(self, name='no-consecutive-blanks',
+        Rule.__init__(self, name='too-many-blanks',
                       description='Too many consecutive blank lines ({0} > {1})',
-                      suggestion='Remove excess blank lines.')
+                      suggestion='Remove excess blank lines.',
+                      # prefer original un-modified text so we can provide correct context snippets
+                      # (as opposed to a text stripped of block comments and similar)
+                      expects_original_text=True)
 
     MAX = 1
 
@@ -17,7 +20,7 @@ class NoConsecutiveBlanks(Rule):
         count = violation.meta['count'] if 'count' in violation.meta else 0
 
         return super().reason(violation).format(
-            count, NoConsecutiveBlanks.MAX)
+            count, TooManyBlanks.MAX)
 
     def augment(self, violation: RuleViolation):
         for i, (linenumber, line) in enumerate(violation.lines):
@@ -54,7 +57,7 @@ class NoConsecutiveBlanks(Rule):
             if not line.strip():
                 consecutive_blanks += 1
             else:
-                if consecutive_blanks > NoConsecutiveBlanks.MAX:
+                if consecutive_blanks > TooManyBlanks.MAX:
                     trigger(at=(line_index + 1, 0),
                             lines=previous_lines(lines, line_index, consecutive_blanks),
                             count=consecutive_blanks)
@@ -63,7 +66,7 @@ class NoConsecutiveBlanks(Rule):
 
             line_index += 1
 
-        if consecutive_blanks > NoConsecutiveBlanks.MAX:
+        if consecutive_blanks > TooManyBlanks.MAX:
             trigger(at=(line_index, 0),  # EOF
                     lines=previous_lines(lines, line_index, consecutive_blanks),
                     count=consecutive_blanks)
