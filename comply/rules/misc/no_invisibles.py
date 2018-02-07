@@ -9,7 +9,8 @@ class NoInvisibles(Rule):
     def __init__(self):
         Rule.__init__(self, name='no-invisibles',
                       description='Avoid invisible characters (found {0})',
-                      suggestion='Delete each occurence or replace with a space.')
+                      suggestion='Delete each occurence or replace with a space.',
+                      expects_original_text=True)
 
     INVISIBLES = ['\u200b', '\u200c', '\u200d',
                   '\uFEFF']

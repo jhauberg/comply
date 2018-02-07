@@ -40,10 +40,11 @@ class RuleViolation:
 class Rule:
     """ Represents a single rule. """
 
-    def __init__(self, name: str, description: str, suggestion: str=None):
+    def __init__(self, name: str, description: str, suggestion: str=None, expects_original_text: bool=False):
         self.name = name
         self.description = description
         self.suggestion = suggestion
+        self.expects_original_text = expects_original_text
 
     def __repr__(self):
         return '[{0}]'.format(self.name)

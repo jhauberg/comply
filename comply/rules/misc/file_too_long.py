@@ -9,7 +9,8 @@ class FileTooLong(Rule):
     def __init__(self):
         Rule.__init__(self, name='file-too-long',
                       description='File has too many lines ({0} > {1})',
-                      suggestion='Consider refactoring and splitting to separate units.')
+                      suggestion='Consider refactoring and splitting to separate units.',
+                      expects_original_text=True)
 
     MAX = 600
 
