@@ -10,3 +10,6 @@ FUNC_IMPL_PATTERN = FUNC_PATTERN + r'(?=\s*{)'
 # match both
 FUNC_BOTH_PATTERN = FUNC_PATTERN + r'(?=\s*(?:;|{))'
 
+# match function bodies (except collapsed bodies, e.g.: '{}')
+# note: this pattern will match the inner-most bodies
+FUNC_BODY_PATTERN = r'{([^{}]+)}'
