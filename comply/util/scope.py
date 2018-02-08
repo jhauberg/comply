@@ -2,7 +2,10 @@
 
 
 def depth(index: int, text: str):
-    """ Determine scope depth at a character index. """
+    """ Determine depth of scope at a character index.
+
+        Return 0 if not inside any scope.
+    """
 
     depth_count = 0
 
