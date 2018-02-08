@@ -86,11 +86,11 @@ def make_rules(names: list, exceptions: list) -> list:
     """ Return a list of rules to run checks on. """
 
     rules = [
+        headers.GuardHeader(),
+        headers.NoHeadersInHeader(),
         includes.ListNeededSymbols(),
         includes.SymbolListedNotNeeded(),
         includes.SymbolNeededNotListed(),
-        includes.GuardHeader(),
-        includes.NoHeadersInHeader(),
         functions.NoRedundantConst(),
         functions.TooManyParams(),
         misc.TooManyBlanks(),

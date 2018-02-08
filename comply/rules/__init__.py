@@ -7,5 +7,7 @@ __all__ = [
     "RuleViolation",
     "includes",
     "functions",
+    "comments",
+    "headers",
     "misc"
 ]
