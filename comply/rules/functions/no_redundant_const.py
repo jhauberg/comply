@@ -5,6 +5,7 @@
 import re
 
 from comply.rules import Rule, RuleViolation
+from comply.rules.functions.pattern import FUNC_PROT_PATTERN
 
 from comply.printing import Colors
 
@@ -34,8 +35,11 @@ class NoRedundantConst(Rule):
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
-        pattern = r'\w*?\s*?\((?P<params>[^!@#$+%^{};]+?)\)(?=\s*?;)'
-        pattern_inside = r'\b(const)\b\s*?\w*?(?:\s*?[,)]|$)'
+
+        # match prototypes
+        pattern = FUNC_PROT_PATTERN
+        # match redundant const qualifiers for a list of arguments (e.g. <params>)
+        pattern_const = r'\b(const)\b\s*\w*(?:\s*[,)]|$)'
 
         for function_match in re.finditer(pattern, text):
             function_parameters = function_match.group('params')
@@ -43,7 +47,7 @@ class NoRedundantConst(Rule):
 
             function_linenumber, function_column = RuleViolation.where(text, function_match.start())
 
-            for redundant_const_match in re.finditer(pattern_inside, function_parameters):
+            for redundant_const_match in re.finditer(pattern_const, function_parameters):
                 const_start, const_end = (redundant_const_match.start(1),
                                           redundant_const_match.end(1))
 
