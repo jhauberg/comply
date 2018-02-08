@@ -52,12 +52,19 @@ class TooManyParams(Rule):
 
         pattern = FUNC_IMPL_PATTERN if self.only_checks_implementation else FUNC_BOTH_PATTERN
 
-        for function_match in re.finditer(pattern, text):
+        from comply.util.stripping import strip_function_bodies
+
+        # weed out potential false-positives by stripping the bodies of function implementations
+        # outer most functions will remain as a collapsed body
+        text_without_bodies = strip_function_bodies(text)
+
+        for function_match in re.finditer(pattern, text_without_bodies):
             function_name = function_match.group('name')
             function_parameters = function_match.group('params')
             function_result = function_match.group(0)
 
-            function_linenumber, function_column = RuleViolation.where(text, function_match.start())
+            function_linenumber, function_column = RuleViolation.where(text_without_bodies,
+                                                                       function_match.start())
 
             number_of_params = len(function_parameters.split(','))
 
