@@ -1,0 +1,106 @@
+# coding=utf-8
+
+import re
+
+from comply.rules import Rule, RuleViolation
+from comply.rules.functions.pattern import FUNC_IMPL_PATTERN
+
+from comply.util.scope import depth
+
+from comply.printing import Colors
+
+
+class FunctionTooLong(Rule):
+    def __init__(self):
+        Rule.__init__(self, name='func-too-long',
+                      description='Function is too long ({0} > {1})',
+                      suggestion='This function may be too complex. Consider refactoring.')
+
+    MAX = 40
+
+    def reason(self, violation: RuleViolation=None):
+        length = violation.meta['length'] if 'length' in violation.meta else 0
+
+        return super().reason(violation).format(
+            length, FunctionTooLong.MAX)
+
+    def augment(self, violation: RuleViolation):
+        name = violation.meta['func'] if 'func' in violation.meta else '<unknown>'
+        line_number = violation.meta['line'] if 'line' in violation.meta else 0
+
+        # assume offending line is the second one
+        breaker_linenumber, breaker_line = violation.lines[1]
+        # add breaker just above offending line
+        violation.lines.insert(1, (breaker_linenumber, '---'))
+
+        for i, (linenumber, line) in enumerate(violation.lines):
+            if i > 0:
+                # mark breaker and everything below it
+                violation.lines[i] = (linenumber, Colors.bad + line + Colors.clear)
+
+        info_line = (Colors.emphasis +
+                     '(in {0}(..) starting at line {1})'.format(name, line_number) +
+                     Colors.clear)
+
+        violation.lines.insert(0, (None, info_line))
+
+    def collect(self, text: str, filename: str, extension: str):
+        offenders = []
+
+        def check_func_body(body: str, name: str, line_number: int):
+            length = body.count('\n')
+
+            if length > FunctionTooLong.MAX:
+                lines = body.splitlines()  # without newlines
+
+                offending_line_index = FunctionTooLong.MAX
+
+                assert len(lines) > offending_line_index + 1
+
+                actual_line_number = line_number + offending_line_index
+
+                offending_lines = [
+                    (actual_line_number, lines[offending_line_index - 1]),
+                    (actual_line_number + 1, lines[offending_line_index]),
+                    (actual_line_number + 2, lines[offending_line_index + 1])
+                ]
+
+                offender = self.violate(at=(line_number + 1, 0),
+                                        lines=offending_lines,
+                                        meta={'length': length,
+                                              'func': name,
+                                              'line': line_number})
+
+                offenders.append(offender)
+
+        pattern = FUNC_IMPL_PATTERN
+
+        for function_match in re.finditer(pattern, text):
+            func_body_start_index = function_match.end()  # we want to start before opening brace
+
+            func_depth = depth(func_body_start_index, text)
+
+            if func_depth == 0:
+                i = 1  # offset index by 1 to make sure we look one char ahead
+
+                body_from_opening = text[func_body_start_index:]
+
+                for c in body_from_opening:
+                    # look for closing brace
+                    if c == '}':
+                        # note that we're assuming the indexing is offset 1 ahead so we can expect
+                        # the depth function to look outside the body, as opposed to inside
+                        func_inner_depth = depth(func_body_start_index + i, text)
+
+                        if func_inner_depth == 0:
+                            line_number, column = RuleViolation.where(text, func_body_start_index)
+
+                            body = text[func_body_start_index:func_body_start_index + i]
+                            # we found end of body; now determine if it violates rule
+                            check_func_body(body, function_match.group('name'), line_number - 1)
+
+                            break
+
+                    i += 1
+
+        return offenders
