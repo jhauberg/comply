@@ -93,6 +93,7 @@ def make_rules(names: list, exceptions: list) -> list:
         includes.SymbolNeededNotListed(),
         functions.NoRedundantConst(),
         functions.TooManyParams(),
+        functions.FirstColumnName(),
         misc.TooManyBlanks(),
         misc.NoTabs(),
         misc.NoInvisibles(),
