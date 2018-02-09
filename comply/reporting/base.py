@@ -70,9 +70,7 @@ class Reporter:
             printdiag(diag)
 
     def report_results(self, results: List[str], prefix_if_suppressed: str= ''):
-        """ Print each result (a formatted violation), suppressing
-            similar results if needed.
-        """
+        """ Print each result (a formatted violation), suppressing similar results if needed. """
 
         emitted = 0
 
@@ -81,6 +79,7 @@ class Reporter:
 
             emitted += 1
 
+            # assuming each result is a violation "almost" identical to the rest
             if self.suppress_similar and emitted >= self.suppress_after:
                 remaining = len(results) - emitted
 

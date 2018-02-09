@@ -25,8 +25,8 @@ def strip_block_comments(text: str) -> str:
         from_index = comment_match.start()
         to_index = comment_match.end()
 
-        # strip entire comment block, leaving newlines in place to ensure that
-        # line numbering remains correct
+        # strip entire comment block, leaving newlines and a hint in place to ensure that
+        # line numbering remains correct; the hint makes sure we don't violate [too-many-blanks]
         replacement = '<IGNORE>\n' * comment.count('\n')
 
         stripped = stripped[:from_index] + replacement + stripped[to_index:]
