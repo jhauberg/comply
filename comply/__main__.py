@@ -96,6 +96,7 @@ def make_rules(names: list, exceptions: list) -> list:
         functions.FirstColumnName(),
         functions.FunctionTooLong(),
         functions.TooManyFunctions(),
+        functions.NoIdenticalParam(),
         misc.TooManyBlanks(),
         misc.NoTabs(),
         misc.NoInvisibles(),
