@@ -136,8 +136,6 @@ def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
 def main():
     """ Entry point for invoking the comply module. """
 
-    time_started_boot = datetime.datetime.now()
-
     exit_if_not_compatible()
 
     if not supports_unicode():
@@ -164,25 +162,19 @@ def main():
 
     inputs = arguments['<input>']
 
-    time_since_boot = datetime.datetime.now() - time_started_boot
     time_started_report = datetime.datetime.now()
 
     report = make_report(inputs, rules, reporter)
 
     if reporter.is_verbose:
         time_since_report = datetime.datetime.now() - time_started_report
-
-        boot_in_seconds = time_since_boot / datetime.timedelta(seconds=1)
         report_in_seconds = time_since_report / datetime.timedelta(seconds=1)
 
-        total_time_taken = boot_in_seconds + report_in_seconds
+        total_time_taken = report_in_seconds
 
         if total_time_taken > 0.01:
             time_diagnostic = 'Analysis finished in {0:.1f} seconds'.format(
                 total_time_taken)
-
-            time_diagnostic += ' ({0:.2f}s to load rules, {1:.2f}s running checks)'.format(
-                boot_in_seconds, report_in_seconds)
 
             printdiag(time_diagnostic)
 
