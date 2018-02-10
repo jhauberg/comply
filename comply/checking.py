@@ -103,7 +103,7 @@ def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, boo
         if number_of_violations > 0:
             result.files_with_violations += 1
 
-            reporter.report(violations, path)
+        reporter.report(violations, path)
 
     return result, True
 

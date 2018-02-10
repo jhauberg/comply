@@ -31,6 +31,8 @@ class HumanReporter(Reporter):
         # group violations by reason so that we can suppress similar ones
         grouped = self.group_by_reason(violations)
 
+        number_of_reported_results = 0
+
         for reason, violations in grouped.items():
             results = []
 
@@ -71,6 +73,7 @@ class HumanReporter(Reporter):
 
                 results.append('\n' + output + Colors.clear)
 
-            self.report_results(results, prefix_if_suppressed='\n')
+            number_of_reported_results += self.report_results(results, prefix_if_suppressed='\n')
 
-        printout('')
+        if number_of_reported_results > 0:
+            printout('')

@@ -71,7 +71,7 @@ class Reporter:
 
             printdiag(diag)
 
-    def report_results(self, results: List[str], prefix_if_suppressed: str= ''):
+    def report_results(self, results: List[str], prefix_if_suppressed: str= '') -> int:
         """ Print each result (a formatted violation), suppressing similar results if needed. """
 
         emitted = 0
@@ -104,10 +104,14 @@ class Reporter:
 
                 break
 
+        return emitted
+
     def report(self, violations: list, path: str):
         """ Print a report of collected violations for a given file. """
 
-        printout('{0}: {1}'.format(path, violations))
+        results = ['{0}: {1}'.format(path, violation) for violation in violations]
+
+        self.report_results(results)
 
     @property
     def suppress_after(self) -> int:
