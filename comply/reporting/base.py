@@ -20,9 +20,11 @@ class Reporter:
         provides the base functions for specialized reporting modes.
     """
 
-    def __init__(self, suppress_similar: bool=True, is_verbose: bool=False):
+    def __init__(self, suppress_similar: bool=True, limit: int=None, is_verbose: bool=False):
         self.suppress_similar = suppress_similar
         self.is_verbose = is_verbose
+        self.limit = limit
+        self.count = 0
 
     @staticmethod
     def group_by_reason(violations: List[RuleViolation]):
@@ -75,9 +77,14 @@ class Reporter:
         emitted = 0
 
         for result in results:
+            if self.limit is not None and self.count >= self.limit:
+                break
+
             printout(result)
 
             emitted += 1
+
+            self.count += 1
 
             # assuming each result is a violation "almost" identical to the rest
             if self.suppress_similar and emitted >= self.suppress_after:
