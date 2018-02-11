@@ -4,20 +4,15 @@ import re
 
 from comply.rules import Rule, RuleViolation
 
-from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
+from comply.rules.includes.pattern import INCLUDE_PATTERN
 from comply.printing import Colors
 
 
-class NoHeadersHeader(Rule):
+class NoHeadersInHeader(Rule):
     def __init__(self):
-        Rule.__init__(self, name='no-headers-header',
+        Rule.__init__(self, name='no-headers-in-header',
                       description='Header files should not include any other headers',
-                      suggestion='Replace \'{0}\' with a forward-declaration for each needed type.')
-
-    def solution(self, violation: RuleViolation=None):
-        inclusion = violation.meta['inclusion'] if 'inclusion' in violation.meta else '???'
-
-        return super().solution(violation).format(inclusion)
+                      suggestion='Replace \'{inclusion}\' with a forward-declaration for each needed type.')
 
     def augment(self, violation: RuleViolation):
         # assume only one offending line
@@ -31,7 +26,7 @@ class NoHeadersHeader(Rule):
         if '.h' not in extension:
             return offenders
 
-        pattern = INCLUDE_STMT_PATTERN
+        pattern = INCLUDE_PATTERN
 
         inclusion = re.search(pattern, text)
 
@@ -40,7 +35,7 @@ class NoHeadersHeader(Rule):
 
             offending_index = inclusion.start()
 
-            line, column = RuleViolation.where(text, offending_index, at_beginning=True)
+            line, column = RuleViolation.at(offending_index, text, at_beginning=True)
 
             offending_line = (line, include_statement)
 

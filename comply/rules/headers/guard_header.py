@@ -4,17 +4,24 @@ import re
 
 from comply.rules import Rule, RuleViolation
 
+from comply.printing import Colors
 
-class IncludeGuard(Rule):
+
+class GuardHeader(Rule):
     def __init__(self):
-        Rule.__init__(self, name='include-guard',
+        Rule.__init__(self, name='guard-header',
                       description='Header files should define an include guard to prevent double inclusion',
-                      suggestion='Wrap your header inside an include guard named "{0}".')
+                      suggestion='Wrap your header inside an include guard named "{guard}".')
 
-    def solution(self, violation: RuleViolation=None):
-        symbol = violation.meta['guard'] if 'guard' in violation.meta else '???'
+    def augment(self, violation: RuleViolation):
+        guard = violation.meta['guard'] if 'guard' in violation.meta else '???'
 
-        return super().solution(violation).format(symbol)
+        violation.lines = [
+            (0, Colors.good + '#ifndef {0}'.format(guard) + Colors.clear),
+            (1, Colors.good + '#define {0}'.format(guard) + Colors.clear),
+            (2, '...'),
+            (3, Colors.good + '#endif' + Colors.clear)
+        ]
 
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
@@ -28,16 +35,13 @@ class IncludeGuard(Rule):
         guard_name = guard_name.replace('-', '_')
         guard_name = guard_name.replace('.', '_')
 
-        # match include statements and capture suffixed content, if any
-        pattern = r'^[\s\S]*#ifndef {0}\s*(?:\n|\r\n)\s*#define {0}[\s\S]*#endif\s*$'\
-            .format(guard_name)
+        pattern = r'^[\s\S]*#ifndef {0}\s*(?:\n|\r\n)\s*#define {0}[\s\S]*#endif\s*$'.format(
+            guard_name)
 
         match = re.match(pattern, text)
 
         if match is None:
-            line, column = RuleViolation.where(text, 0)
-
-            offender = self.violate(at=(line, column),
+            offender = self.violate(at=RuleViolation.at_top(),
                                     meta={'guard': guard_name})
 
             offenders.append(offender)

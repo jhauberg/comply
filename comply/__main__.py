@@ -6,7 +6,7 @@ Make your C follow the rules
 
 Usage:
   comply <input>... [--reporter=<name>] [--check=<rule>]... [--except=<rule>]...
-                    [--verbose] [--strict]
+                    [--limit=<amount>] [--verbose] [--strict]
   comply -h | --help
   comply --version
 
@@ -14,6 +14,7 @@ Options:
   -r --reporter=<name>    Specify type of reported output [default: human]
   -c --check=<rule>       Only run checks for a specific rule
   -e --except=<rule>      Don't run checks for a specific rule
+  -i --limit=<amount>     Specify a limit on how many violations to report
   -s --strict             Show all violations (similar violations not suppressed)
   -v --verbose            Show diagnostic messages
   -h --help               Show program help
@@ -34,12 +35,13 @@ from comply.printing import printdiag, diagnostics, supports_unicode, is_windows
 from comply.checking import check, compliance, CheckResult
 from comply.version import __version__
 
+import comply.printing
+
 from comply.rules import *
 
 
 def check_for_update():
     """ Determine whether a newer version is available remotely. """
-
     from urllib.request import urlopen
     from urllib.error import URLError, HTTPError
 
@@ -59,8 +61,8 @@ def check_for_update():
                 remote_version_identifier = matches.group(1)
 
                 if parse_version(__version__) < parse_version(remote_version_identifier):
-                    printdiag('A newer version is available ({0} > {1})'
-                              .format(remote_version_identifier, __version__))
+                    printdiag('A newer version is available ({0})'.format(
+                        remote_version_identifier))
     except HTTPError:
         # fail silently
         pass
@@ -78,7 +80,7 @@ def make_reporter(reporting_mode: str) -> Reporter:
         return OneLineReporter()
 
     printdiag('Reporting mode \'{0}\' not available.'.format(reporting_mode),
-              apply_prefix=True)
+              as_error=True)
 
     return Reporter()
 
@@ -87,11 +89,18 @@ def make_rules(names: list, exceptions: list) -> list:
     """ Return a list of rules to run checks on. """
 
     rules = [
+        headers.GuardHeader(),
+        headers.NoHeadersInHeader(),
         includes.ListNeededSymbols(),
         includes.SymbolListedNotNeeded(),
         includes.SymbolNeededNotListed(),
-        includes.IncludeGuard(),
-        includes.NoHeadersHeader(),
+        functions.NoRedundantConst(),
+        functions.TooManyParams(),
+        functions.SplitByName(),
+        functions.FunctionTooLong(),
+        functions.TooManyFunctions(),
+        functions.NoRedundantName(),
+        misc.TooManyBlanks(),
         misc.NoTabs(),
         misc.NoInvisibles(),
         misc.LineTooLong(),
@@ -130,8 +139,6 @@ def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
 def main():
     """ Entry point for invoking the comply module. """
 
-    time_started_boot = datetime.datetime.now()
-
     exit_if_not_compatible()
 
     if not supports_unicode():
@@ -141,7 +148,7 @@ def main():
                       'Set environment variable PYTHONIOENCODING as UTF-8:\n'
                       '\texport PYTHONIOENCODING=UTF-8'
                       .format(diagnostics.encoding),
-                      apply_prefix=True)
+                      as_error=True)
 
     arguments = docopt(__doc__, version='comply ' + __version__)
 
@@ -156,27 +163,28 @@ def main():
     reporter.suppress_similar = not arguments['--strict']
     reporter.is_verbose = arguments['--verbose']
 
+    if arguments['--limit'] is not None:
+        reporter.limit = int(arguments['--limit'])
+
+    if not comply.printing.results.isatty() and reporter.suppress_similar:
+        printdiag('Suppressing similar violations; results may be omitted '
+                  '(set --strict to disable)')
+
     inputs = arguments['<input>']
 
-    time_since_boot = datetime.datetime.now() - time_started_boot
     time_started_report = datetime.datetime.now()
 
     report = make_report(inputs, rules, reporter)
 
     if reporter.is_verbose:
         time_since_report = datetime.datetime.now() - time_started_report
-
-        boot_in_seconds = time_since_boot / datetime.timedelta(seconds=1)
         report_in_seconds = time_since_report / datetime.timedelta(seconds=1)
 
-        total_time_taken = boot_in_seconds + report_in_seconds
+        total_time_taken = report_in_seconds
 
         if total_time_taken > 0.01:
             time_diagnostic = 'Analysis finished in {0:.1f} seconds'.format(
                 total_time_taken)
-
-            time_diagnostic += ' ({0:.2f}s to load rules, {1:.2f}s running checks)'.format(
-                boot_in_seconds, report_in_seconds)
 
             printdiag(time_diagnostic)
 

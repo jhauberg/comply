@@ -26,6 +26,7 @@
           <div class="jump-list-title">Jump to:</div>
           <ul class="indent jump-list">
             <li><a href="#include-statements">Include statements</a></li>
+            <li><a href="#functions">Functions</a></li>
             <li><a href="#misc">Miscellaneous</a></li>
           </ul>
         </div>
@@ -113,7 +114,7 @@
             </td>
           </tr>
           <tr>
-            <td><p id="no-headers-header"><tt>no-headers-header</tt></p></td>
+            <td><p id="no-headers-in-header"><tt>no-headers-in-header</tt></p></td>
             <td><p>Requires that header files do not include any other headers.</p>
               <details>
                 <summary><strong>Read more</strong></summary>
@@ -150,7 +151,7 @@ struct attr_t;
             </td>
           </tr>
           <tr>
-            <td><p><tt>include-guard</tt></p></td>
+            <td><p><tt>guard-header</tt></p></td>
             <td><p>Requires that the contents of headers be wrapped in <em>include guards</em> named identically to the filename of the header.</p>
               <details>
                 <summary><strong>Read more</strong></summary>
@@ -172,10 +173,35 @@ struct attr_t;
                 </code>
               </pre>
               <p>
-                <em>Fully implementing and strictly enforcing <a href="#no-headers-header"><tt>no-headers-header</tt></a> actually makes this rule unnecessary.</em></p><p><em>Regardless, it is still advised to enforce it as a precaution against unruly includers.</em></p>
+                <em>Fully implementing and strictly enforcing <a href="#no-headers-in-header"><tt>no-headers-in-header</tt></a> actually makes this rule unnecessary.</em></p><p><em>Regardless, it is still advised to enforce it as a precaution against unruly includers.</em></p>
               </details>
             </td>
             <td><p class="reasoning">Helps prevent double inclusion errors.</p></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2 id="misc">Functions</h2>
+      <p>
+        Rules related to functions; including prototypes and implementations.
+      </p>
+      <table class="rules">
+        <thead>
+          <tr>
+            <th>Name</a></th>
+            <th>Description</th>
+            <th>Why is this important?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><p><tt>no-redundant-const</tt></p></td>
+            <td><p>Parameter names in function prototypes should not be marked const as that is an implementation detail.</p>
+            todo: read more examples</td>
+            <td><p class="reasoning">A parameter name might be marked as const in its function prototype, but an implementation does <em>not</em> have to make it so.</p>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -226,6 +252,12 @@ struct attr_t;
             <td><p><tt>no-invisibles</tt></p></td>
             <td><p>Requires that files contain no invisible characters.</p></td>
             <td><p class="reasoning">Invisible characters serve no purpose unless escaped and used as a literal.</p>
+            </td>
+          </tr>
+          <tr>
+            <td><p><tt>no-consecutive-blanks</tt></p></td>
+            <td><p>Requires that files do not contain voids of two or more consecutive blank lines.</p></td>
+            <td><p class="reasoning">Blank lines serve no purpose and only add clutter.<br/><br/>They are occasionally used as a way of partitioning or grouping chunks of code, but this is not recommended. Prefer splitting into separate source files.</p>
             </td>
           </tr>
         </tbody>

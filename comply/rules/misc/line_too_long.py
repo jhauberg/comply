@@ -8,20 +8,15 @@ from comply.printing import Colors
 class LineTooLong(Rule):
     def __init__(self):
         Rule.__init__(self, name='line-too-long',
-                      description='Line is too long ({0} > {1})',
-                      suggestion='Use shorter names or split statements to multiple lines.')
+                      description='Line is too long ({length} > {max})',
+                      suggestion='Use shorter names or split statements to multiple lines.',
+                      expects_original_text=True)
 
     MAX = 80
 
-    def reason(self, violation: RuleViolation=None):
-        length = violation.meta['length'] if 'length' in violation.meta else 0
-
-        return super().reason(violation).format(
-            length, LineTooLong.MAX)
-
     def augment(self, violation: RuleViolation):
         # insert cursor to indicate max line length
-        insertion_index = LineTooLong.MAX
+        insertion_index = violation.meta['max']
 
         # assume only one offending line
         linenumber, line = violation.lines[0]
@@ -39,14 +34,15 @@ class LineTooLong(Rule):
         for line in text.splitlines(keepends=True):  # keep ends to ensure indexing is correct
             length = len(line)
 
+            max_characters = LineTooLong.MAX
             characters_except_newline = length - 1
 
-            if characters_except_newline > LineTooLong.MAX:
-                offending_index = index + LineTooLong.MAX
+            if characters_except_newline > max_characters:
+                offending_index = index + max_characters
 
-                linenumber, column = RuleViolation.where(text, offending_index)
+                linenumber, column = RuleViolation.at(offending_index, text)
 
-                assert column > LineTooLong.MAX
+                assert column > max_characters
 
                 # remove any trailing newlines to keep neat prints
                 line = without_trailing_newline(line)
@@ -55,7 +51,8 @@ class LineTooLong(Rule):
 
                 offender = self.violate(at=(linenumber, column),
                                         lines=[offending_line],
-                                        meta={'length': characters_except_newline})
+                                        meta={'length': characters_except_newline,
+                                              'max': max_characters})
 
                 offenders.append(offender)
 

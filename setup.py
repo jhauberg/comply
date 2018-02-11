@@ -13,7 +13,7 @@ License: MIT (see LICENSE)
 import sys
 import re
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 from comply import VERSION_PATTERN, is_compatible
 from comply.printing import printdiag
@@ -54,12 +54,7 @@ setup(
     author='Jacob Hauberg Hansen',
     author_email='jacob.hauberg@gmail.com',
     license='MIT',
-    packages=['comply',
-              'comply.util',
-              'comply.reporting',
-              'comply.rules',
-              'comply.rules.includes',
-              'comply.rules.misc'],
+    packages=find_packages(),
     include_package_data=True,
     platforms='any',
     install_requires=[

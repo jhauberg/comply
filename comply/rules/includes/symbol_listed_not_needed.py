@@ -5,7 +5,7 @@ import re
 from comply.rules import Rule, RuleViolation
 
 from comply.rules.includes.list_needed_symbols import is_symbol_list
-from comply.rules.includes.pattern import INCLUDE_STMT_PATTERN
+from comply.rules.includes.pattern import INCLUDE_PATTERN
 
 from comply.printing import Colors
 
@@ -13,18 +13,8 @@ from comply.printing import Colors
 class SymbolListedNotNeeded(Rule):
     def __init__(self):
         Rule.__init__(self, name='symbol-listed-not-needed',
-                      description='Unused symbol \'{0}\' should not be listed as needed',
-                      suggestion='Remove symbol \'{0}\' from list.')
-
-    def reason(self, violation: RuleViolation=None):
-        symbol = violation.meta['symbol'] if 'symbol' in violation.meta else '???'
-
-        return super().reason(violation).format(symbol)
-
-    def solution(self, violation: RuleViolation=None):
-        symbol = violation.meta['symbol'] if 'symbol' in violation.meta else '???'
-
-        return super().solution(violation).format(symbol)
+                      description='Unused symbol \'{symbol}\' should not be listed as needed',
+                      suggestion='Remove symbol \'{symbol}\' from list.')
 
     def augment(self, violation: RuleViolation):
         from_index, to_index = violation.meta['range'] if 'range' in violation.meta else (0, 0)
@@ -40,7 +30,7 @@ class SymbolListedNotNeeded(Rule):
 
     def collect(self, text: str, filename: str, extension: str):
         # match include statements and capture suffixed content, if any
-        pattern = INCLUDE_STMT_PATTERN + r'(.*)'
+        pattern = INCLUDE_PATTERN + r'(.*)'
 
         offenders = []
 
@@ -59,7 +49,7 @@ class SymbolListedNotNeeded(Rule):
                     if not has_symbol_usage(symbol, text_after_usage):
                         offending_index = text.index(symbol, inclusion.start(1), inclusion.end())
 
-                        linenumber, column = RuleViolation.where(text, offending_index)
+                        linenumber, column = RuleViolation.at(offending_index, text)
 
                         line = inclusion.group(0)
 

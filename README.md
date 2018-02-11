@@ -1,4 +1,4 @@
-<img width="90" src="logo.png" alt="comply" align="left">
+<img width="90" src="assets/logo.png" alt="comply" align="left">
 
 # comply
 
@@ -14,7 +14,7 @@ Compilers do not usually care how you write your code. They're happy as long as 
 
 `comply` is a standard/style compliance checker (or linter) that uses static code analysis to look for things that could be improved. _It is not a compiler_- as such, it will not find errors in your code.
 
-![](example.png "An example of reported rule violations in Xcode")
+![](assets/example.png "An example of reported rule violations in Xcode")
 
 *It is recommended to always enable all warnings and errors that your compiler provides and only use `comply` as a supplement.*
 
@@ -114,7 +114,7 @@ $ comply .
 
 <br/>
 
-You can also run `comply` without installing it.
+You can also run `comply` without having to first install it.
 
 **1) By executing the supplied run script**
 
@@ -139,7 +139,10 @@ $ python -m comply path/to/src/
 
 `comply` can be integrated as a *Run Script Build Phase* in Xcode to have violations reported directly in the IDE.
 
-**1) Using installed executable (*recommended*)**
+<details>
+  <summary><strong>1) Using installed executable (*recommended*)</strong></summary>
+
+<br/>
 
 First, figure out exactly where `comply` has been installed to:
 
@@ -169,9 +172,14 @@ export PYTHONIOENCODING=UTF-8
 /Library/Frameworks/Python.framework/Versions/3.6/bin/comply "${SRCROOT}" --reporter=oneline
 ```
 
-**2) Using script sources directly**
+</details>
 
-If you prefer not installing, you can still use the phase script described above. It can be useful to avoid installing if you're working on new features, or want to use a different fork.
+<details>
+  <summary><strong>2) Using script sources directly</strong></summary>
+
+<br/>
+
+If you prefer not installing, you can still use the phase script as described in 1). It can be useful to avoid installing if you're working on new features, or want to use a different fork.
 
 Just point to the [run.py](run.py) script instead of the installed executable:
 
@@ -181,9 +189,13 @@ export PYTHONIOENCODING=UTF-8
 python path/to/comply/run.py "${SRCROOT}" --reporter=oneline
 ```
 
-Now, every time you build, `comply` should be run on every file and directory within the root of your project. 
+</details>
 
-You can change or add arguments as you like, but `--reporter=oneline` is required for violations to be displayed.
+<br />
+
+Now, every time you build, `comply` will be run on every file and directory within the root of your project. 
+
+You can change or add arguments as you like, but `--reporter=oneline` is required for violations to be displayed as pop-ups.
 
 ### Full usage
 

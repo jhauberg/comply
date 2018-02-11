@@ -21,8 +21,14 @@ class RuleViolation:
         return '{0} at {1}'.format(self.which, self.lines)
 
     @staticmethod
-    def where(text: str, index: int, at_beginning: bool=False) -> (int, int):
-        """ Return the linenumber and column at which a character index occur in a text.
+    def at_top() -> (int, int):
+        """ Return the line number and column at the top of a text. """
+
+        return 1, 0
+
+    @staticmethod
+    def at(index: int, text: str, at_beginning: bool=False) -> (int, int):
+        """ Return the line number and column at which a character index occur in a text.
 
             Column is set to 0 if at_beginning is True.
         """
@@ -40,10 +46,11 @@ class RuleViolation:
 class Rule:
     """ Represents a single rule. """
 
-    def __init__(self, name: str, description: str, suggestion: str=None):
+    def __init__(self, name: str, description: str, suggestion: str=None, expects_original_text: bool=False):
         self.name = name
         self.description = description
         self.suggestion = suggestion
+        self.expects_original_text = expects_original_text
 
     def __repr__(self):
         return '[{0}]'.format(self.name)
@@ -51,16 +58,28 @@ class Rule:
     def reason(self, violation: RuleViolation=None):
         """ Return a reason for why a given violation occurred.
 
-            Subclasses may override and provide specific formatting.
+            Base behavior is to format any associated meta information from the violation into
+            the reason/description string as defined by the rule.
+
+            Subclasses may override to provide customized formatting.
         """
+
+        if self.description is not None and violation.meta is not None:
+            return self.description.format(**violation.meta)
 
         return self.description
 
     def solution(self, violation: RuleViolation=None):
         """ Return a solution for fixing a given violation.
 
-            Subclasses may override and provide specific formatting.
+            Base behavior is to format any associated meta information from the violation into
+            the solution/suggestion string as defined by the rule.
+
+            Subclasses may override to provide customized formatting.
         """
+
+        if self.suggestion is not None and violation.meta is not None:
+            return self.suggestion.format(**violation.meta)
 
         return self.suggestion
 
