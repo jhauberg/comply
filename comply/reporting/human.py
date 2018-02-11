@@ -75,5 +75,7 @@ class HumanReporter(Reporter):
 
             number_of_reported_results += self.report_results(results, prefix_if_suppressed='\n')
 
-        if number_of_reported_results > 0:
+        if self.is_verbose and number_of_reported_results > 0:
+            # make sure we separate the "Checking..." message with a newline
+            # note that this only occur when --verbose is set
             printout('')
