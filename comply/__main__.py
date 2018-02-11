@@ -80,7 +80,7 @@ def make_reporter(reporting_mode: str) -> Reporter:
         return OneLineReporter()
 
     printdiag('Reporting mode \'{0}\' not available.'.format(reporting_mode),
-              apply_prefix=True)
+              as_error=True)
 
     return Reporter()
 
@@ -148,7 +148,7 @@ def main():
                       'Set environment variable PYTHONIOENCODING as UTF-8:\n'
                       '\texport PYTHONIOENCODING=UTF-8'
                       .format(diagnostics.encoding),
-                      apply_prefix=True)
+                      as_error=True)
 
     arguments = docopt(__doc__, version='comply ' + __version__)
 

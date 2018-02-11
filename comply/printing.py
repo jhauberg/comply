@@ -12,14 +12,14 @@ diagnostics = sys.stderr
 results = sys.stdout
 
 
-def printdiag(text: str, apply_prefix: bool=False, end: str=None):
+def printdiag(text: str, as_error: bool=False, end: str=None):
     """ Print diagnostic output to the appropriate buffer.
 
         A diagnostic is output that is *not* directly related to the purpose of the program;
         for example: errors encountered during a run, or verbose informational messages.
     """
 
-    diagnostic = 'comply: {0}'.format(text) if apply_prefix else text
+    diagnostic = 'comply: {0}'.format(text) if as_error else text
 
     if end is not None:
         print(diagnostic, file=diagnostics, end=end, flush=True)
