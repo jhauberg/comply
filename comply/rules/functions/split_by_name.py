@@ -7,10 +7,11 @@ from comply.rules.functions.pattern import FUNC_IMPL_PATTERN
 
 from comply.printing import Colors
 
-class FirstColumnName(Rule):
+
+class SplitByName(Rule):
     def __init__(self):
-        Rule.__init__(self, name='first-column-name',
-                      description='Function names should be placed at the first column of a line',
+        Rule.__init__(self, name='split-by-name',
+                      description='Function names should be placed at the beginning of a line',
                       suggestion='Split function name and return type to separate lines.')
 
     def augment(self, violation: RuleViolation):
