@@ -27,13 +27,15 @@ class TooManyBlanks(Rule):
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
+        max_lines = TooManyBlanks.MAX
+
         lines = text.splitlines()  # without newlines
 
         consecutive_blanks = 0
 
         def trigger(at, lines, count):
             offender = self.violate(at, lines, meta={'count': count,
-                                                     'max': TooManyBlanks.MAX})
+                                                     'max': max_lines})
             offenders.append(offender)
 
         def previous_lines(lines, from_index, count):
@@ -52,7 +54,7 @@ class TooManyBlanks(Rule):
             if not line.strip():
                 consecutive_blanks += 1
             else:
-                if consecutive_blanks > TooManyBlanks.MAX:
+                if consecutive_blanks > max_lines:
                     trigger(at=(line_index + 1, 0),
                             lines=previous_lines(lines, line_index, consecutive_blanks),
                             count=consecutive_blanks)
@@ -61,7 +63,7 @@ class TooManyBlanks(Rule):
 
             line_index += 1
 
-        if consecutive_blanks > TooManyBlanks.MAX:
+        if consecutive_blanks > max_lines:
             trigger(at=(line_index, 0),  # EOF
                     lines=previous_lines(lines, line_index, consecutive_blanks),
                     count=consecutive_blanks)

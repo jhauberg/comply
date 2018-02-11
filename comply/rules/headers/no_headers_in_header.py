@@ -35,7 +35,7 @@ class NoHeadersInHeader(Rule):
 
             offending_index = inclusion.start()
 
-            line, column = RuleViolation.where(text, offending_index, at_beginning=True)
+            line, column = RuleViolation.at(offending_index, text, at_beginning=True)
 
             offending_line = (line, include_statement)
 

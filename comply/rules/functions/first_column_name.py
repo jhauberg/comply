@@ -48,8 +48,8 @@ class FirstColumnName(Rule):
         for function_match in re.finditer(pattern, text_without_bodies):
             func_name = function_match.group('name')
 
-            func_line_number, func_column = RuleViolation.where(text_without_bodies,
-                                                                function_match.start())
+            func_line_number, func_column = RuleViolation.at(function_match.start(),
+                                                             text_without_bodies)
             func_line_index = func_line_number - 1
 
             line = lines[func_line_index]

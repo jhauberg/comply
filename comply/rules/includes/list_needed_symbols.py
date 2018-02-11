@@ -33,7 +33,7 @@ class ListNeededSymbols(Rule):
             if not is_symbol_list(suffix):
                 offending_index = inclusion.start()
 
-                linenumber, column = RuleViolation.where(text, offending_index, at_beginning=True)
+                linenumber, column = RuleViolation.at(offending_index, text, at_beginning=True)
 
                 offending_line = (linenumber, inclusion.group(0))
 

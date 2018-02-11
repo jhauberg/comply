@@ -89,7 +89,7 @@ class FunctionTooLong(Rule):
                         func_inner_depth = depth(func_body_start_index + i, text)
 
                         if func_inner_depth == 0:
-                            line_number, column = RuleViolation.where(text, func_body_start_index)
+                            line_number, column = RuleViolation.at(func_body_start_index, text)
 
                             body = text[func_body_start_index:func_body_start_index + i]
                             # we found end of body; now determine if it violates rule

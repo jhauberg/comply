@@ -49,7 +49,7 @@ class SymbolListedNotNeeded(Rule):
                     if not has_symbol_usage(symbol, text_after_usage):
                         offending_index = text.index(symbol, inclusion.start(1), inclusion.end())
 
-                        linenumber, column = RuleViolation.where(text, offending_index)
+                        linenumber, column = RuleViolation.at(offending_index, text)
 
                         line = inclusion.group(0)
 

@@ -52,8 +52,8 @@ class TooManyParams(Rule):
             function_parameters = function_match.group('params')
             function_result = function_match.group(0)
 
-            function_linenumber, function_column = RuleViolation.where(text_without_bodies,
-                                                                       function_match.start())
+            function_linenumber, function_column = RuleViolation.at(function_match.start(),
+                                                                    text_without_bodies)
 
             max_params = TooManyParams.MAX
             number_of_params = len(function_parameters.split(','))

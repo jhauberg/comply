@@ -60,8 +60,8 @@ class NoIdenticalParam(Rule):
                         offending_index = (function_match.start('params') +
                                            param_start)
 
-                        function_linenumber, function_column = RuleViolation.where(text_without_bodies,
-                                                                                   offending_index)
+                        function_linenumber, function_column = RuleViolation.at(offending_index,
+                                                                                text_without_bodies)
 
                         params_start_index = function_match.start('params') - function_match.start()
 

@@ -40,7 +40,7 @@ class LineTooLong(Rule):
             if characters_except_newline > max_characters:
                 offending_index = index + max_characters
 
-                linenumber, column = RuleViolation.where(text, offending_index)
+                linenumber, column = RuleViolation.at(offending_index, text)
 
                 assert column > max_characters
 

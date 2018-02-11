@@ -42,7 +42,7 @@ class FileTooLong(Rule):
                                (offending_line_index + 1, lines[offending_line_index]),
                                (offending_line_index + 2, lines[offending_line_index + 1])]
 
-            offender = self.violate(at=(offending_line_index + 1, 0),
+            offender = self.violate(at=RuleViolation.at_top(),
                                     lines=offending_lines,
                                     meta={'length': length,
                                           'max': max_length})

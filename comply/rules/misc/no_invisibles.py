@@ -54,7 +54,7 @@ class NoInvisibles(Rule):
 
             assert first_invis_index != -1
 
-            linenumber, column = RuleViolation.where(text, first_invis_index)
+            linenumber, column = RuleViolation.at(first_invis_index, text)
 
             lines = text.splitlines()
 

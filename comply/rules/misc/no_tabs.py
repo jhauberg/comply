@@ -40,7 +40,7 @@ class NoTabs(Rule):
         if tabs_found > 0:
             first_tab_index = text.find(NoTabs.TAB)
 
-            linenumber, column = RuleViolation.where(text, first_tab_index)
+            linenumber, column = RuleViolation.at(first_tab_index, text)
 
             lines = text.splitlines()
 

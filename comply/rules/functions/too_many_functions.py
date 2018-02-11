@@ -31,9 +31,7 @@ class TooManyFunctions(Rule):
         number_of_matches = len(matches)
 
         if number_of_matches > max_matches:
-            line, column = RuleViolation.where(text, 0)
-
-            offender = self.violate(at=(line, column),
+            offender = self.violate(at=RuleViolation.at_top(),
                                     meta={'count': number_of_matches,
                                           'max': max_matches})
 

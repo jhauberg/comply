@@ -39,7 +39,7 @@ class NoRedundantConst(Rule):
             function_parameters = function_match.group('params')
             function_result = function_match.group(0)
 
-            function_linenumber, function_column = RuleViolation.where(text, function_match.start())
+            function_linenumber, function_column = RuleViolation.at(function_match.start(), text)
 
             for redundant_const_match in re.finditer(pattern_const, function_parameters):
                 const_start, const_end = (redundant_const_match.start(1),
@@ -48,7 +48,7 @@ class NoRedundantConst(Rule):
                 offending_index = (function_match.start('params') +
                                    const_start)
 
-                linenumber, column = RuleViolation.where(text, offending_index)
+                linenumber, column = RuleViolation.at(offending_index, text)
 
                 diff = function_match.start('params') - function_match.start()
 

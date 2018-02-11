@@ -21,8 +21,14 @@ class RuleViolation:
         return '{0} at {1}'.format(self.which, self.lines)
 
     @staticmethod
-    def where(text: str, index: int, at_beginning: bool=False) -> (int, int):
-        """ Return the linenumber and column at which a character index occur in a text.
+    def at_top() -> (int, int):
+        """ Return the line number and column at the top of a text. """
+
+        return 1, 0
+
+    @staticmethod
+    def at(index: int, text: str, at_beginning: bool=False) -> (int, int):
+        """ Return the line number and column at which a character index occur in a text.
 
             Column is set to 0 if at_beginning is True.
         """
