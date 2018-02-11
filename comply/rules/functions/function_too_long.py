@@ -41,7 +41,7 @@ class FunctionTooLong(Rule):
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
-        def check_func_body(body: str, name: str, line_number: int):
+        def check_func_body(body: str, name: str, line_number: int, starting_from_position: (int, int)):
             max_length = FunctionTooLong.MAX
             length = body.count('\n')
 
@@ -52,7 +52,7 @@ class FunctionTooLong(Rule):
 
                 assert len(lines) > offending_line_index + 1
 
-                actual_line_number = line_number + offending_line_index
+                actual_line_number = line_number - 1 + offending_line_index
 
                 offending_lines = [
                     (actual_line_number, lines[offending_line_index - 1]),
@@ -60,12 +60,12 @@ class FunctionTooLong(Rule):
                     (actual_line_number + 2, lines[offending_line_index + 1])
                 ]
 
-                offender = self.violate(at=(line_number + 1, 0),
+                offender = self.violate(at=starting_from_position,
                                         lines=offending_lines,
                                         meta={'length': length,
                                               'max': max_length,
                                               'func': name,
-                                              'line': line_number})
+                                              'line': starting_from_position[0]})
 
                 offenders.append(offender)
 
@@ -89,11 +89,14 @@ class FunctionTooLong(Rule):
                         func_inner_depth = depth(func_body_start_index + i, text)
 
                         if func_inner_depth == 0:
+                            # todo: line number in this context is start of function body
                             line_number, column = RuleViolation.at(func_body_start_index, text)
 
                             body = text[func_body_start_index:func_body_start_index + i]
                             # we found end of body; now determine if it violates rule
-                            check_func_body(body, function_match.group('name'), line_number - 1)
+                            check_func_body(body, function_match.group('name'), line_number,
+                                            RuleViolation.at(function_match.start(), text,
+                                                             at_beginning=True))
 
                             break
 
