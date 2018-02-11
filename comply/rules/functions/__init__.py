@@ -5,7 +5,7 @@ from comply.rules.functions.too_many_params import TooManyParams
 from comply.rules.functions.first_column_name import FirstColumnName
 from comply.rules.functions.function_too_long import FunctionTooLong
 from comply.rules.functions.too_many_functions import TooManyFunctions
-from comply.rules.functions.no_identical_param import NoIdenticalParam
+from comply.rules.functions.no_redundant_name import NoRedundantName
 
 __all__ = [
     "NoRedundantConst",
@@ -13,5 +13,5 @@ __all__ = [
     "FirstColumnName",
     "FunctionTooLong",
     "TooManyFunctions",
-    "NoIdenticalParam"
+    "NoRedundantName"
 ]

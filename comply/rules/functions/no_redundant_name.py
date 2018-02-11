@@ -8,9 +8,9 @@ from comply.rules.functions.pattern import FUNC_PROT_PATTERN
 from comply.printing import Colors
 
 
-class NoIdenticalParam(Rule):
+class NoRedundantName(Rule):
     def __init__(self):
-        Rule.__init__(self, name='no-identical-param',
+        Rule.__init__(self, name='no-redundant-name',
                       description='Parameter \'{param}\' should not be named identically to its type \'{type}\'',
                       suggestion='Rename parameter \'{param}\' to something meaningful or omit it.')
 
