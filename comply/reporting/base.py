@@ -91,14 +91,12 @@ class Reporter:
                 remaining = len(results) - emitted
 
                 # if results are being piped or redirected, we don't need to emit a diagnostic
-                # todo: the better solution might be to just disable suppression entirely in this case
-                #       this would have the benefit of automatically avoiding this conditional and
-                #       remove confusion when not notifying (it might seem like results are "missing")
-                should_notify = comply.printing.results.isatty()
+                # note that the PyCharm bit is just for testing purposes
+                should_notify = comply.printing.results.isatty() or 'PYCHARM' in os.environ
 
                 if remaining > 0 and should_notify:
-                    # note that this does not require verbosity flag; if a suppression does occur,
-                    # it should always be mentioned
+                    # note that this does not require --verbose;
+                    # when a suppression occurs it should always be mentioned
                     printdiag('{0}(...{1} more suppressed)'
                               .format(prefix_if_suppressed, remaining))
 
