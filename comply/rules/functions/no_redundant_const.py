@@ -25,12 +25,7 @@ class NoRedundantConst(Rule):
                           Colors.bad + function_line[from_index:to_index] + Colors.clear +
                           function_line[to_index:])
 
-        offending_lines = []
-
-        for i, line in enumerate(augmented_line.splitlines()):
-            offending_lines.append((function_linenumber + i, line))
-
-        violation.lines = offending_lines
+        violation.lines[0] = (function_linenumber, augmented_line)
 
     def collect(self, text: str, filename: str, extension: str):
         offenders = []

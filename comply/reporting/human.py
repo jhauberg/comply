@@ -54,13 +54,19 @@ class HumanReporter(Reporter):
                     context = ''
 
                     for i, (linenumber, line) in enumerate(violation.lines):
-                        if linenumber is None:
-                            linenumber = ''
+                        expanded_lines = self.expand_lines(linenumber, line)
 
-                        line = line.expandtabs(4)
+                        for j, (n, l) in enumerate(expanded_lines):
+                            if n is None:
+                                n = ''
 
-                        context += Colors.emphasis + str(linenumber) + Colors.clear
-                        context += Colors.clear + '\t{0}'.format(line)
+                            line = l.expandtabs(4)
+
+                            context += Colors.emphasis + str(n) + Colors.clear
+                            context += Colors.clear + '\t{0}'.format(line)
+
+                            if j != len(expanded_lines) - 1:
+                                context += '\n'
 
                         if i != len(violation.lines) - 1:
                             context += '\n'
@@ -79,3 +85,13 @@ class HumanReporter(Reporter):
             # make sure we separate the "Checking..." message with a newline
             # note that this only occur when --verbose is set
             printout('')
+
+    def expand_lines(self, line_number: int, line: str):
+        """ Like str.splitlines(), except including line numbers. """
+        lines = []
+
+        for i, l in enumerate(line.splitlines()):
+            current_line_number = line_number + i if line_number is not None else None
+            lines.append((current_line_number, l))
+
+        return lines
