@@ -191,6 +191,8 @@ python path/to/comply/run.py "${SRCROOT}" --reporter=oneline
 
 </details>
 
+<br />
+
 Now, every time you build, `comply` will be run on every file and directory within the root of your project. 
 
 You can change or add arguments as you like, but `--reporter=oneline` is required for violations to be displayed as pop-ups.
