@@ -45,8 +45,7 @@ class HumanReporter(Reporter):
 
                 why = '{w}{0} {vague}[{1}]'.format(reason, rule.name,
                                                    w=Colors.warn,
-                                                   vague=Colors.vague)
-                why = why + Colors.clear
+                                                   vague=Colors.vague) + Colors.clear
 
                 solution = rule.solution(violation)
 
@@ -54,7 +53,7 @@ class HumanReporter(Reporter):
                     context = ''
 
                     for i, (linenumber, line) in enumerate(violation.lines):
-                        expanded_lines = self.expand_lines(linenumber, line)
+                        expanded_lines = HumanReporter.expand_lines(linenumber, line)
 
                         for j, (n, l) in enumerate(expanded_lines):
                             if n is None:
@@ -86,7 +85,8 @@ class HumanReporter(Reporter):
             # note that this only occur when --verbose is set
             printout('')
 
-    def expand_lines(self, line_number: int, line: str):
+    @staticmethod
+    def expand_lines(line_number: int, line: str):
         """ Like str.splitlines(), except including line numbers. """
         lines = []
 

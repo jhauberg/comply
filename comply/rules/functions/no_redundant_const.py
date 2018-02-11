@@ -30,7 +30,6 @@ class NoRedundantConst(Rule):
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
-
         # match prototypes
         pattern = FUNC_PROT_PATTERN
         # match redundant const qualifiers for a list of arguments (e.g. <params>)
