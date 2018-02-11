@@ -35,6 +35,8 @@ from comply.printing import printdiag, diagnostics, supports_unicode, is_windows
 from comply.checking import check, compliance, CheckResult
 from comply.version import __version__
 
+import comply.printing
+
 from comply.rules import *
 
 
@@ -163,6 +165,10 @@ def main():
 
     if arguments['--limit'] is not None:
         reporter.limit = int(arguments['--limit'])
+
+    if not comply.printing.results.isatty() and reporter.suppress_similar:
+        printdiag('Suppressing similar violations; results may be omitted '
+                  '(set --strict to disable)')
 
     inputs = arguments['<input>']
 
