@@ -13,16 +13,10 @@ from comply.printing import Colors
 class FunctionTooLong(Rule):
     def __init__(self):
         Rule.__init__(self, name='func-too-long',
-                      description='Function is too long ({0} > {1})',
+                      description='Function is too long ({length} > {max})',
                       suggestion='This function may be too complex. Consider refactoring.')
 
     MAX = 40
-
-    def reason(self, violation: RuleViolation=None):
-        length = violation.meta['length'] if 'length' in violation.meta else 0
-
-        return super().reason(violation).format(
-            length, FunctionTooLong.MAX)
 
     def augment(self, violation: RuleViolation):
         name = violation.meta['func'] if 'func' in violation.meta else '<unknown>'
@@ -48,12 +42,13 @@ class FunctionTooLong(Rule):
         offenders = []
 
         def check_func_body(body: str, name: str, line_number: int):
+            max_length = FunctionTooLong.MAX
             length = body.count('\n')
 
-            if length > FunctionTooLong.MAX:
+            if length > max_length:
                 lines = body.splitlines()  # without newlines
 
-                offending_line_index = FunctionTooLong.MAX
+                offending_line_index = max_length
 
                 assert len(lines) > offending_line_index + 1
 
@@ -68,6 +63,7 @@ class FunctionTooLong(Rule):
                 offender = self.violate(at=(line_number + 1, 0),
                                         lines=offending_lines,
                                         meta={'length': length,
+                                              'max': max_length,
                                               'func': name,
                                               'line': line_number})
 

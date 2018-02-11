@@ -8,19 +8,13 @@ from comply.printing import Colors
 class TooManyBlanks(Rule):
     def __init__(self):
         Rule.__init__(self, name='too-many-blanks',
-                      description='Too many consecutive blank lines ({0} > {1})',
+                      description='Too many consecutive blank lines ({count} > {max})',
                       suggestion='Remove excess blank lines.',
                       # prefer original un-modified text so we can provide correct context snippets
                       # (as opposed to a text stripped of block comments and similar)
                       expects_original_text=True)
 
     MAX = 1
-
-    def reason(self, violation: RuleViolation=None):
-        count = violation.meta['count'] if 'count' in violation.meta else 0
-
-        return super().reason(violation).format(
-            count, TooManyBlanks.MAX)
 
     def augment(self, violation: RuleViolation):
         for i, (linenumber, line) in enumerate(violation.lines):
@@ -38,7 +32,8 @@ class TooManyBlanks(Rule):
         consecutive_blanks = 0
 
         def trigger(at, lines, count):
-            offender = self.violate(at, lines, meta={'count': count})
+            offender = self.violate(at, lines, meta={'count': count,
+                                                     'max': TooManyBlanks.MAX})
             offenders.append(offender)
 
         def previous_lines(lines, from_index, count):

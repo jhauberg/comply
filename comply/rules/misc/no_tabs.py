@@ -8,15 +8,10 @@ from comply.printing import Colors, supports_unicode
 class NoTabs(Rule):
     def __init__(self):
         Rule.__init__(self, name='no-tabs',
-                      description='Avoid tabs to keep consistent line lengths (found {0} tabs)',
+                      description='Avoid tabs to keep consistent line lengths (found {count} tabs)',
                       suggestion='Replace each tab with spaces (typically 4).')
 
     TAB = '\t'
-
-    def reason(self, violation: RuleViolation=None):
-        count = violation.meta['count'] if 'count' in violation.meta else 0
-
-        return super().reason(violation).format(count)
 
     def augment(self, violation: RuleViolation):
         # assume only one offending line

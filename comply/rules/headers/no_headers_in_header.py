@@ -12,12 +12,7 @@ class NoHeadersInHeader(Rule):
     def __init__(self):
         Rule.__init__(self, name='no-headers-in-header',
                       description='Header files should not include any other headers',
-                      suggestion='Replace \'{0}\' with a forward-declaration for each needed type.')
-
-    def solution(self, violation: RuleViolation=None):
-        inclusion = violation.meta['inclusion'] if 'inclusion' in violation.meta else '???'
-
-        return super().solution(violation).format(inclusion)
+                      suggestion='Replace \'{inclusion}\' with a forward-declaration for each needed type.')
 
     def augment(self, violation: RuleViolation):
         # assume only one offending line

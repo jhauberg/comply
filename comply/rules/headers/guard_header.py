@@ -6,16 +6,12 @@ from comply.rules import Rule, RuleViolation
 
 from comply.printing import Colors
 
+
 class GuardHeader(Rule):
     def __init__(self):
         Rule.__init__(self, name='guard-header',
                       description='Header files should define an include guard to prevent double inclusion',
-                      suggestion='Wrap your header inside an include guard named "{0}".')
-
-    def solution(self, violation: RuleViolation=None):
-        guard = violation.meta['guard'] if 'guard' in violation.meta else '???'
-
-        return super().solution(violation).format(guard)
+                      suggestion='Wrap your header inside an include guard named "{guard}".')
 
     def augment(self, violation: RuleViolation):
         guard = violation.meta['guard'] if 'guard' in violation.meta else '???'
@@ -39,7 +35,8 @@ class GuardHeader(Rule):
         guard_name = guard_name.replace('-', '_')
         guard_name = guard_name.replace('.', '_')
 
-        pattern = r'^[\s\S]*#ifndef {0}\s*(?:\n|\r\n)\s*#define {0}[\s\S]*#endif\s*$'.format(guard_name)
+        pattern = r'^[\s\S]*#ifndef {0}\s*(?:\n|\r\n)\s*#define {0}[\s\S]*#endif\s*$'.format(
+            guard_name)
 
         match = re.match(pattern, text)
 

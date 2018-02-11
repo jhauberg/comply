@@ -52,16 +52,28 @@ class Rule:
     def reason(self, violation: RuleViolation=None):
         """ Return a reason for why a given violation occurred.
 
-            Subclasses may override and provide specific formatting.
+            Base behavior is to format any associated meta information from the violation into
+            the reason/description string as defined by the rule.
+
+            Subclasses may override to provide customized formatting.
         """
+
+        if self.description is not None and violation.meta is not None:
+            return self.description.format(**violation.meta)
 
         return self.description
 
     def solution(self, violation: RuleViolation=None):
         """ Return a solution for fixing a given violation.
 
-            Subclasses may override and provide specific formatting.
+            Base behavior is to format any associated meta information from the violation into
+            the solution/suggestion string as defined by the rule.
+
+            Subclasses may override to provide customized formatting.
         """
+
+        if self.suggestion is not None and violation.meta is not None:
+            return self.suggestion.format(**violation.meta)
 
         return self.suggestion
 

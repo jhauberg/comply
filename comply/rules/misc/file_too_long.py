@@ -8,17 +8,11 @@ from comply.printing import Colors
 class FileTooLong(Rule):
     def __init__(self):
         Rule.__init__(self, name='file-too-long',
-                      description='File has too many lines ({0} > {1})',
+                      description='File has too many lines ({length} > {max})',
                       suggestion='Consider refactoring and splitting to separate units.',
                       expects_original_text=True)
 
     MAX = 600
-
-    def reason(self, violation: RuleViolation=None):
-        length = violation.meta['length'] if 'length' in violation.meta else 0
-
-        return super().reason(violation).format(
-            length, FileTooLong.MAX)
 
     def augment(self, violation: RuleViolation):
         # assume offending line is the second one
@@ -34,12 +28,13 @@ class FileTooLong(Rule):
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
+        max_length = FileTooLong.MAX
         length = text.count('\n')
 
-        if length > FileTooLong.MAX:
+        if length > max_length:
             lines = text.splitlines()  # without newlines
 
-            offending_line_index = FileTooLong.MAX
+            offending_line_index = max_length
 
             assert len(lines) > offending_line_index + 1
 
@@ -49,7 +44,8 @@ class FileTooLong(Rule):
 
             offender = self.violate(at=(offending_line_index + 1, 0),
                                     lines=offending_lines,
-                                    meta={'length': length})
+                                    meta={'length': length,
+                                          'max': max_length})
 
             offenders.append(offender)
 

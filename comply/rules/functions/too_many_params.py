@@ -11,7 +11,7 @@ from comply.printing import Colors
 class TooManyParams(Rule):
     def __init__(self, only_check_implementations: bool=False):
         Rule.__init__(self, name='too-many-params',
-                      description='Too many function parameters ({0} > {1})',
+                      description='Too many function parameters ({count} > {max})',
                       suggestion='This function may be taking on too much work. Consider refactoring.')
 
         # determine whether to only match implementations, or both prototypes and implementations
@@ -20,12 +20,6 @@ class TooManyParams(Rule):
         self.only_checks_implementation = only_check_implementations
 
     MAX = 4
-
-    def reason(self, violation: RuleViolation=None):
-        count = violation.meta['count'] if 'count' in violation.meta else 0
-
-        return super().reason(violation).format(
-            count, TooManyParams.MAX)
 
     def augment(self, violation: RuleViolation):
         function_linenumber, function_line = violation.lines[0]
@@ -66,12 +60,14 @@ class TooManyParams(Rule):
             function_linenumber, function_column = RuleViolation.where(text_without_bodies,
                                                                        function_match.start())
 
+            max_params = TooManyParams.MAX
             number_of_params = len(function_parameters.split(','))
 
-            if number_of_params > TooManyParams.MAX:
+            if number_of_params > max_params:
                 offender = self.violate(at=(function_linenumber, function_column),
                                         lines=[(function_linenumber, function_result)],
                                         meta={'count': number_of_params,
+                                              'max': max_params,
                                               'range': (0, len(function_name))})
 
                 offenders.append(offender)

@@ -11,19 +11,8 @@ from comply.printing import Colors
 class NoIdenticalParam(Rule):
     def __init__(self):
         Rule.__init__(self, name='no-identical-param',
-                      description='Parameter \'{0}\' should not be named identically to its type \'{1}\'',
-                      suggestion='Rename parameter \'{0}\' to something meaningful or omit it.')
-
-    def reason(self, violation: RuleViolation=None):
-        parameter_name = violation.meta['param'] if 'param' in violation.meta else 0
-        parameter_type = violation.meta['type'] if 'type' in violation.meta else 0
-
-        return super().reason(violation).format(parameter_name, parameter_type)
-
-    def solution(self, violation: RuleViolation=None):
-        parameter_name = violation.meta['param'] if 'param' in violation.meta else 0
-
-        return super().solution(violation).format(parameter_name)
+                      description='Parameter \'{param}\' should not be named identically to its type \'{type}\'',
+                      suggestion='Rename parameter \'{param}\' to something meaningful or omit it.')
 
     def augment(self, violation: RuleViolation):
         function_linenumber, function_line = violation.lines[0]

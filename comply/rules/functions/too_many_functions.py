@@ -9,16 +9,10 @@ from comply.rules.functions.pattern import FUNC_IMPL_PATTERN
 class TooManyFunctions(Rule):
     def __init__(self):
         Rule.__init__(self, name='too-many-funcs',
-                      description='Too many functions in a single file ({0} > {1})',
+                      description='Too many functions in a single file ({count} > {max})',
                       suggestion='Consider splitting into separate units.')
 
     MAX = 7
-
-    def reason(self, violation: RuleViolation=None):
-        count = violation.meta['count'] if 'count' in violation.meta else 0
-
-        return super().reason(violation).format(
-            count, TooManyFunctions.MAX)
 
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
@@ -33,13 +27,15 @@ class TooManyFunctions(Rule):
 
         matches = re.findall(pattern, text_without_bodies)
 
+        max_matches = TooManyFunctions.MAX
         number_of_matches = len(matches)
 
-        if number_of_matches > TooManyFunctions.MAX:
+        if number_of_matches > max_matches:
             line, column = RuleViolation.where(text, 0)
 
             offender = self.violate(at=(line, column),
-                                    meta={'count': number_of_matches})
+                                    meta={'count': number_of_matches,
+                                          'max': max_matches})
 
             offenders.append(offender)
 
