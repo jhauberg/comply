@@ -104,7 +104,8 @@ def make_rules(names: list, exceptions: list) -> list:
         misc.NoTabs(),
         misc.NoInvisibles(),
         misc.LineTooLong(),
-        misc.FileTooLong()
+        misc.FileTooLong(),
+        misc.PreferStandardInt()
     ]
 
     if len(names) > 0:
