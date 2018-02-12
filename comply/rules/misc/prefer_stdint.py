@@ -8,7 +8,7 @@ from comply.printing import Colors
 
 
 def match_exactly(int_type: str) -> str:
-    return r'\bunsigned\s+{type}\b|\bsigned\s+{type}\b|\blong\s+{type}\b|(\b{type}\b)'.format(
+    return r'\bunsigned\s+{type}\b|\bsigned\s+{type}\b|(\b{type}\b)'.format(
         type=int_type)
 
 
@@ -29,8 +29,8 @@ class PreferStandardInt(Rule):
                       suggestion='Use \'{stdint}\' instead of \'{int}\'.')
 
     INT_TYPES = {
-        # note that unsigned|signed char is often a perfectly valid choice over e.g. int8_t
-        # so we don't include it in the table
+        # note that unsigned|signed char is often a perfectly valid choice over uint8_t|int8_t
+        # so we don't include that in the table
 
         'unsigned short':     ('uint16_t', match_unsigned('short')),
         'signed short':       ('int16_t',  match_signed('short')),
