@@ -100,6 +100,7 @@ def make_rules(names: list, exceptions: list) -> list:
         functions.FunctionTooLong(),
         functions.TooManyFunctions(),
         functions.NoRedundantName(),
+        misc.IdentifierTooLong(),
         misc.TooManyBlanks(),
         misc.NoTabs(),
         misc.NoTodo(),

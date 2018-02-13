@@ -7,6 +7,7 @@ from comply.rules.misc.no_invisibles import NoInvisibles
 from comply.rules.misc.too_many_blanks import TooManyBlanks
 from comply.rules.misc.prefer_stdint import PreferStandardInt
 from comply.rules.misc.no_todo import NoTodo
+from comply.rules.misc.identifier_too_long import IdentifierTooLong
 
 __all__ = [
     "LineTooLong",
@@ -15,5 +16,6 @@ __all__ = [
     "NoInvisibles",
     "TooManyBlanks",
     "PreferStandardInt",
-    "NoTodo"
+    "NoTodo",
+    "IdentifierTooLong"
 ]
