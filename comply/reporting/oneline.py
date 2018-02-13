@@ -2,6 +2,8 @@
 
 import os
 
+from comply.rules import RuleViolation
+
 from comply.reporting.base import Reporter
 
 
@@ -34,8 +36,14 @@ class OneLineReporter(Reporter):
                 else:
                     location = '{0}:{1}:'.format(absolute_path, line)
 
-                why = '{0} [{1}]'.format(reason, violation.which.name)
-                output = '{0} warning: {1}'.format(location, why)
+                rule = violation.which
+
+                severity = ('error' if rule.severity > RuleViolation.WARN else
+                            ('warning' if rule.severity > RuleViolation.ALLOW else
+                             'note'))
+
+                why = '{0} [{1}]'.format(reason, rule.name)
+                output = '{0} {1}: {2}'.format(location, severity, why)
 
                 results.append(output)
 

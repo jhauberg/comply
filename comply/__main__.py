@@ -85,7 +85,7 @@ def make_reporter(reporting_mode: str) -> Reporter:
     return Reporter()
 
 
-def make_rules(names: list, exceptions: list) -> list:
+def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
     """ Return a list of rules to run checks on. """
 
     rules = [
@@ -115,6 +115,12 @@ def make_rules(names: list, exceptions: list) -> list:
         rules = [rule for rule
                  in rules
                  if rule.name in names]
+    else:
+        if not is_strict:
+            # remove any rules of low severity
+            rules = [rule for rule
+                     in rules
+                     if rule.severity > RuleViolation.ALLOW]
 
     if len(exceptions) > 0:
         # don't run checks for certain rules
@@ -122,7 +128,10 @@ def make_rules(names: list, exceptions: list) -> list:
                  in rules
                  if rule.name not in exceptions]
 
-    return sorted(rules, key=lambda rule: rule.collection_hint)
+    # sort rules in descending order, first by severity, then collection hint,
+    # making sure severe violations are listed before less severe violations
+    return sorted(rules, reverse=True, key=lambda rule: (rule.severity,
+                                                         rule.collection_hint))
 
 
 def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
@@ -155,15 +164,17 @@ def main():
 
     arguments = docopt(__doc__, version='comply ' + __version__)
 
+    is_strict = arguments['--strict']
+
     checks = arguments['--check']
     exceptions = arguments['--except']
 
-    rules = make_rules(checks, exceptions)
+    rules = make_rules(checks, exceptions, is_strict)
 
     reporting_mode = arguments['--reporter']
 
     reporter = make_reporter(reporting_mode)
-    reporter.suppress_similar = not arguments['--strict']
+    reporter.suppress_similar = not is_strict
     reporter.is_verbose = arguments['--verbose']
 
     if arguments['--limit'] is not None:
