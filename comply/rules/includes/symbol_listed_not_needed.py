@@ -14,7 +14,8 @@ class SymbolListedNotNeeded(Rule):
     def __init__(self):
         Rule.__init__(self, name='symbol-listed-not-needed',
                       description='Unused symbol \'{symbol}\' should not be listed as needed',
-                      suggestion='Remove symbol \'{symbol}\' from list.')
+                      suggestion='Remove symbol \'{symbol}\' from list.',
+                      expects_original_text=True)  # must use original text including comments
 
     def augment(self, violation: RuleViolation):
         from_index, to_index = violation.meta['range'] if 'range' in violation.meta else (0, 0)
