@@ -15,6 +15,10 @@ class NoTodo(Rule):
                       suggestion='Consider promoting this issue to a full report in your issue tracker.',
                       expects_original_text=True)
 
+    @property
+    def severity(self):
+        return RuleViolation.ALLOW
+
     def augment(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
 
