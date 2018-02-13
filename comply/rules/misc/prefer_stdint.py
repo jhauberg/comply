@@ -2,6 +2,8 @@
 
 import re
 
+from collections import OrderedDict
+
 from comply.rules import Rule, RuleViolation
 
 from comply.printing import Colors
@@ -39,8 +41,8 @@ class PreferStandardInt(Rule):
         'signed int':         ('int32_t',  match_signed('int')),
         'int':                ('int32_t',  match_exactly('int')),
         'unsigned long':      ('uint32_t', match_unsigned('long')),
-        'signed long':        ('int32_t', match_signed('long')),
-        'long':               ('int32_t', match_exactly('long')),
+        'signed long':        ('int32_t',  match_signed('long')),
+        'long':               ('int32_t',  match_exactly('long')),
         'unsigned long long': ('uint64_t', match_unsigned('long long')),
         'signed long long':   ('int64_t',  match_signed('long long')),
         'long long':          ('int64_t',  match_exactly('long long')),
@@ -60,10 +62,17 @@ class PreferStandardInt(Rule):
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
+        columns_collected = []
+
         lines = text.splitlines()
 
-        for int_type in PreferStandardInt.INT_TYPES:
-            prefer_type, pattern = PreferStandardInt.INT_TYPES[int_type]
+        int_types = [int_type for int_type in PreferStandardInt.INT_TYPES]
+        # sort by length of type
+        sorted_int_types = sorted(int_types, key=lambda int_type: len(int_type.split(' ')))
+
+        # go through each type, but reversed so that we start with the longest types
+        for int_type in reversed(sorted_int_types):
+            prefer_int_type, pattern = PreferStandardInt.INT_TYPES[int_type]
 
             for int_match in re.finditer(pattern, text):
                 if not int_match.group(1):
@@ -72,9 +81,14 @@ class PreferStandardInt(Rule):
 
                 line_number, column = RuleViolation.at(int_match.start(), text)
 
+                if column in columns_collected:
+                    continue
+
+                columns_collected.append(column)
+
                 offender = self.violate(at=(line_number, column),
                                         lines=[(line_number, lines[line_number - 1])],
-                                        meta={'stdint': prefer_type,
+                                        meta={'stdint': prefer_int_type,
                                               'int': int_type,
                                               'range': (column - 1, column - 1 + len(int_type))})
 
