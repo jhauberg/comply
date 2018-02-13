@@ -2,38 +2,65 @@
 
 import re
 
-from comply.rules.comments.pattern import COMMENT_BLOCK_PATTERN
+from comply.rules.comments.pattern import COMMENT_BLOCK_PATTERN, COMMENT_LINE_PATTERN
 from comply.rules.functions.pattern import FUNC_BODY_PATTERN
 
 from comply.util.scope import depth
 
 
-def strip_block_comments(text: str) -> str:
-    """ Remove any block-style comments from a text.
+def strip_comments(text: str, patterns: list) -> str:
+    """ Remove any comments matching provided patterns from a text.
 
-        Any stripped line is replaced by "<IGNORE>\n".
+        Any fully stripped line is replaced by "<IGNORE>\n" to avoid triggering [too-many-blanks].
     """
 
     stripped = text
 
-    comment_pattern = COMMENT_BLOCK_PATTERN
-    comment_match = re.search(comment_pattern, stripped)
+    for pattern in patterns:
+        comment_match = re.search(pattern, stripped)
 
-    while comment_match is not None:
-        comment = comment_match.group(0)
+        while comment_match is not None:
+            comment = comment_match.group(0)
 
-        from_index = comment_match.start()
-        to_index = comment_match.end()
+            from_index = comment_match.start()
+            to_index = comment_match.end()
 
-        # strip entire comment block, leaving newlines and a hint in place to ensure that
-        # line numbering remains correct; the hint makes sure we don't violate [too-many-blanks]
-        replacement = '<IGNORE>\n' * comment.count('\n')
+            # strip entire comment, leaving newlines and a hint in place to ensure that line
+            # numbering remains correct; the hint makes sure we don't violate [too-many-blanks]
+            replacement = '<IGNORE>\n' * comment.count('\n')
 
-        stripped = stripped[:from_index] + replacement + stripped[to_index:]
+            stripped = stripped[:from_index] + replacement + stripped[to_index:]
 
-        comment_match = re.search(comment_pattern, stripped)
+            comment_match = re.search(pattern, stripped)
 
     return stripped
+
+
+def strip_any_comments(text: str) -> str:
+    """ Remove both line- and block-style comments from a text.
+
+        Any fully stripped line is replaced by "<IGNORE>\n" to avoid triggering [too-many-blanks].
+    """
+
+    return strip_comments(text, [COMMENT_BLOCK_PATTERN, COMMENT_LINE_PATTERN])
+
+
+def strip_line_comments(text: str) -> str:
+    """ Remove any line-style comments from a text.
+
+        Any fully stripped line is replaced by "<IGNORE>\n" to avoid triggering [too-many-blanks].
+    """
+
+    return strip_comments(text, [COMMENT_LINE_PATTERN])
+
+
+def strip_block_comments(text: str) -> str:
+    """ Remove any block-style comments from a text.
+
+        Any fully stripped line is replaced by "<IGNORE>\n" to avoid triggering [too-many-blanks].
+    """
+
+    return strip_comments(text, [COMMENT_BLOCK_PATTERN])
 
 
 def strip_function_bodies(text: str) -> str:
