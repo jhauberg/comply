@@ -34,34 +34,53 @@ class NoRedundantConst(Rule):
 
         # match prototypes
         pattern = FUNC_PROT_PATTERN
-        # match redundant const qualifiers for a list of arguments (e.g. <params>)
-        pattern_const = r'\b(const)\b\s*\w*(?:\s*[,)]|$)'
 
-        for function_match in re.finditer(pattern, text):
+        from comply.util.stripping import strip_function_bodies
+
+        # weed out potential false-positives by stripping the bodies of function implementations
+        # outer most functions will remain as a collapsed body
+        text_without_bodies = strip_function_bodies(text)
+
+        for function_match in re.finditer(pattern, text_without_bodies):
             function_parameters = function_match.group('params')
-            function_result = function_match.group(0)
+            function_result = function_match.group()
 
-            function_linenumber, function_column = RuleViolation.at(function_match.start(), text)
+            function_linenumber, function_column = RuleViolation.at(function_match.start(),
+                                                                    text_without_bodies)
 
-            for redundant_const_match in re.finditer(pattern_const, function_parameters):
-                const_start, const_end = (redundant_const_match.start(1),
-                                          redundant_const_match.end(1))
+            param_index = function_match.start('params')
 
-                offending_index = (function_match.start('params') +
-                                   const_start)
+            # naively splitting by comma (macros may cause trouble here)
+            params = function_parameters.split(',')
 
-                linenumber, column = RuleViolation.at(offending_index, text)
+            for param in params:
+                param_components = param.split('*')
 
-                diff = function_match.start('params') - function_match.start()
+                # take the last element; this should always be the right-most component
+                # even if there's no stars in the parameter
+                last_param_component = param_components[-1]
 
-                _, leading_space = RuleViolation.at(function_match.start(), text)
+                if ('const' in last_param_component and
+                        ('[' not in last_param_component and ']' not in last_param_component)):
+                    up_to = len(param[:-len(last_param_component)]) + last_param_component.index('const')
 
-                offender = self.violate(at=(linenumber, column),
-                                        lines=[(function_linenumber, function_result)],
-                                        meta={'leading_space': leading_space - 1,
-                                              'range': (diff + const_start,
-                                                        diff + const_end)})
+                    param_index_in_function_result = param_index - function_match.start()
+                    const_index_in_function_result = param_index_in_function_result + up_to
 
-                offenders.append(offender)
+                    offending_range = (const_index_in_function_result,
+                                       const_index_in_function_result + len('const'))
+
+                    offending_index = param_index + up_to
+                    offending_line_number, offending_column = RuleViolation.at(offending_index,
+                                                                               text_without_bodies)
+
+                    offender = self.violate(at=(offending_line_number, offending_column),
+                                            lines=[(function_linenumber, function_result)],
+                                            meta={'leading_space': function_column - 1,
+                                                  'range': offending_range})
+
+                    offenders.append(offender)
+
+                param_index += len(param) + 1  # +1 to account for the split by ','
 
         return offenders
