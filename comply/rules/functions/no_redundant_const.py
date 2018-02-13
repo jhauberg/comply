@@ -25,7 +25,9 @@ class NoRedundantConst(Rule):
                           Colors.bad + function_line[from_index:to_index] + Colors.clear +
                           function_line[to_index:])
 
-        violation.lines[0] = (function_linenumber, augmented_line)
+        leading_space = violation.meta['leading_space'] if 'leading_space' in violation.meta else 0
+
+        violation.lines[0] = (function_linenumber, (' ' * leading_space) + augmented_line)
 
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
@@ -52,9 +54,12 @@ class NoRedundantConst(Rule):
 
                 diff = function_match.start('params') - function_match.start()
 
+                _, leading_space = RuleViolation.at(function_match.start(), text)
+
                 offender = self.violate(at=(linenumber, column),
                                         lines=[(function_linenumber, function_result)],
-                                        meta={'range': (diff + const_start,
+                                        meta={'leading_space': leading_space - 1,
+                                              'range': (diff + const_start,
                                                         diff + const_end)})
 
                 offenders.append(offender)
