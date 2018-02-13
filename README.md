@@ -14,7 +14,7 @@ Compilers do not usually care how you write your code. They're happy as long as 
 
 `comply` is a standard/style compliance checker (or linter) that uses static code analysis to look for things that could be improved. _It is not a compiler_- as such, it will not find errors in your code.
 
-![](assets/example.png "An example of reported rule violations in Xcode")
+![](assets/example.png "An example of reported violations in Xcode")
 
 *It is recommended to always enable all warnings and errors that your compiler provides and only use `comply` as a supplement.*
 
@@ -23,6 +23,8 @@ Compilers do not usually care how you write your code. They're happy as long as 
 `comply` defines and applies some (highly) opinionated and strict rules and conventions on best practices for writing C99 that is both readable and maintainable.
 
 Following these rules will help enforce consistency and improve maintainability throughout your project. You might not like some of them, but each has thought and reasoning behind it.
+
+![](assets/example_terminal.png "An example of reported violations using the Human reporting mode in a terminal")
 
 You can read more about the thoughts behind each rule on the [project page](http://jhauberg.github.io/comply).
 
@@ -212,7 +214,7 @@ Options:
   -r --reporter=<name>    Specify type of reported output [default: human]
   -c --check=<rule>       Only run checks for a specific rule
   -e --except=<rule>      Don't run checks for a specific rule
-  -i --limit=<amount>     Specify a limit on how many violations to report
+  -i --limit=<amount>     Limit the amount of reported violations
   -s --strict             Show all violations (similar violations not suppressed)
   -v --verbose            Show diagnostic messages
   -h --help               Show program help
