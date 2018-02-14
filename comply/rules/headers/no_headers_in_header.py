@@ -28,10 +28,12 @@ class NoHeadersInHeader(Rule):
 
         pattern = INCLUDE_PATTERN
 
-        inclusion = re.search(pattern, text)
-
-        if inclusion is not None:
+        for inclusion in re.finditer(pattern, text):
             include_statement = inclusion.group(0)
+
+            if ('<stdint.h>' in include_statement or '<inttypes.h>' in include_statement or
+                    '<stdbool.h>' in include_statement):
+                continue
 
             offending_index = inclusion.start()
 
@@ -44,6 +46,8 @@ class NoHeadersInHeader(Rule):
                                     meta={'inclusion': include_statement})
 
             offenders.append(offender)
+
+            break
 
         return offenders
 
