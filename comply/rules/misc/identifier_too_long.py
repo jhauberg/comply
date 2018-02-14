@@ -13,7 +13,6 @@ class IdentifierTooLong(Rule):
                       description='Identifier is too long ({length} > {max})',
                       suggestion='Use a shorter name.')
 
-    # https://stackoverflow.com/questions/2352209/max-identifier-length
     MAX = 31
 
     def augment(self, violation: RuleViolation):
@@ -31,27 +30,23 @@ class IdentifierTooLong(Rule):
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
-        pattern = r'\b\w+\b'
-
         lines = text.splitlines()
 
-        for identifier_match in re.finditer(pattern, text):
-            identifier = identifier_match.group(0)
-
-            line_number, column = RuleViolation.at(identifier_match.start(), text)
-            line_index = line_number - 1
-
-            line = lines[line_index]
-
+        def check_identifier(identifier: str, occurrence: (int, int)):
             max_identifier_length = IdentifierTooLong.MAX
 
             identifier_length = len(identifier)
 
             if identifier_length > max_identifier_length:
+                line_number, column = occurrence
+                line_index = line_number - 1
+
+                line = lines[line_index]
+
                 identifier_start_index = column - 1
                 identifier_end_index = identifier_start_index + identifier_length
 
-                offender = self.violate(at=(line_number, column),
+                offender = self.violate(at=occurrence,
                                         lines=[(line_number, line)],
                                         meta={'length': identifier_length,
                                               'max': max_identifier_length,
@@ -59,5 +54,10 @@ class IdentifierTooLong(Rule):
                                                         identifier_end_index)})
 
                 offenders.append(offender)
+
+        for identifier_match in re.finditer(r'\b\w+\b', text):
+            occurrence = RuleViolation.at(identifier_match.start(), text)
+
+            check_identifier(identifier_match.group(), occurrence)
 
         return offenders
