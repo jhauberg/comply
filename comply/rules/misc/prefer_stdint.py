@@ -62,7 +62,7 @@ class PreferStandardInt(Rule):
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
-        columns_collected = []
+        ranges_collected = []
 
         lines = text.splitlines()
 
@@ -79,12 +79,22 @@ class PreferStandardInt(Rule):
                     # expect actual match in first group (a match may occur without a capture)
                     continue
 
-                line_number, column = RuleViolation.at(int_match.start(), text)
+                type_already_collected = False
 
-                if column in columns_collected:
+                for collected_type_start, collected_type_end in ranges_collected:
+                    if collected_type_start <= int_match.start(1) <= collected_type_end:
+                        type_already_collected = True
+
+                        break
+
+                if type_already_collected:
                     continue
 
-                columns_collected.append(column)
+                line_number, column = RuleViolation.at(int_match.start(), text)
+
+                int_type_range = (int_match.start(1), int_match.end(1))
+
+                ranges_collected.append(int_type_range)
 
                 offender = self.violate(at=(line_number, column),
                                         lines=[(line_number, lines[line_number - 1])],
