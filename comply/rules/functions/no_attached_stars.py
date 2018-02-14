@@ -8,7 +8,6 @@ from comply.rules.functions.pattern import FUNC_BOTH_PATTERN
 from comply.printing import Colors
 
 
-# todo: naming
 class NoAttachedStars(Rule):
     def __init__(self):
         Rule.__init__(self, name='no-attached-stars',

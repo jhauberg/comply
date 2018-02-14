@@ -58,6 +58,8 @@ class TooManyParams(Rule):
                                                                     text_without_bodies)
 
             max_params = TooManyParams.MAX
+
+            # naively splitting by comma (macros may cause trouble here)
             number_of_params = len(function_parameters.split(','))
 
             if number_of_params > max_params:

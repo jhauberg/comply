@@ -89,7 +89,6 @@ class FunctionTooLong(Rule):
                         func_inner_depth = depth(func_body_start_index + i, text)
 
                         if func_inner_depth == 0:
-                            # todo: line number in this context is start of function body
                             line_number, column = RuleViolation.at(func_body_start_index, text)
 
                             body = text[func_body_start_index:func_body_start_index + i]
