@@ -11,8 +11,12 @@ from comply.printing import Colors
 class NoHeadersInHeader(Rule):
     def __init__(self):
         Rule.__init__(self, name='no-headers-in-header',
-                      description='Header files should not include any other headers',
-                      suggestion='Replace \'{inclusion}\' with a forward-declaration for each needed type.')
+                      description='Avoid including headers in header files',
+                      suggestion='If possible, replace \'{inclusion}\' with a forward-declaration for each needed type.')
+
+    @property
+    def severity(self):
+        return RuleViolation.ALLOW
 
     def augment(self, violation: RuleViolation):
         # assume only one offending line
