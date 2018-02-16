@@ -53,9 +53,9 @@ class NoRedundantName(Rule):
                     func_param_name = type_components[-1]  # last or right-most component
                     func_param_types = type_components[:-1]
 
-                    types = [x.group() for x in func_param_types]
+                    types = [x.group().lower() for x in func_param_types]
 
-                    if func_param_name.group() in types:
+                    if func_param_name.group().lower() in types:
                         param_start = func_param.start(1) + func_param_name.start()
                         param_end = func_param.end(1)
 
