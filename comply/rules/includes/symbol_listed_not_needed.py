@@ -43,6 +43,10 @@ class SymbolListedNotNeeded(Rule):
                 symbols_list = suffix[2:]
                 symbols = [symbol.strip() for symbol in symbols_list.split(',')]
 
+                if '*' in symbols:
+                    # a single star means everything will be matched; no violations can occur
+                    continue
+
                 for symbol in symbols:
                     # search for symbol usage after include statement
                     text_after_usage = text[inclusion.end():]
@@ -67,6 +71,8 @@ class SymbolListedNotNeeded(Rule):
 
 
 def has_symbol_usage(symbol: str, text: str) -> bool:
+    """ Determine whether a symbol occurs in a text. """
+
     # star matches any non-whitespace character
     symbol = symbol.replace('*', '\S*?')
     # match any use of symbol as a stand-alone element
