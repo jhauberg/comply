@@ -15,6 +15,10 @@ class IdentifierTooLong(Rule):
 
     MAX = 31
 
+    @property
+    def severity(self):
+        return RuleViolation.ALLOW
+
     def augment(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
 
