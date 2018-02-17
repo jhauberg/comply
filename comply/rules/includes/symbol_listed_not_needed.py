@@ -48,10 +48,15 @@ class SymbolListedNotNeeded(Rule):
                     continue
 
                 for symbol in symbols:
+                    symbol_components = symbol.split(' as ')
+
+                    symbol_type = symbol_components[0].strip()
+                    sought_symbol = symbol_components[-1].strip()
+
                     # search for symbol usage after include statement
                     text_after_usage = text[inclusion.end():]
 
-                    if not has_symbol_usage(symbol, text_after_usage):
+                    if not has_symbol_usage(sought_symbol, text_after_usage):
                         offending_index = text.index(symbol, inclusion.start(1), inclusion.end())
 
                         linenumber, column = RuleViolation.at(offending_index, text)
@@ -62,7 +67,7 @@ class SymbolListedNotNeeded(Rule):
 
                         offender = self.violate(at=(linenumber, column),
                                                 lines=[offending_line],
-                                                meta={'symbol': symbol,
+                                                meta={'symbol': symbol_type,
                                                       'range': (column - 1, column - 1 + len(symbol))})
 
                         offenders.append(offender)
