@@ -115,4 +115,4 @@ class Reporter:
     def suppress_after(self) -> int:
         """ Return the number of similar violations emitted before being suppressed. """
 
-        return 2
+        return 1

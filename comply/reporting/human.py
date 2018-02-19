@@ -13,10 +13,6 @@ from comply.util.truncation import truncated, Ellipsize
 class HumanReporter(Reporter):
     """ Provides reporting output (including suggestions) formatted for human readers. """
 
-    @property
-    def suppress_after(self):
-        return 1
-
     def report(self, violations: list, path: str):
         # determine absolute path of file
         absolute_path = os.path.abspath(path)
