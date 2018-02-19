@@ -18,6 +18,10 @@ class FunctionTooLong(Rule):
 
     MAX = 40
 
+    @property
+    def severity(self):
+        return RuleViolation.ALLOW
+
     def augment(self, violation: RuleViolation):
         name = violation.meta['func'] if 'func' in violation.meta else '<unknown>'
         line_number = violation.meta['line'] if 'line' in violation.meta else 0
