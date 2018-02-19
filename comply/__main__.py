@@ -186,7 +186,7 @@ def main():
 
     if not comply.printing.results.isatty() and reporter.suppress_similar:
         printdiag('Suppressing similar violations; results may be omitted '
-                  '(set --strict to disable)')
+                  '(set --strict to show everything)')
 
     inputs = arguments['<input>']
 
