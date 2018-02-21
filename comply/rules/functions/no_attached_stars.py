@@ -33,7 +33,7 @@ class NoAttachedStars(Rule):
 
         text_without_literals = strip_literals(text)
 
-        star_pattern = r'\*[^\s,*()=]|[^\s*()]\*'
+        star_pattern = r'\*[^\s,*()=0-9]|[^\s*()0-9]\*'
 
         for star_match in re.finditer(star_pattern, text_without_literals):
             offending_index = star_match.start()
