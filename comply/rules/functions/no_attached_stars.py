@@ -10,8 +10,8 @@ from comply.printing import Colors
 class NoAttachedStars(Rule):
     def __init__(self):
         Rule.__init__(self, name='no-attached-stars',
-                      description='Pointer stars should be padded with space on both sides',
-                      suggestion='Add spacing to the {left_or_right} of the pointer star.')
+                      description='Asterisks should be padded with space on both sides',
+                      suggestion='Add spacing to the {left_or_right} of the asterisk.')
 
     def augment(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
@@ -33,7 +33,7 @@ class NoAttachedStars(Rule):
 
         text_without_literals = strip_literals(text)
 
-        star_pattern = r'\*[^\s,*()=0-9]|[^\s*()0-9]\*'
+        star_pattern = r'\*[^\s,*()=]|[^\s*()]\*'
 
         for star_match in re.finditer(star_pattern, text_without_literals):
             offending_index = star_match.start()
@@ -45,7 +45,7 @@ class NoAttachedStars(Rule):
             for i in range(index_left_of_star, 0, -1):
                 c = text_without_literals[i]
 
-                if c in [',', '=', '!', '+', '-', '/', '(', ')', '[', ']', '\r', '\n']:
+                if c in [',', ';', '=', '!', '+', '-', '/', '(', ')', '[', ']', '\r', '\n']:
                     # found a character that signifies this is probably a dereferencing pointer
                     break
                 else:
