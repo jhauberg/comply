@@ -40,7 +40,9 @@ class NoAttachedStars(Rule):
 
             is_probably_dereference = True
 
-            for i in range(offending_index - 1, 0, -1):
+            index_left_of_star = offending_index + star_match.group().index('*') - 1
+
+            for i in range(index_left_of_star, 0, -1):
                 c = text_without_literals[i]
 
                 if c in [',', '=', '!', '+', '-', '/', '(', ')', '[', ']', '\r', '\n']:
