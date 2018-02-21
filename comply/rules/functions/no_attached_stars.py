@@ -27,47 +27,50 @@ class NoAttachedStars(Rule):
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
-        pattern = r'\((?P<params>[^!@#$+%^{};()]*)\)'
-
         lines = text.splitlines()
 
+        from comply.util.stripping import strip_literals
 
-        for function_match in re.finditer(pattern, text):
-            function_parameters = function_match.group('params')
+        text_without_literals = strip_literals(text)
 
-            star_pattern = r'\*[^\s,*]|[^\s*]\*'
+        star_pattern = r'\*[^\s,*()=]|[^\s*()]\*'
 
-            for star_match in re.finditer(star_pattern, function_parameters):
-                is_probably_dereference = True
+        for star_match in re.finditer(star_pattern, text_without_literals):
+            offending_index = star_match.start()
 
-                for i in range(star_match.start() - 1, 0, -1):
-                    if function_parameters[i] == ',':
-                        break
+            is_probably_dereference = True
 
-                    if function_parameters[i] != ' ':
+            for i in range(offending_index - 1, 0, -1):
+                c = text_without_literals[i]
+
+                if c in [',', '=', '!', '+', '-', '/', '(', ')', '[', ']', '\r', '\n']:
+                    # found a character that signifies this is probably a dereferencing pointer
+                    break
+                else:
+                    if c not in [' ', '\t']:
+                        # found a character that signifies this is likely a declaration pointer
                         is_probably_dereference = False
 
                         break
 
-                if not is_probably_dereference:
-                    offending_index = function_match.start('params') + star_match.start()
+            if not is_probably_dereference:
+                offending_line_number, offending_column = RuleViolation.at(offending_index,
+                                                                           text_without_literals)
 
-                    offending_line_number, offending_column = RuleViolation.at(offending_index,
-                                                                               text)
+                line = lines[offending_line_number - 1]
 
-                    line = lines[offending_line_number - 1]
+                length = star_match.end() - star_match.start()
 
-                    length = star_match.end() - star_match.start()
+                offending_range = (offending_column - 1, offending_column - 1 + length)
+                offending_snippet = star_match.group()
 
-                    offending_range = (offending_column - 1, offending_column - 1 + length)
+                left_or_right = 'right' if offending_snippet.startswith('*') else 'left'
 
-                    left_or_right = 'right' if star_match.group().startswith('*') else 'left'
+                offender = self.violate(at=(offending_line_number, offending_column),
+                                        lines=[(offending_line_number, line)],
+                                        meta={'left_or_right': left_or_right,
+                                              'range': offending_range})
 
-                    offender = self.violate(at=(offending_line_number, offending_column),
-                                            lines=[(offending_line_number, line)],
-                                            meta={'left_or_right': left_or_right,
-                                                  'range': offending_range})
-
-                    offenders.append(offender)
+                offenders.append(offender)
 
         return offenders
