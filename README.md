@@ -6,15 +6,15 @@
 
 `comply` is a style compliance checker (or linter) for sources written in C99.
 
-Its goal is to help programmers write better code by making consistency and style issues apparent and obvious.
+Its goal is to help programmers write better code by making style issues apparent and obvious.
 
-**Improve your code**
+**Writing better code**
 
-By way of static code analysis (see [Pattern matching](#pattern-matching)), `comply` looks for things that could be improved in terms of readability and consistency and provides helpful hints and suggestions.
+By way of static code analysis (see [Pattern matching](#pattern-matching)), `comply` looks for things that could be improved in terms of either *readability*, *maintainability* or *consistency* and provides helpful hints and suggestions on how to apply it.
 
 ![](assets/example.png "An example of reported violations in Xcode")
 
-> *It's recommended to always enable all warnings and errors that your compiler provides and use `comply` as a supplement.*
+> *It's recommended to always enable all warnings and errors that your compiler provides and use `comply` only as a supplement.*
 
 **Strict style compliance**
 
