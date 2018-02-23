@@ -152,6 +152,23 @@ def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
     return report
 
 
+def expand_identifiers(identifiers: list) -> list:
+    """ Return an expanded list of identifiers from a list of (potentially) comma-separated
+        identifiers.
+
+        E.g. given a list of ['a', 'b,c,d'], returns ['a', 'b', 'c', 'd']
+    """
+
+    expanded_identifiers = []
+
+    for identifier in identifiers:
+        expanded_identifiers.extend(
+            [i.strip() for i in
+             identifier.split(',')])
+
+    return expanded_identifiers
+
+
 def main():
     """ Entry point for invoking the comply module. """
 
@@ -170,8 +187,8 @@ def main():
 
     is_strict = arguments['--strict']
 
-    checks = arguments['--check']
-    exceptions = arguments['--except']
+    checks = expand_identifiers(arguments['--check'])
+    exceptions = expand_identifiers(arguments['--except'])
 
     rules = make_rules(checks, exceptions, is_strict)
 
