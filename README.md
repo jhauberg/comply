@@ -4,19 +4,11 @@
 
 <br/>
 
-What are the best practices for well-written, readable and maintainable C?
-
-I think we can all agree that opinions on these topics are numerous. You probably have one too.
-
-Compilers do not usually care how you write your code. They're happy as long as it does not contain errors. Humans, however, do (or at least, _should_) care. This project is for the humans.
-
-**Improve your code**
-
-`comply` is a standard/style compliance checker (or linter) that uses static code analysis to look for things that could be improved. _It is not a compiler_- as such, it will not find errors in your code.
+`comply` is a style compliance checker (or linter) for sources written in C99 that uses static code analysis through pattern matching to look for things that could be improved.
 
 ![](assets/example.png "An example of reported violations in Xcode")
 
-*It is recommended to always enable all warnings and errors that your compiler provides and only use `comply` as a supplement.*
+<sub>*It's recommended to always enable all warnings and errors that your compiler provides and use `comply` as a supplement.*</sub>
 
 **Strict style compliance**
 
@@ -27,6 +19,12 @@ Following these rules will help enforce consistency and improve maintainability 
 ![](assets/example_terminal.png "An example of reported violations using the Human reporting mode in a terminal")
 
 You can read more about the thoughts behind each rule on the [project page](http://jhauberg.github.io/comply).
+
+**Pattern matching**
+
+Unlike most linters, `comply` primarily use Regex and pattern matching to determine violations. This makes `comply` *worse* than the alternatives (e.g. `clang-tidy`) in some cases, and may even have a higher tendency toward false-positives which a compiler-backed linter would not.
+
+On the upside, it allows `comply` to be much more lean in terms of dependencies, and, I dare say, friendlier and easier to get into for people wishing to add or improve functionality.
 
 ## Installation
 
@@ -221,17 +219,7 @@ Options:
   --version               Show program version
 ```
 
-## Why make this?
 
-I wanted a strict style checker for my code, but wasn't able to find any that **1) was strict enough**, or **2) was usable right away without setup** and **3) did not rely on compiler libraries**.
-
-So I just started working on one. Turns out it's a fun project, and so I kept at it.
-
-But. This project is by no means a unique little snowflake. There's a bunch of alternatives.
-
-A downside to this checker is that the rules engine heavily relies on parsing and searching by Regex and is unlikely to ever be the fastest or best at its job- in theory, checkers utilizing compiler libraries should produce more reliable results.
-
-It does, however, work out great for my needs.
 
 ## License
 
