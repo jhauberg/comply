@@ -14,6 +14,10 @@ class TooManyFunctions(Rule):
 
     MAX = 7
 
+    @property
+    def severity(self):
+        return RuleViolation.ALLOW
+
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
 

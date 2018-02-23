@@ -12,7 +12,8 @@ class ListNeededSymbols(Rule):
     def __init__(self):
         Rule.__init__(self, name='list-needed-symbols',
                       description='Include statements should indicate which symbols are needed',
-                      suggestion='Add a comment immediately after include statement, listing each needed symbol.')
+                      suggestion='Add a comment immediately after include statement, listing each needed symbol.',
+                      expects_original_text=True)  # must use original text including comments
 
     def augment(self, violation: RuleViolation):
         # assume only one offending line

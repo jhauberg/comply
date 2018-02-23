@@ -14,7 +14,8 @@ class SymbolListedNotNeeded(Rule):
     def __init__(self):
         Rule.__init__(self, name='symbol-listed-not-needed',
                       description='Unused symbol \'{symbol}\' should not be listed as needed',
-                      suggestion='Remove symbol \'{symbol}\' from list.')
+                      suggestion='Remove symbol \'{symbol}\' from list.',
+                      expects_original_text=True)  # must use original text including comments
 
     def augment(self, violation: RuleViolation):
         from_index, to_index = violation.meta['range'] if 'range' in violation.meta else (0, 0)
@@ -42,11 +43,20 @@ class SymbolListedNotNeeded(Rule):
                 symbols_list = suffix[2:]
                 symbols = [symbol.strip() for symbol in symbols_list.split(',')]
 
+                if '*' in symbols:
+                    # a single star means everything will be matched; no violations can occur
+                    continue
+
                 for symbol in symbols:
+                    symbol_components = symbol.split(' as ')
+
+                    symbol_type = symbol_components[0].strip()
+                    sought_symbol = symbol_components[-1].strip()
+
                     # search for symbol usage after include statement
                     text_after_usage = text[inclusion.end():]
 
-                    if not has_symbol_usage(symbol, text_after_usage):
+                    if not has_symbol_usage(sought_symbol, text_after_usage):
                         offending_index = text.index(symbol, inclusion.start(1), inclusion.end())
 
                         linenumber, column = RuleViolation.at(offending_index, text)
@@ -57,7 +67,7 @@ class SymbolListedNotNeeded(Rule):
 
                         offender = self.violate(at=(linenumber, column),
                                                 lines=[offending_line],
-                                                meta={'symbol': symbol,
+                                                meta={'symbol': symbol_type,
                                                       'range': (column - 1, column - 1 + len(symbol))})
 
                         offenders.append(offender)
@@ -66,6 +76,8 @@ class SymbolListedNotNeeded(Rule):
 
 
 def has_symbol_usage(symbol: str, text: str) -> bool:
+    """ Determine whether a symbol occurs in a text. """
+
     # star matches any non-whitespace character
     symbol = symbol.replace('*', '\S*?')
     # match any use of symbol as a stand-alone element

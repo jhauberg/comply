@@ -70,6 +70,8 @@ class Colors:
     bad = '\x1b[0;31m'
     good = '\x1b[0;32m'
     warn = '\x1b[0;33m'
+    allow = '\x1b[0;94m'
+    deny = '\x1b[0;31m'
     clear = '\x1b[0m'
 
     @staticmethod

@@ -13,6 +13,10 @@ class NoTabs(Rule):
 
     TAB = '\t'
 
+    @property
+    def severity(self):
+        return RuleViolation.DENY
+
     def augment(self, violation: RuleViolation):
         # assume only one offending line
         linenumber, line = violation.lines[0]

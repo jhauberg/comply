@@ -18,6 +18,10 @@ class FunctionTooLong(Rule):
 
     MAX = 40
 
+    @property
+    def severity(self):
+        return RuleViolation.ALLOW
+
     def augment(self, violation: RuleViolation):
         name = violation.meta['func'] if 'func' in violation.meta else '<unknown>'
         line_number = violation.meta['line'] if 'line' in violation.meta else 0
@@ -89,7 +93,6 @@ class FunctionTooLong(Rule):
                         func_inner_depth = depth(func_body_start_index + i, text)
 
                         if func_inner_depth == 0:
-                            # todo: line number in this context is start of function body
                             line_number, column = RuleViolation.at(func_body_start_index, text)
 
                             body = text[func_body_start_index:func_body_start_index + i]

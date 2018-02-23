@@ -6,7 +6,7 @@ from typing import List
 
 from comply.reporting import Reporter
 from comply.rules import Rule, RuleViolation
-from comply.util.stripping import strip_block_comments
+from comply.util.stripping import strip_any_comments
 
 
 class CheckResult:
@@ -114,7 +114,7 @@ def collect(text: str, filename: str, extension: str, rules: List[Rule]) -> List
     violations = []
 
     # remove block comments to reduce chance of false-positives for stuff that isn't actually code
-    text_without_comments = strip_block_comments(text)
+    text_without_comments = strip_any_comments(text)
 
     for rule in rules:
         text_body = text if rule.expects_original_text else text_without_comments

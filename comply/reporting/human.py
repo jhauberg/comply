@@ -2,6 +2,8 @@
 
 import os
 
+from comply.rules import RuleViolation
+
 from comply.reporting.base import Reporter
 
 from comply.printing import printout, Colors
@@ -10,10 +12,6 @@ from comply.util.truncation import truncated, Ellipsize
 
 class HumanReporter(Reporter):
     """ Provides reporting output (including suggestions) formatted for human readers. """
-
-    @property
-    def suppress_after(self):
-        return 1
 
     def report(self, violations: list, path: str):
         # determine absolute path of file
@@ -43,9 +41,13 @@ class HumanReporter(Reporter):
 
                 location = Colors.vague + '{0}:'.format(truncated_path) + Colors.clear
 
-                why = '{w}{0} {vague}[{1}]'.format(reason, rule.name,
-                                                   w=Colors.warn,
-                                                   vague=Colors.vague) + Colors.clear
+                severity_color = (Colors.deny if rule.severity > RuleViolation.WARN else
+                                  (Colors.warn if rule.severity > RuleViolation.ALLOW else
+                                   Colors.allow))
+
+                why = '{tint}{0} {vague}[{1}]'.format(reason, rule.name,
+                                                      tint=severity_color,
+                                                      vague=Colors.vague) + Colors.clear
 
                 solution = rule.solution(violation)
 

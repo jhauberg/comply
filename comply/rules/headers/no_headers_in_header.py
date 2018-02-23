@@ -11,8 +11,12 @@ from comply.printing import Colors
 class NoHeadersInHeader(Rule):
     def __init__(self):
         Rule.__init__(self, name='no-headers-in-header',
-                      description='Header files should not include any other headers',
-                      suggestion='Replace \'{inclusion}\' with a forward-declaration for each needed type.')
+                      description='Avoid including headers in header files',
+                      suggestion='If possible, replace \'{inclusion}\' with a forward-declaration for each needed type.')
+
+    @property
+    def severity(self):
+        return RuleViolation.ALLOW
 
     def augment(self, violation: RuleViolation):
         # assume only one offending line
@@ -28,10 +32,12 @@ class NoHeadersInHeader(Rule):
 
         pattern = INCLUDE_PATTERN
 
-        inclusion = re.search(pattern, text)
-
-        if inclusion is not None:
+        for inclusion in re.finditer(pattern, text):
             include_statement = inclusion.group(0)
+
+            if ('<stdint.h>' in include_statement or '<inttypes.h>' in include_statement or
+                    '<stdbool.h>' in include_statement):
+                continue
 
             offending_index = inclusion.start()
 
@@ -44,6 +50,8 @@ class NoHeadersInHeader(Rule):
                                     meta={'inclusion': include_statement})
 
             offenders.append(offender)
+
+            break
 
         return offenders
 

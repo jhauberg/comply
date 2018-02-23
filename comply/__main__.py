@@ -14,7 +14,7 @@ Options:
   -r --reporter=<name>    Specify type of reported output [default: human]
   -c --check=<rule>       Only run checks for a specific rule
   -e --except=<rule>      Don't run checks for a specific rule
-  -i --limit=<amount>     Specify a limit on how many violations to report
+  -i --limit=<amount>     Limit the amount of reported violations
   -s --strict             Show all violations (similar violations not suppressed)
   -v --verbose            Show diagnostic messages
   -h --help               Show program help
@@ -85,26 +85,33 @@ def make_reporter(reporting_mode: str) -> Reporter:
     return Reporter()
 
 
-def make_rules(names: list, exceptions: list) -> list:
+def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
     """ Return a list of rules to run checks on. """
 
     rules = [
         headers.GuardHeader(),
         headers.NoHeadersInHeader(),
+        headers.AvoidUnifiedHeaders(),
         includes.ListNeededSymbols(),
         includes.SymbolListedNotNeeded(),
         includes.SymbolNeededNotListed(),
+        includes.NoDuplicateIncludes(),
         functions.NoRedundantConst(),
         functions.TooManyParams(),
         functions.SplitByName(),
         functions.FunctionTooLong(),
         functions.TooManyFunctions(),
         functions.NoRedundantName(),
+        functions.ConstOnRight(),
+        functions.NoAttachedStars(),
+        misc.IdentifierTooLong(),
         misc.TooManyBlanks(),
         misc.NoTabs(),
+        misc.NoTodo(),
         misc.NoInvisibles(),
         misc.LineTooLong(),
-        misc.FileTooLong()
+        misc.FileTooLong(),
+        misc.PreferStandardInt()
     ]
 
     if len(names) > 0:
@@ -112,6 +119,12 @@ def make_rules(names: list, exceptions: list) -> list:
         rules = [rule for rule
                  in rules
                  if rule.name in names]
+    else:
+        if not is_strict:
+            # remove any rules of low severity
+            rules = [rule for rule
+                     in rules
+                     if rule.severity > RuleViolation.ALLOW]
 
     if len(exceptions) > 0:
         # don't run checks for certain rules
@@ -119,7 +132,10 @@ def make_rules(names: list, exceptions: list) -> list:
                  in rules
                  if rule.name not in exceptions]
 
-    return sorted(rules, key=lambda rule: rule.collection_hint)
+    # sort rules in descending order, first by severity, then collection hint,
+    # making sure severe violations are listed before less severe violations
+    return sorted(rules, reverse=True, key=lambda rule: (rule.severity,
+                                                         rule.collection_hint))
 
 
 def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
@@ -152,15 +168,17 @@ def main():
 
     arguments = docopt(__doc__, version='comply ' + __version__)
 
+    is_strict = arguments['--strict']
+
     checks = arguments['--check']
     exceptions = arguments['--except']
 
-    rules = make_rules(checks, exceptions)
+    rules = make_rules(checks, exceptions, is_strict)
 
     reporting_mode = arguments['--reporter']
 
     reporter = make_reporter(reporting_mode)
-    reporter.suppress_similar = not arguments['--strict']
+    reporter.suppress_similar = not is_strict
     reporter.is_verbose = arguments['--verbose']
 
     if arguments['--limit'] is not None:
@@ -168,7 +186,7 @@ def main():
 
     if not comply.printing.results.isatty() and reporter.suppress_similar:
         printdiag('Suppressing similar violations; results may be omitted '
-                  '(set --strict to disable)')
+                  '(set --strict to show everything)')
 
     inputs = arguments['<input>']
 

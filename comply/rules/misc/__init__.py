@@ -5,11 +5,17 @@ from comply.rules.misc.file_too_long import FileTooLong
 from comply.rules.misc.no_tabs import NoTabs
 from comply.rules.misc.no_invisibles import NoInvisibles
 from comply.rules.misc.too_many_blanks import TooManyBlanks
+from comply.rules.misc.prefer_stdint import PreferStandardInt
+from comply.rules.misc.no_todo import NoTodo
+from comply.rules.misc.identifier_too_long import IdentifierTooLong
 
 __all__ = [
     "LineTooLong",
     "FileTooLong",
     "NoTabs",
     "NoInvisibles",
-    "TooManyBlanks"
+    "TooManyBlanks",
+    "PreferStandardInt",
+    "NoTodo",
+    "IdentifierTooLong"
 ]

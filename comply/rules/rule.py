@@ -7,9 +7,13 @@ class RuleViolation:
     """ Represents an occurence of a violated rule. """
 
     """ A hint to indicate that a violation typically only occur once per file. """
-    ONCE_PER_FILE = 0
+    ONCE_PER_FILE = 1
     """ A hint to indicate that a violation may occur more than once per file. """
-    MANY_PER_FILE = 1
+    MANY_PER_FILE = 0
+
+    ALLOW = 0
+    WARN = 1
+    DENY = 2
 
     def __init__(self, which: 'Rule', where: (int, int), lines: List[Tuple[int, str]], meta: dict=None):
         self.which = which
@@ -103,6 +107,12 @@ class Rule:
         """
 
         return []
+
+    @property
+    def severity(self) -> int:
+        """ Return a number indicating the severity of violating this rule. """
+
+        return RuleViolation.WARN
 
     @property
     def collection_hint(self) -> int:

@@ -34,7 +34,9 @@ class TooManyParams(Rule):
                           Colors.bad + function_line[from_index:to_index] + Colors.clear +
                           function_line[to_index:])
 
-        violation.lines[0] = (function_linenumber, augmented_line)
+        leading_space = violation.meta['leading_space'] if 'leading_space' in violation.meta else 0
+
+        violation.lines[0] = (function_linenumber, (' ' * leading_space) + augmented_line)
 
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
@@ -56,13 +58,18 @@ class TooManyParams(Rule):
                                                                     text_without_bodies)
 
             max_params = TooManyParams.MAX
+
+            # naively splitting by comma (macros may cause trouble here)
             number_of_params = len(function_parameters.split(','))
 
             if number_of_params > max_params:
+                _, leading_space = RuleViolation.at(function_match.start(), text)
+
                 offender = self.violate(at=(function_linenumber, function_column),
                                         lines=[(function_linenumber, function_result)],
                                         meta={'count': number_of_params,
                                               'max': max_params,
+                                              'leading_space': leading_space - 1,
                                               'range': (0, len(function_name))})
 
                 offenders.append(offender)

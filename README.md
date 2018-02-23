@@ -4,25 +4,25 @@
 
 <br/>
 
-What are the best practices for well-written, readable and maintainable C?
+`comply` is a style compliance checker (or linter) for sources written in C99.
 
-I think we can all agree that opinions on these topics are numerous. You probably have one too.
+Its goal is to help programmers write better code by making style issues apparent and obvious.
 
-Compilers do not usually care how you write your code. They're happy as long as it does not contain errors. Humans, however, do (or at least, _should_) care. This project is for the humans.
+**Writing better code**
 
-**Improve your code**
+By way of static code analysis (see [Pattern matching](#pattern-matching)), `comply` looks for things that could be improved in terms of either *readability*, *maintainability* or *consistency* and provides helpful hints and suggestions on how to apply it.
 
-`comply` is a standard/style compliance checker (or linter) that uses static code analysis to look for things that could be improved. _It is not a compiler_- as such, it will not find errors in your code.
+![](assets/example.png "An example of reported violations in Xcode")
 
-![](assets/example.png "An example of reported rule violations in Xcode")
-
-*It is recommended to always enable all warnings and errors that your compiler provides and only use `comply` as a supplement.*
+> *It's recommended to always enable all warnings and errors that your compiler provides and use `comply` only as a supplement.*
 
 **Strict style compliance**
 
 `comply` defines and applies some (highly) opinionated and strict rules and conventions on best practices for writing C99 that is both readable and maintainable.
 
 Following these rules will help enforce consistency and improve maintainability throughout your project. You might not like some of them, but each has thought and reasoning behind it.
+
+![](assets/example_terminal.png "An example of reported violations using the Human reporting mode in a terminal")
 
 You can read more about the thoughts behind each rule on the [project page](http://jhauberg.github.io/comply).
 
@@ -204,7 +204,7 @@ Make your C follow the rules
 
 Usage:
   comply <input>... [--reporter=<name>] [--check=<rule>]... [--except=<rule>]...
-                    [--verbose] [--strict]
+                    [--limit=<amount>] [--verbose] [--strict]
   comply -h | --help
   comply --version
 
@@ -212,23 +212,20 @@ Options:
   -r --reporter=<name>    Specify type of reported output [default: human]
   -c --check=<rule>       Only run checks for a specific rule
   -e --except=<rule>      Don't run checks for a specific rule
+  -i --limit=<amount>     Limit the amount of reported violations
   -s --strict             Show all violations (similar violations not suppressed)
   -v --verbose            Show diagnostic messages
   -h --help               Show program help
   --version               Show program version
 ```
 
-## Why make this?
+## Other linters
 
-I wanted a strict style checker for my code, but wasn't able to find any that **1) was strict enough**, or **2) was usable right away without setup** and **3) did not rely on compiler libraries**.
+### Pattern matching
 
-So I just started working on one. Turns out it's a fun project, and so I kept at it.
+Unlike most linters, `comply` primarily use Regex and pattern matching to determine violations. This makes `comply` *worse* than the alternatives (e.g. `clang-tidy`) in some cases, and may even have a higher tendency toward false-positives which a compiler-backed linter would not.
 
-But. This project is by no means a unique little snowflake. There's a bunch of alternatives.
-
-A downside to this checker is that the rules engine heavily relies on parsing and searching by Regex and is unlikely to ever be the fastest or best at its job- in theory, checkers utilizing compiler libraries should produce more reliable results.
-
-It does, however, work out great for my needs.
+On the upside, it allows `comply` to be much more lean in terms of dependencies and portability, and, I dare say, friendlier and easier to get into for people wishing to add or improve functionality.
 
 ## License
 
