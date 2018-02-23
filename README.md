@@ -4,11 +4,17 @@
 
 <br/>
 
-`comply` is a style compliance checker (or linter) for sources written in C99 that uses static code analysis through pattern matching to look for things that could be improved.
+`comply` is a style compliance checker (or linter) for sources written in C99.
+
+Its goal is to help programmers write better code by making consistency and style issues apparent and obvious.
+
+**Improve your code**
+
+By way of static code analysis (see [Pattern matching](#pattern-matching)), `comply` looks for things that could be improved in terms of readability and consistency and provides helpful hints and suggestions.
 
 ![](assets/example.png "An example of reported violations in Xcode")
 
-<sub>*It's recommended to always enable all warnings and errors that your compiler provides and use `comply` as a supplement.*</sub>
+> *It's recommended to always enable all warnings and errors that your compiler provides and use `comply` as a supplement.*
 
 **Strict style compliance**
 
@@ -19,12 +25,6 @@ Following these rules will help enforce consistency and improve maintainability 
 ![](assets/example_terminal.png "An example of reported violations using the Human reporting mode in a terminal")
 
 You can read more about the thoughts behind each rule on the [project page](http://jhauberg.github.io/comply).
-
-**Pattern matching**
-
-Unlike most linters, `comply` primarily use Regex and pattern matching to determine violations. This makes `comply` *worse* than the alternatives (e.g. `clang-tidy`) in some cases, and may even have a higher tendency toward false-positives which a compiler-backed linter would not.
-
-On the upside, it allows `comply` to be much more lean in terms of dependencies, and, I dare say, friendlier and easier to get into for people wishing to add or improve functionality.
 
 ## Installation
 
@@ -219,7 +219,13 @@ Options:
   --version               Show program version
 ```
 
+## Other linters
 
+### Pattern matching
+
+Unlike most linters, `comply` primarily use Regex and pattern matching to determine violations. This makes `comply` *worse* than the alternatives (e.g. `clang-tidy`) in some cases, and may even have a higher tendency toward false-positives which a compiler-backed linter would not.
+
+On the upside, it allows `comply` to be much more lean in terms of dependencies and portability, and, I dare say, friendlier and easier to get into for people wishing to add or improve functionality.
 
 ## License
 
