@@ -4,15 +4,23 @@ from typing import List, Tuple
 
 
 class RuleViolation:
-    """ Represents an occurence of a violated rule. """
+    """ Represents an occurence of a rule violation. """
 
     """ A hint to indicate that a violation typically only occur once per file. """
     ONCE_PER_FILE = 1
     """ A hint to indicate that a violation may occur more than once per file. """
     MANY_PER_FILE = 0
 
+    """ A severity indicator for violations that have a negative impact, but can't be objectively
+        deemed to be an issue.
+    """
     ALLOW = 0
+    """ A severity indicator for violations that have an objectively negative impact.
+    
+        This is the default severity. 
+    """
     WARN = 1
+    """ A severity indicator for violations that have an objectively severe negative impact. """
     DENY = 2
 
     def __init__(self, which: 'Rule', where: (int, int), lines: List[Tuple[int, str]], meta: dict=None):
