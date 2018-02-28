@@ -60,8 +60,8 @@ class IdentifierTooLong(Rule):
                 offenders.append(offender)
 
         for identifier_match in re.finditer(r'\b\w+\b', text):
-            occurrence = RuleViolation.at(identifier_match.start(), text)
+            location = RuleViolation.at(identifier_match.start(), text)
 
-            check_identifier(identifier_match.group(), occurrence)
+            check_identifier(identifier_match.group(), location)
 
         return offenders
