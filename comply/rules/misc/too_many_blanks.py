@@ -51,7 +51,7 @@ class TooManyBlanks(Rule):
         line_index = 0
 
         for line in lines:
-            if not line.strip():
+            if not line.strip():  # line is blank/empty
                 consecutive_blanks += 1
             else:
                 if consecutive_blanks > max_lines:
