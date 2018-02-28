@@ -4,25 +4,17 @@
 
 <br/>
 
-`comply` is a style compliance checker (or linter) for sources written in C99.
+A linter tool to help programmers enforce a consistent coding style for sources written in C99.
 
-Its goal is to help programmers write better code by making style issues apparent and obvious.
-
-**Writing better code**
-
-By way of static code analysis (see [Pattern matching](#pattern-matching)), `comply` looks for things that could be improved in terms of either *readability*, *maintainability* or *consistency* and provides helpful hints and suggestions on how to apply it.
-
-![](assets/example.png "An example of reported violations in Xcode")
-
-> *It's recommended to always enable all warnings and errors that your compiler provides and use `comply` only as a supplement.*
+By way of static code analysis (see [Pattern matching](#pattern-matching)), the aim is to make style issues apparent while providing helpful hints and suggestions on how to fix them.
 
 **Strict style compliance**
 
-`comply` defines and applies some (highly) opinionated and strict rules and conventions on best practices for writing C99 that is both readable and maintainable.
-
-Following these rules will help enforce consistency and improve maintainability throughout your project. You might not like some of them, but each has thought and reasoning behind it.
+`comply` defines and applies some (highly) opinionated and strict rules and conventions on best practices for writing code that is both readable and maintainable.
 
 ![](assets/example_terminal.png "An example of reported violations using the Human reporting mode in a terminal")
+
+Following these rules will help enforce consistency and improve maintainability throughout your project. You might not like some of them, but each has thought and reasoning behind it.
 
 You can read more about the thoughts behind each rule on the [project page](http://jhauberg.github.io/comply).
 
@@ -88,25 +80,20 @@ You can then go through all listed files and manually delete each one.
 
 ## Usage
 
-When installed, you can run `comply` on the command line:
+When installed, you can run `comply` on the command line.
+
+> *It's recommended to enable all warnings and errors that your compiler provides and run `comply` as a supplement once your project compiles.*
+
+You can provide `comply` with single files or entire directories:
 
 ```console
 $ comply mylib.h mylib.c
 ```
 
-You can provide `comply` with single files or entire directories.
-
 If provided with a directory, `comply` will automatically traverse the entire directory and run on each appropriate file found inside (also in sub-directories):
 
 ```console
-$ comply mylib
-```
-
-You can also just provide the current working directory as input:
-
-```console
-$ cd mylib
-$ comply .
+$ comply mylib/src/
 ```
 
 <details>
@@ -137,7 +124,11 @@ $ python -m comply path/to/src/
 
 ### Integrating with Xcode
 
-`comply` can be integrated as a *Run Script Build Phase* in Xcode to have violations reported directly in the IDE.
+`comply` can be integrated as a *Run Script Build Phase* in Xcode to have violations reported directly in the IDE:
+
+![](assets/example.png "An example of reported violations in Xcode")
+
+You have two options for making this happen:
 
 <details>
   <summary><strong>1) Using installed executable (*recommended*)</strong></summary>
@@ -179,7 +170,7 @@ export PYTHONIOENCODING=UTF-8
 
 <br/>
 
-If you prefer not installing, you can still use the phase script as described in 1). It can be useful to avoid installing if you're working on new features, or want to use a different fork.
+If you prefer not installing, you can still use the phase script as described in **1)**. It can be useful to avoid installing if you're working on new features or fixing bugs.
 
 Just point to the [run.py](run.py) script instead of the installed executable:
 
@@ -223,12 +214,12 @@ Options:
 
 ### Pattern matching
 
-Unlike most linters, `comply` primarily use Regex and pattern matching to determine violations. This makes `comply` *worse* than the alternatives (e.g. `clang-tidy`) in some cases, and may even have a higher tendency toward false-positives which a compiler-backed linter would not.
+Unlike most linters, `comply` exclusively use Regex and pattern matching to determine violations. This makes `comply` *worse* than the alternatives (e.g. `clang-tidy`) in some cases, and may even have a higher tendency toward false-positives which a compiler-backed linter would not.
 
 On the upside, it allows `comply` to be much more lean in terms of dependencies and portability, and, I dare say, friendlier and easier to get into for people wishing to add or improve functionality.
 
 ## License
 
-See [LICENSE](LICENSE)
+This is a Free Open-Source Software project released under the [MIT License](LICENSE).
 
 *Logo with courtesy of [game-icons.net](http://game-icons.net/lorc/originals/black-flag.html)*
