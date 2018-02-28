@@ -12,7 +12,7 @@ class AvoidUnifiedHeaders(Rule):
     def __init__(self):
         Rule.__init__(self, name='avoid-unified-headers',
                       description='Avoid unified (or umbrella) headers',
-                      suggestion='Prefererererferererefsdf.')
+                      suggestion='Though convenient, unifying header inclusions does not promote loosely-coupled modules and increases compile times.')
 
     @property
     def severity(self):
