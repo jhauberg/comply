@@ -80,11 +80,9 @@ You can then go through all listed files and manually delete each one.
 
 ## Usage
 
-When installed, you can run `comply` on the command line.
-
 > *It's recommended to enable all warnings and errors that your compiler provides and run `comply` as a supplement once your project compiles.*
 
-You can provide `comply` with single files or entire directories:
+When installed, you can run `comply` on the command line and provide it with single files or entire directories:
 
 ```console
 $ comply mylib.h mylib.c
@@ -214,7 +212,7 @@ Options:
 
 ### Pattern matching
 
-Unlike most linters, `comply` exclusively use Regex and pattern matching to determine violations. This makes `comply` *worse* than the alternatives (e.g. `clang-tidy`) in some cases, and may even have a higher tendency toward false-positives which a compiler-backed linter would not.
+Unlike most popular linters, `comply` exclusively use Regex and pattern matching to determine violations. This makes `comply` *worse* than the alternatives (e.g. `clang-tidy`) in some cases, and may even have a higher tendency toward false-positives which a compiler-backed linter would not.
 
 On the upside, it allows `comply` to be much more lean in terms of dependencies and portability, and, I dare say, friendlier and easier to get into for people wishing to add or improve functionality.
 
