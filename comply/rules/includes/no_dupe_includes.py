@@ -19,14 +19,14 @@ class NoDuplicateIncludes(Rule):
 
         violation.lines[0] = (line_number, Colors.bad + line + Colors.clear)
 
-    def collect(self, text: str, filename: str, extension: str):
-        pattern = INCLUDE_PATTERN
+    pattern = re.compile(INCLUDE_PATTERN)
 
+    def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
         include_stmts = []
 
-        for inclusion in re.finditer(pattern, text):
+        for inclusion in self.pattern.finditer(text):
             include_stmt = inclusion.group()
 
             if include_stmt not in include_stmts:

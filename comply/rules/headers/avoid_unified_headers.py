@@ -18,13 +18,15 @@ class AvoidUnifiedHeaders(Rule):
     def severity(self):
         return RuleViolation.ALLOW
 
+    pattern = re.compile(INCLUDE_PATTERN)
+
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
         if '.h' not in extension:
             return offenders
 
-        has_includes = re.search(INCLUDE_PATTERN, text) is not None
+        has_includes = self.pattern.search(text) is not None
 
         if has_includes:
             has_function_prototypes = re.search(FUNC_PROT_PATTERN, text) is not None
@@ -32,7 +34,6 @@ class AvoidUnifiedHeaders(Rule):
 
             if not has_function_prototypes and not has_bodies:
                 offender = self.violate(at=RuleViolation.at_top())
-
                 offenders.append(offender)
 
         return offenders

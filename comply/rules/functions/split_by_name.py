@@ -32,11 +32,10 @@ class SplitByName(Rule):
 
         violation.lines = offending_lines
 
+    pattern = re.compile(FUNC_IMPL_PATTERN)
+
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
-
-        # match function implementations
-        pattern = FUNC_IMPL_PATTERN
 
         lines = text.splitlines()
 
@@ -46,7 +45,7 @@ class SplitByName(Rule):
         # outer most functions will remain as a collapsed body
         text_without_bodies = strip_function_bodies(text)
 
-        for function_match in re.finditer(pattern, text_without_bodies):
+        for function_match in self.pattern.finditer(text_without_bodies):
             func_name = function_match.group('name')
 
             func_line_number, func_column = RuleViolation.at(function_match.start(),

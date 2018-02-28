@@ -29,11 +29,10 @@ class ConstOnRight(Rule):
 
         violation.lines[0] = (function_linenumber, (' ' * leading_space) + augmented_line)
 
+    pattern = re.compile(FUNC_PROT_PATTERN)
+
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
-
-        # match prototypes
-        pattern = FUNC_PROT_PATTERN
 
         from comply.util.stripping import strip_function_bodies
 
@@ -41,7 +40,7 @@ class ConstOnRight(Rule):
         # outer most functions will remain as a collapsed body
         text_without_bodies = strip_function_bodies(text)
 
-        for function_match in re.finditer(pattern, text_without_bodies):
+        for function_match in self.pattern.finditer(text_without_bodies):
             function_parameters = function_match.group('params')
             function_result = function_match.group()
 

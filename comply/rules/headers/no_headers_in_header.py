@@ -24,15 +24,15 @@ class NoHeadersInHeader(Rule):
 
         violation.lines[0] = (linenumber, Colors.bad + line + Colors.clear)
 
+    pattern = re.compile(INCLUDE_PATTERN)
+
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
         if '.h' not in extension:
             return offenders
 
-        pattern = INCLUDE_PATTERN
-
-        for inclusion in re.finditer(pattern, text):
+        for inclusion in self.pattern.finditer(text):
             include_statement = inclusion.group(0)
 
             if ('<stdint.h>' in include_statement or '<inttypes.h>' in include_statement or

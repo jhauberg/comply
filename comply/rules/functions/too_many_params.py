@@ -17,9 +17,12 @@ class TooManyParams(Rule):
         # determine whether to only match implementations, or both prototypes and implementations
         # (prefer both, as e.g. inline functions won't be caught otherwise-
         # since they don't require a prototype, they may end up going unnoticed)
-        self.only_checks_implementation = only_check_implementations
+        if only_check_implementations:
+            self.pattern = re.compile(FUNC_IMPL_PATTERN)
 
     MAX = 4
+
+    pattern = re.compile(FUNC_BOTH_PATTERN)
 
     def augment(self, violation: RuleViolation):
         function_linenumber, function_line = violation.lines[0]
@@ -41,15 +44,13 @@ class TooManyParams(Rule):
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
-        pattern = FUNC_IMPL_PATTERN if self.only_checks_implementation else FUNC_BOTH_PATTERN
-
         from comply.util.stripping import strip_function_bodies
 
         # weed out potential false-positives by stripping the bodies of function implementations
         # outer most functions will remain as a collapsed body
         text_without_bodies = strip_function_bodies(text)
 
-        for function_match in re.finditer(pattern, text_without_bodies):
+        for function_match in self.pattern.finditer(text_without_bodies):
             function_name = function_match.group('name')
             function_parameters = function_match.group('params')
             function_result = function_match.group(0)
