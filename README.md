@@ -14,7 +14,9 @@ By way of static code analysis (see [Pattern matching](#pattern-matching)), the 
 
 ![](assets/example_terminal.png "An example of reported violations using the Human reporting mode in a terminal")
 
-Following these rules will help enforce consistency and improve maintainability throughout your project. You might not like some of them, but each has thought and reasoning behind it.
+Following these rules will help improve the general state of your project, making it easier for both yourself and newcomers to contribute and maintain.
+
+You might not like, or even agree, with some of them, but each has thought and reasoning behind it.
 
 You can read more about the thoughts behind each rule on the [project page](http://jhauberg.github.io/comply).
 
@@ -106,7 +108,7 @@ You can also run `comply` without having to first install it.
 From anywhere, simply execute [run.py](run.py) with the same arguments that you normally would `comply`. The script is found at the root of the project.
 
 ```console
-$ python path/to/comply/run.py src.h src.c --reporter=standard
+$ python path/to/comply/run.py src.h src.c --reporter=human
 ```
 
 **2) By executing the module as a script**
