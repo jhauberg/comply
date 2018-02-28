@@ -11,8 +11,8 @@ from comply.rules.functions.pattern import FUNC_PROT_PATTERN, FUNC_BODY_PATTERN
 class AvoidUnifiedHeaders(Rule):
     def __init__(self):
         Rule.__init__(self, name='avoid-unified-headers',
-                      description='Avoid unified (or umbrella) headers',
-                      suggestion='Though convenient, unifying header inclusions does not promote loosely-coupled modules and increases compile times.')
+                      description='Avoid unified headers (headers whose only purpose is to include other headers)',
+                      suggestion='Though convenient, unifying header inclusions does not promote loosely-coupled modules and potentially increases compile times.')
 
     @property
     def severity(self):
