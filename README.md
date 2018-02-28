@@ -16,7 +16,7 @@ By way of static code analysis (see [Pattern matching](#pattern-matching)), the 
 
 Following these rules will help improve the general state of your project, making it easier for both yourself and newcomers to contribute and maintain.
 
-You might not like, or even agree, with some of them, but each has thought and reasoning behind it.
+You might not like (or even agree with) some of these rules, but each has thought and reasoning behind it.
 
 You can read more about the thoughts behind each rule on the [project page](http://jhauberg.github.io/comply).
 
