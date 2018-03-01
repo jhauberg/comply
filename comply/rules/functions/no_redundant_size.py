@@ -81,7 +81,7 @@ class NoRedundantSize(Rule):
                 if is_probably_enforced:
                     continue
 
-                offending_index = function_match.start('params') + size_match.start()
+                offending_index = function_match.start('params') + size_match.start(1)
 
                 function_linenumber, function_column = RuleViolation.at(offending_index,
                                                                         text_without_bodies)
