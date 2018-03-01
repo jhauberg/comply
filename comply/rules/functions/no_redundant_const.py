@@ -59,9 +59,12 @@ class NoRedundantConst(Rule):
                 # even if there's no stars in the parameter
                 last_param_component = param_components[-1]
 
-                if ('const' in last_param_component and
-                        ('[' not in last_param_component and ']' not in last_param_component)):
-                    up_to = len(param[:-len(last_param_component)]) + last_param_component.index('const')
+                if 'const' in last_param_component:
+                    # find the last occurrence; this makes sure we get the proper const qualifier
+                    # even in cases like "int * const arr[const]"
+                    const_index = last_param_component.rindex('const')
+
+                    up_to = len(param[:-len(last_param_component)]) + const_index
 
                     param_index_in_function_result = param_index - function_match.start()
                     const_index_in_function_result = param_index_in_function_result + up_to
