@@ -60,28 +60,35 @@ class NoRedundantConst(Rule):
                 last_param_component = param_components[-1]
 
                 if 'const' in last_param_component:
-                    # find the last occurrence; this makes sure we get the proper const qualifier
-                    # even in cases like "int * const arr[const]"
-                    const_index = last_param_component.rindex('const')
+                    const_index = last_param_component.index('const')
 
-                    up_to = len(param[:-len(last_param_component)]) + const_index
+                    if '[' in last_param_component and ']' in last_param_component:
+                        # make sure we don't proceed if encountering e.g. "const arr[]"
+                        const_index = -1
 
-                    param_index_in_function_result = param_index - function_match.start()
-                    const_index_in_function_result = param_index_in_function_result + up_to
+                        # except if that occurrence is actually like "const arr[const]"
+                        if last_param_component.count('const') > 1:
+                            const_index = last_param_component.rindex('const')
 
-                    offending_range = (const_index_in_function_result,
-                                       const_index_in_function_result + len('const'))
+                    if const_index != -1:
+                        up_to = len(param[:-len(last_param_component)]) + const_index
 
-                    offending_index = param_index + up_to
-                    offending_line_number, offending_column = RuleViolation.at(offending_index,
-                                                                               text_without_bodies)
+                        param_index_in_function_result = param_index - function_match.start()
+                        const_index_in_function_result = param_index_in_function_result + up_to
 
-                    offender = self.violate(at=(offending_line_number, offending_column),
-                                            lines=[(function_linenumber, function_result)],
-                                            meta={'leading_space': function_column - 1,
-                                                  'range': offending_range})
+                        offending_range = (const_index_in_function_result,
+                                           const_index_in_function_result + len('const'))
 
-                    offenders.append(offender)
+                        offending_index = param_index + up_to
+                        offending_line_number, offending_column = RuleViolation.at(offending_index,
+                                                                                   text_without_bodies)
+
+                        offender = self.violate(at=(offending_line_number, offending_column),
+                                                lines=[(function_linenumber, function_result)],
+                                                meta={'leading_space': function_column - 1,
+                                                      'range': offending_range})
+
+                        offenders.append(offender)
 
                 param_index += len(param) + 1  # +1 to account for the split by ','
 
