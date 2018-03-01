@@ -21,6 +21,7 @@ Options:
   --version               Show program version
 """
 
+import os
 import re
 import datetime
 
@@ -147,8 +148,24 @@ def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
     for path in inputs:
         result, checked = check(path, rules, reporter)
 
-        if checked:
+        if checked == CheckResult.FILE_CHECKED:
             report += result
+        else:
+            reason = None
+
+            if checked == CheckResult.FILE_NOT_FOUND:
+                reason = 'file not found'
+            elif checked == CheckResult.NO_FILES_FOUND:
+                reason = 'no files found'
+            elif checked == CheckResult.FILE_NOT_SUPPORTED:
+                reason = 'file not supported'
+
+            if reason is not None:
+                printdiag('File \'{path}\' was not checked ({reason}).'.format(
+                    path=os.path.abspath(path), reason=reason))
+            else:
+                printdiag('File \'{path}\' was not checked.'.format(
+                    path=os.path.abspath(path)))
 
     return report
 
@@ -212,7 +229,7 @@ def main():
 
     report = make_report(inputs, rules, reporter)
 
-    if reporter.is_verbose:
+    if reporter.is_verbose and report.files > 0:
         time_since_report = datetime.datetime.now() - time_started_report
         report_in_seconds = time_since_report / datetime.timedelta(seconds=1)
 

@@ -12,6 +12,11 @@ from comply.util.stripping import strip_any_comments
 class CheckResult:
     """ Represents the result of running a check on one or more files. """
 
+    FILE_CHECKED = 1
+    FILE_NOT_FOUND = -1
+    NO_FILES_FOUND = -2
+    FILE_NOT_SUPPORTED = -3
+
     def __init__(self,
                  files: int=0,
                  files_with_violations: int=0,
@@ -34,7 +39,7 @@ def supported_file_types() -> tuple:
     return '.h', '.c'
 
 
-def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, bool):
+def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, int):
     """ Run a check on the file found at path, if any.
 
         If the path points to a directory, a check is run on each subsequent filepath.
@@ -45,7 +50,7 @@ def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, boo
     result = CheckResult()
 
     if not os.path.exists(path):
-        return result, False
+        return result, CheckResult.FILE_NOT_FOUND
 
     if os.path.isdir(path):
         checked_any = False
@@ -55,17 +60,18 @@ def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, boo
 
             file_result, checked = check(filepath, rules, reporter)
 
-            if checked:
+            if checked == CheckResult.FILE_CHECKED:
                 checked_any = True
 
                 result += file_result
 
-        return result, checked_any
+        return result, (CheckResult.FILE_CHECKED if checked_any else
+                        CheckResult.NO_FILES_FOUND)
 
     filename, extension = os.path.splitext(path)
 
     if extension not in supported_file_types():
-        return result, False
+        return result, CheckResult.FILE_NOT_SUPPORTED
 
     filename = os.path.basename(filename)
 
@@ -105,7 +111,7 @@ def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, boo
 
         reporter.report(violations, path)
 
-    return result, True
+    return result, CheckResult.FILE_CHECKED
 
 
 def collect(text: str, filename: str, extension: str, rules: List[Rule]) -> List[RuleViolation]:
