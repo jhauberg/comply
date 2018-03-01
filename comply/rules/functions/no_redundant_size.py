@@ -54,7 +54,7 @@ class NoRedundantSize(Rule):
                     # when passed an incompatible type
                     continue
 
-                if 'const' in size:
+                if size == 'const':
                     # the const qualifier can be used to indicate that the pointer name is const
                     continue
 
