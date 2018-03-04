@@ -5,7 +5,7 @@
 import re
 
 from comply.rules import Rule, RuleViolation
-from comply.rules.functions.pattern import FUNC_PROT_PATTERN
+from comply.rules.functions.pattern import FUNC_BOTH_PATTERN
 
 from comply.printing import Colors
 
@@ -40,7 +40,7 @@ class ConstOnRight(Rule):
 
         violation.lines[0] = (function_linenumber, (' ' * leading_space) + augmented_line)
 
-    pattern = re.compile(FUNC_PROT_PATTERN)
+    pattern = re.compile(FUNC_BOTH_PATTERN)
 
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
