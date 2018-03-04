@@ -13,17 +13,28 @@ from comply.printing import Colors
 class ConstOnRight(Rule):
     def __init__(self):
         Rule.__init__(self, name='const-on-right',
-                      description='Prefer const qualifiers on the right; todo, grammar',
+                      description='Prefer const qualifiers on the right',
                       suggestion='Place const qualifier to the right.')
 
     def augment(self, violation: RuleViolation):
         function_linenumber, function_line = violation.lines[0]
 
         from_index, to_index = violation.meta['range'] if 'range' in violation.meta else (0, 0)
+        insert_index = violation.meta['insert'] if 'insert' in violation.meta else 0
 
-        augmented_line = (function_line[:from_index] +
-                          Colors.bad + function_line[from_index:to_index] + Colors.clear +
-                          function_line[to_index:])
+        char_at_insertion = function_line[insert_index]
+        # determine whether the 'const' should be right-padded
+        add_padding = char_at_insertion not in [')', ',']
+
+        # insert proper placement first, assuming this index always occur later
+        augmented_line = (function_line[:insert_index] +
+                          Colors.good + 'const' + (' ' if add_padding else '') + Colors.clear +
+                          function_line[insert_index:])
+
+        # then markup part to delete (again, assuming that these indices are before insertion index)
+        augmented_line = (augmented_line[:from_index] +
+                          Colors.bad + augmented_line[from_index:to_index] + Colors.clear +
+                          augmented_line[to_index:])
 
         leading_space = violation.meta['leading_space'] if 'leading_space' in violation.meta else 0
 
@@ -63,7 +74,7 @@ class ConstOnRight(Rule):
                     param_component_stripped = param_component.strip()
 
                     has_const_on_left = param_component_stripped.startswith('const')
-                    is_array_pointer = '[' in param_component or ']' in param_component
+                    is_array_pointer = '[' in param_component and ']' in param_component
                     is_by_itself = len(param_component_stripped.split(' ')) == 1
 
                     if has_const_on_left and not is_by_itself and not is_array_pointer:
@@ -79,10 +90,13 @@ class ConstOnRight(Rule):
                         offending_line_number, offending_column = RuleViolation.at(offending_index,
                                                                                    text_without_bodies)
 
+                        insertion_index = param_index_in_function_result + len(param_component)
+
                         offender = self.violate(at=(offending_line_number, offending_column),
                                                 lines=[(function_linenumber, function_result)],
                                                 meta={'leading_space': function_column - 1,
-                                                      'range': offending_range})
+                                                      'range': offending_range,
+                                                      'insert': insertion_index})
 
                         offenders.append(offender)
 
