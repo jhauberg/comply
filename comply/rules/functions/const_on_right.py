@@ -1,7 +1,5 @@
 # coding=utf-8
 
-# coding=utf-8
-
 import re
 
 from comply.rules import Rule, RuleViolation
@@ -14,7 +12,7 @@ class ConstOnRight(Rule):
     def __init__(self):
         Rule.__init__(self, name='const-on-right',
                       description='Prefer const qualifiers on the right',
-                      suggestion='Place const qualifier to the right.')
+                      suggestion='Place const qualifier to the right of the type declaration.')
 
     def augment(self, violation: RuleViolation):
         function_linenumber, function_line = violation.lines[0]
@@ -70,7 +68,10 @@ class ConstOnRight(Rule):
 
                 exclude_last_component = param.count('*') > 0
 
-                for param_component in (param_components if not exclude_last_component else param_components[:-1]):
+                iterable_components = (param_components if not exclude_last_component else
+                                       param_components[:-1])
+
+                for param_component in iterable_components:
                     param_component_stripped = param_component.strip()
 
                     has_const_on_left = param_component_stripped.startswith('const')
