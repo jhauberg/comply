@@ -20,15 +20,18 @@ class CheckResult:
     def __init__(self,
                  files: int=0,
                  files_with_violations: int=0,
-                 violations: int=0):
+                 violations: int=0,
+                 severe_violations: int=0):
         self.files = files
         self.files_with_violations = files_with_violations
         self.violations = violations
+        self.severe_violations = severe_violations
 
     def __iadd__(self, other):
         self.files += other.files
         self.files_with_violations += other.files_with_violations
         self.violations += other.violations
+        self.severe_violations += other.severe_violations
 
         return self
 
@@ -99,14 +102,21 @@ def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, int
     if text is not None:
         violations = collect(text, filename, extension, rules)
 
-        number_of_violations = len(violations)
+        num_severe_violations = 0
+
+        for violation in violations:
+            if violation.which.severity == RuleViolation.DENY:
+                num_severe_violations += 1
+
+        num_violations = len(violations) - num_severe_violations
 
         result.files += 1
-        result.violations += number_of_violations
+        result.violations += num_violations
+        result.severe_violations += num_severe_violations
 
         reporter.report_before_results(violations)
 
-        if number_of_violations > 0:
+        if num_violations > 0 or num_severe_violations > 0:
             result.files_with_violations += 1
 
         reporter.report(violations, path)

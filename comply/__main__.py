@@ -253,20 +253,12 @@ def main():
         printdiag('Found {2} violations in {0}/{1} files (scoring {3})'
                   .format(report.files_with_violations,
                           report.files,
-                          report.violations,
+                          report.violations + report.severe_violations,
                           score))
 
     check_for_update()
 
-    should_exit_with_errors = False
-
-    for violation in report.violations:
-        if violation.which.severity == RuleViolation.DENY:
-            should_exit_with_errors = True
-
-            break
-
-    if should_exit_with_errors:
+    if report.severe_violations > 0:
         # everything went fine; severe violations were encountered
         sys.exit(EXIT_CODE_SUCCESS_WITH_SEVERE_VIOLATIONS)
     else:
