@@ -250,11 +250,15 @@ def main():
 
         score = score_format.format(score)
 
-        printdiag('Found {2} violations in {0}/{1} files (scoring {3})'
+        severe_format = '({0} severe) '.format(
+            report.severe_violations) if report.severe_violations > 0 else ''
+
+        printdiag('Found {2} violations {4}in {0}/{1} files (scoring {3})'
                   .format(report.files_with_violations,
                           report.files,
                           report.violations + report.severe_violations,
-                          score))
+                          score,
+                          severe_format))
 
     check_for_update()
 
