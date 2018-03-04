@@ -30,14 +30,14 @@ class NoTodo(Rule):
 
         violation.lines[0] = (line_number, augmented_line)
 
+    pattern = re.compile(r'TODO:|todo:')
+
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
-        pattern = r'TODO:|todo:'
-
         lines = text.splitlines()
 
-        for match in re.finditer(pattern, text):
+        for match in self.pattern.finditer(text):
             line_number, column = RuleViolation.at(match.start(), text)
 
             column_end = column - 1 + (match.end() - match.start())

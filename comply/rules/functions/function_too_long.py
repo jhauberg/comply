@@ -42,6 +42,8 @@ class FunctionTooLong(Rule):
 
         violation.lines.insert(0, (None, info_line))
 
+    pattern = re.compile(FUNC_IMPL_PATTERN)
+
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
@@ -73,9 +75,7 @@ class FunctionTooLong(Rule):
 
                 offenders.append(offender)
 
-        pattern = FUNC_IMPL_PATTERN
-
-        for function_match in re.finditer(pattern, text):
+        for function_match in self.pattern.finditer(text):
             func_body_start_index = function_match.end()  # we want to start before opening brace
 
             func_depth = depth(func_body_start_index, text)

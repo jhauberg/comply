@@ -21,6 +21,7 @@ Options:
   --version               Show program version
 """
 
+import os
 import re
 import datetime
 
@@ -104,6 +105,7 @@ def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
         functions.NoRedundantName(),
         functions.ConstOnRight(),
         functions.NoAttachedStars(),
+        functions.NoRedundantSize(),
         misc.IdentifierTooLong(),
         misc.TooManyBlanks(),
         misc.NoTabs(),
@@ -146,10 +148,43 @@ def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
     for path in inputs:
         result, checked = check(path, rules, reporter)
 
-        if checked:
+        if checked == CheckResult.FILE_CHECKED:
             report += result
+        else:
+            reason = None
+
+            if checked == CheckResult.FILE_NOT_FOUND:
+                reason = 'file not found'
+            elif checked == CheckResult.NO_FILES_FOUND:
+                reason = 'no files found'
+            elif checked == CheckResult.FILE_NOT_SUPPORTED:
+                reason = 'file not supported'
+
+            if reason is not None:
+                printdiag('File \'{path}\' was not checked ({reason}).'.format(
+                    path=os.path.abspath(path), reason=reason))
+            else:
+                printdiag('File \'{path}\' was not checked.'.format(
+                    path=os.path.abspath(path)))
 
     return report
+
+
+def expand_identifiers(identifiers: list) -> list:
+    """ Return an expanded list of identifiers from a list of (potentially) comma-separated
+        identifiers.
+
+        E.g. given a list of ['a', 'b,c,d'], returns ['a', 'b', 'c', 'd']
+    """
+
+    expanded_identifiers = []
+
+    for identifier in identifiers:
+        expanded_identifiers.extend(
+            [i.strip() for i in
+             identifier.split(',')])
+
+    return expanded_identifiers
 
 
 def main():
@@ -170,8 +205,8 @@ def main():
 
     is_strict = arguments['--strict']
 
-    checks = arguments['--check']
-    exceptions = arguments['--except']
+    checks = expand_identifiers(arguments['--check'])
+    exceptions = expand_identifiers(arguments['--except'])
 
     rules = make_rules(checks, exceptions, is_strict)
 
@@ -194,7 +229,7 @@ def main():
 
     report = make_report(inputs, rules, reporter)
 
-    if reporter.is_verbose:
+    if reporter.is_verbose and report.files > 0:
         time_since_report = datetime.datetime.now() - time_started_report
         report_in_seconds = time_since_report / datetime.timedelta(seconds=1)
 

@@ -67,6 +67,7 @@ class Colors:
     emphasis = '\x1b[3m'
     underlined = '\x1b[4m'
     vague = '\x1b[0;37m'
+    dark = '\x1b[0;90m'
     bad = '\x1b[0;31m'
     good = '\x1b[0;32m'
     warn = '\x1b[0;33m'

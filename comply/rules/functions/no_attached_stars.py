@@ -24,6 +24,8 @@ class NoAttachedStars(Rule):
 
         violation.lines[0] = (line_number, augmented_line)
 
+    pattern = re.compile(r'\*[^\s,*()=]|[^\s*()]\*')
+
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
@@ -33,9 +35,7 @@ class NoAttachedStars(Rule):
 
         text_without_literals = strip_literals(text)
 
-        star_pattern = r'\*[^\s,*()=]|[^\s*()]\*'
-
-        for star_match in re.finditer(star_pattern, text_without_literals):
+        for star_match in self.pattern.finditer(text_without_literals):
             offending_index = star_match.start()
 
             is_probably_dereference = True

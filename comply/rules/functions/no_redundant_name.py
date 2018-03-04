@@ -27,27 +27,30 @@ class NoRedundantName(Rule):
 
         violation.lines[0] = (function_linenumber, (' ' * leading_space) + augmented_line)
 
+    pattern = re.compile(FUNC_PROT_PATTERN)
+
+    params_pattern = re.compile(r'(.*?)(,|$)')
+    const_pattern = re.compile(r'(?!const\b)\b\w[^\s]*\b')
+
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
-
-        pattern = FUNC_PROT_PATTERN
 
         from comply.util.stripping import strip_function_bodies
 
         # weed out potential false-positives by stripping the bodies of function implementations
         text_without_bodies = strip_function_bodies(text)
 
-        for function_match in re.finditer(pattern, text_without_bodies):
+        for function_match in self.pattern.finditer(text_without_bodies):
             function_parameters = function_match.group('params')
 
             # naively split by comma; won't yield correct results in all cases,
             # but it doesn't need to for the following logic to work out
-            separated_parameters = list(re.finditer(r'(.*?)(,|$)', function_parameters))
+            separated_parameters = list(self.params_pattern.finditer(function_parameters))
 
             for func_param in separated_parameters:
                 param = func_param.group(1)
                 # matches any word component in a parameter (that isn't 'const')
-                type_components = list(re.finditer(r'(?!const\b)\b\w[^\s]*\b', param))
+                type_components = list(self.const_pattern.finditer(param))
 
                 if len(type_components) > 1:  # must be more than two word components in the param
                     func_param_name = type_components[-1]  # last or right-most component
@@ -71,7 +74,8 @@ class NoRedundantName(Rule):
 
                         param_type = ' '.join(types)
 
-                        _, leading_space = RuleViolation.at(function_match.start(), text_without_bodies)
+                        _, leading_space = RuleViolation.at(function_match.start(),
+                                                            text_without_bodies)
 
                         offender = self.violate(at=(function_linenumber, function_column),
                                                 lines=[(function_linenumber, function_result)],

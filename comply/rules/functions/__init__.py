@@ -8,6 +8,7 @@ from comply.rules.functions.too_many_functions import TooManyFunctions
 from comply.rules.functions.no_redundant_name import NoRedundantName
 from comply.rules.functions.const_on_right import ConstOnRight
 from comply.rules.functions.no_attached_stars import NoAttachedStars
+from comply.rules.functions.no_redundant_size import NoRedundantSize
 
 __all__ = [
     "NoRedundantConst",
@@ -17,5 +18,6 @@ __all__ = [
     "TooManyFunctions",
     "NoRedundantName",
     "ConstOnRight",
-    "NoAttachedStars"
+    "NoAttachedStars",
+    "NoRedundantSize"
 ]

@@ -29,11 +29,10 @@ class NoRedundantConst(Rule):
 
         violation.lines[0] = (function_linenumber, (' ' * leading_space) + augmented_line)
 
+    pattern = re.compile(FUNC_PROT_PATTERN)
+
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
-
-        # match prototypes
-        pattern = FUNC_PROT_PATTERN
 
         from comply.util.stripping import strip_function_bodies
 
@@ -41,7 +40,7 @@ class NoRedundantConst(Rule):
         # outer most functions will remain as a collapsed body
         text_without_bodies = strip_function_bodies(text)
 
-        for function_match in re.finditer(pattern, text_without_bodies):
+        for function_match in self.pattern.finditer(text_without_bodies):
             function_parameters = function_match.group('params')
             function_result = function_match.group()
 
@@ -60,26 +59,36 @@ class NoRedundantConst(Rule):
                 # even if there's no stars in the parameter
                 last_param_component = param_components[-1]
 
-                if ('const' in last_param_component and
-                        ('[' not in last_param_component and ']' not in last_param_component)):
-                    up_to = len(param[:-len(last_param_component)]) + last_param_component.index('const')
+                if 'const' in last_param_component:
+                    const_index = last_param_component.index('const')
 
-                    param_index_in_function_result = param_index - function_match.start()
-                    const_index_in_function_result = param_index_in_function_result + up_to
+                    if '[' in last_param_component and ']' in last_param_component:
+                        # make sure we don't proceed if encountering e.g. "const arr[]"
+                        const_index = -1
 
-                    offending_range = (const_index_in_function_result,
-                                       const_index_in_function_result + len('const'))
+                        # except if that occurrence is actually like "const arr[const]"
+                        if last_param_component.count('const') > 1:
+                            const_index = last_param_component.rindex('const')
 
-                    offending_index = param_index + up_to
-                    offending_line_number, offending_column = RuleViolation.at(offending_index,
-                                                                               text_without_bodies)
+                    if const_index != -1:
+                        up_to = len(param[:-len(last_param_component)]) + const_index
 
-                    offender = self.violate(at=(offending_line_number, offending_column),
-                                            lines=[(function_linenumber, function_result)],
-                                            meta={'leading_space': function_column - 1,
-                                                  'range': offending_range})
+                        param_index_in_function_result = param_index - function_match.start()
+                        const_index_in_function_result = param_index_in_function_result + up_to
 
-                    offenders.append(offender)
+                        offending_range = (const_index_in_function_result,
+                                           const_index_in_function_result + len('const'))
+
+                        offending_index = param_index + up_to
+                        offending_line_number, offending_column = RuleViolation.at(offending_index,
+                                                                                   text_without_bodies)
+
+                        offender = self.violate(at=(offending_line_number, offending_column),
+                                                lines=[(function_linenumber, function_result)],
+                                                meta={'leading_space': function_column - 1,
+                                                      'range': offending_range})
+
+                        offenders.append(offender)
 
                 param_index += len(param) + 1  # +1 to account for the split by ','
 

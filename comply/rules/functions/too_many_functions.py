@@ -18,10 +18,10 @@ class TooManyFunctions(Rule):
     def severity(self):
         return RuleViolation.ALLOW
 
+    pattern = re.compile(FUNC_IMPL_PATTERN)
+
     def collect(self, text: str, filename: str, extension: str):
         offenders = []
-
-        pattern = FUNC_IMPL_PATTERN
 
         from comply.util.stripping import strip_function_bodies
 
@@ -29,7 +29,7 @@ class TooManyFunctions(Rule):
         # outer most functions will remain as a collapsed body
         text_without_bodies = strip_function_bodies(text)
 
-        matches = re.findall(pattern, text_without_bodies)
+        matches = self.pattern.findall(text_without_bodies)
 
         max_matches = TooManyFunctions.MAX
         number_of_matches = len(matches)

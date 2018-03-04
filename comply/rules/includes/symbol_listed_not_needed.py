@@ -29,13 +29,12 @@ class SymbolListedNotNeeded(Rule):
 
         violation.lines[0] = (linenumber, augmented_line)
 
-    def collect(self, text: str, filename: str, extension: str):
-        # match include statements and capture suffixed content, if any
-        pattern = INCLUDE_PATTERN + r'(.*)'
+    pattern = re.compile(INCLUDE_PATTERN + r'(.*)')
 
+    def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
-        for inclusion in re.finditer(pattern, text):
+        for inclusion in self.pattern.finditer(text):
             suffix = inclusion.group(1).strip()
 
             if is_symbol_list(suffix):
