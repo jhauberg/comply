@@ -23,13 +23,17 @@ Options:
 
 import os
 import re
+import sys
 import datetime
 
 from docopt import docopt
 
 from pkg_resources import parse_version
 
-from comply import VERSION_PATTERN, exit_if_not_compatible
+from comply import (
+    VERSION_PATTERN,
+    EXIT_CODE_SUCCESS, EXIT_CODE_SUCCESS_WITH_SEVERE_VIOLATIONS, exit_if_not_compatible
+)
 
 from comply.reporting import Reporter, OneLineReporter, HumanReporter
 from comply.printing import printdiag, diagnostics, supports_unicode, is_windows_environment
@@ -253,6 +257,21 @@ def main():
                           score))
 
     check_for_update()
+
+    should_exit_with_errors = False
+
+    for violation in report.violations:
+        if violation.which.severity == RuleViolation.DENY:
+            should_exit_with_errors = True
+
+            break
+
+    if should_exit_with_errors:
+        # everything went fine; severe violations were encountered
+        sys.exit(EXIT_CODE_SUCCESS_WITH_SEVERE_VIOLATIONS)
+    else:
+        # everything went fine; violations might have been encountered
+        sys.exit(EXIT_CODE_SUCCESS)
 
 
 if __name__ == '__main__':

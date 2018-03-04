@@ -15,13 +15,13 @@ import re
 
 from setuptools import setup, find_packages
 
-from comply import VERSION_PATTERN, is_compatible
+from comply import VERSION_PATTERN, EXIT_CODE_FAILURE, is_compatible
 from comply.printing import printdiag
 
 if not is_compatible():
     printdiag('Python 3.5 or newer required')
 
-    sys.exit(1)
+    sys.exit(EXIT_CODE_FAILURE)
 
 
 def determine_version_or_exit() -> str:
@@ -38,7 +38,7 @@ def determine_version_or_exit() -> str:
 
     printdiag('Version could not be determined')
 
-    sys.exit(1)
+    sys.exit(EXIT_CODE_FAILURE)
 
 
 VERSION_IDENTIFIER = determine_version_or_exit()
