@@ -80,11 +80,11 @@ def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, int
 
     text = None
 
-    default_encoding = 'utf-8'
+    default_encoding = 'utf8'
 
     supported_encodings = [
         default_encoding,
-        'windows-1252'
+        'cp1252'
     ]
 
     for encoding in supported_encodings:
