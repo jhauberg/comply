@@ -73,7 +73,7 @@ def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, int
 
     filename, extension = os.path.splitext(path)
 
-    if extension not in supported_file_types():
+    if extension.lower() not in supported_file_types():
         return result, CheckResult.FILE_NOT_SUPPORTED
 
     filename = os.path.basename(filename)
