@@ -6,7 +6,7 @@
 
 A linter tool to help programmers enforce a consistent coding style for sources written in C99.
 
-By way of static code analysis (see [Pattern matching](#pattern-matching)), the aim is to make style issues apparent while providing helpful hints and suggestions on how to fix them.
+By way of static code analysis (see [Pattern matching](#pattern-matching)), the goal is to make style issues apparent while providing helpful hints and suggestions on how to fix them.
 
 **Strict style compliance**
 
@@ -14,9 +14,13 @@ By way of static code analysis (see [Pattern matching](#pattern-matching)), the 
 
 ![](assets/example_terminal.png "An example of reported violations using the Human reporting mode in a terminal")
 
-Following these rules will help improve the general state of your project, making it easier for both yourself and newcomers to contribute and maintain.
+Following these rules will help improve the general state of your project, making it easier for both yourself as well as newcomers to contribute and maintain in the future.
 
-You might not like (or even agree with) some of these rules, but each has thought and reasoning behind it.
+**Disclaimer**
+
+Note that the proposed style guidelines are fully based on my personal convictions of what is "the correct style". I've applied these guidelines to many smaller/medium-sized projects, but nothing of significant size.
+
+You might not like (or even agree with) some of the rules, but each has thought and reasoning behind it.
 
 You can read more about the thoughts behind each rule on the [project page](http://jhauberg.github.io/comply).
 
@@ -216,7 +220,7 @@ Options:
 
 Unlike most popular linters, `comply` exclusively use Regex and pattern matching to determine violations. This makes `comply` *worse* than the alternatives (e.g. `clang-tidy`) in some cases, and may even have a higher tendency toward false-positives which a compiler-backed linter would not.
 
-On the upside, it allows `comply` to be much more lean in terms of dependencies and portability, and, I dare say, friendlier and easier to get into for people wishing to add or improve functionality.
+On the upside, it allows `comply` to be much more lean in terms of dependencies and portability, and, potentially even friendlier and easier to get into for people wishing to add or improve functionality.
 
 ## License
 
