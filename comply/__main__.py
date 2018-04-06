@@ -158,19 +158,24 @@ def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
         else:
             reason = None
 
+            file_or_directory = 'File'
+
             if checked == CheckResult.FILE_NOT_FOUND:
                 reason = 'file not found'
             elif checked == CheckResult.NO_FILES_FOUND:
                 reason = 'no files found'
+
+                file_or_directory = 'Directory'
             elif checked == CheckResult.FILE_NOT_SUPPORTED:
                 reason = 'file not supported'
 
             if reason is not None:
-                printdiag('File \'{path}\' was not checked ({reason}).'.format(
-                    path=os.path.abspath(path), reason=reason))
+
+                printdiag('{type} \'{path}\' was not checked ({reason}).'.format(
+                    type=file_or_directory, path=os.path.abspath(path), reason=reason))
             else:
-                printdiag('File \'{path}\' was not checked.'.format(
-                    path=os.path.abspath(path)))
+                printdiag('{type} \'{path}\' was not checked.'.format(
+                    type=file_or_directory, path=os.path.abspath(path)))
 
     return report
 
