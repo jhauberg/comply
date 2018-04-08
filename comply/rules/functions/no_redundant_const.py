@@ -62,13 +62,25 @@ class NoRedundantConst(Rule):
                 if 'const' in last_param_component:
                     const_index = last_param_component.index('const')
 
-                    if '[' in last_param_component and ']' in last_param_component:
-                        # make sure we don't proceed if encountering e.g. "const arr[]"
-                        const_index = -1
+                    has_pointer_degradation = ('[' in last_param_component and
+                                               ']' in last_param_component)
 
-                        # except if that occurrence is actually like "const arr[const]"
+                    if has_pointer_degradation:
+                        # if the parameter is like "const arr[const]"
                         if last_param_component.count('const') > 1:
+                            # then it's the last const that is the redundant one
                             const_index = last_param_component.rindex('const')
+                        else:
+                            # or has compounded parameter like
+                            # 'enum suit const (* const suits)[2]'
+                            compound_index = last_param_component.find(')')
+
+                            is_compounded = (compound_index != -1 and
+                                             compound_index < last_param_component.index('['))
+
+                            if not is_compounded:
+                                # ignore this const
+                                const_index = -1
 
                     if const_index != -1:
                         up_to = len(param[:-len(last_param_component)]) + const_index
