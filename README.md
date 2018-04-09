@@ -218,9 +218,23 @@ Options:
 
 ### Pattern matching
 
-Unlike most popular linters, `comply` exclusively use Regex and pattern matching to determine violations. This makes `comply` *worse* than the alternatives (e.g. `clang-tidy`) in some cases, and may even have a higher tendency toward false-positives which a compiler-backed linter would not.
+Unlike most popular linters, `comply` exclusively use Regex and pattern-matching to determine violations. 
 
-On the upside, it allows `comply` to be much more lean in terms of dependencies and portability, and, potentially even friendlier and easier to get into for people wishing to add or improve functionality.
+This is both good and bad.
+
+**Bad**
+
+Theoretically, it performs *worse* than the alternatives (e.g. `clang-tidy`) in many cases. It may be less capable of parsing the language correctly in many edge-cases (of which C has a lot) and may even have a higher tendency toward false-positives which a compiler-backed linter would generally not.
+
+You could argue that it takes on more responsibility than it needs to.
+
+**Good**
+
+However, on the upside, it makes `comply` simpler in its usage, as it does not need to compile anything before running its checks and thus does not need any configuration (e.g. include paths and such).
+
+Just point and shoot.
+
+Additionally, it also allows `comply` to be much more lean in terms of dependencies and portability, and, potentially even friendlier and easier to get into for people wishing to add or improve functionality.
 
 ## License
 
