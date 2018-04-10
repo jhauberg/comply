@@ -48,11 +48,12 @@ class Reporter:
         if self.is_verbose:
             normalized_path = os.path.normpath(path)
 
-            encoding = ' ({0})'.format(
-                encoding.upper()) if encoding is not None else ''
+            encoding = ' ({enc})'.format(
+                enc=encoding.upper()) if encoding is not None else ''
 
-            diag = 'Checking \'{0}\'{1}... '.format(
-                truncated(normalized_path), encoding)
+            diag = 'Checking \'{path}\'{enc}... '.format(
+                path=truncated(normalized_path),
+                enc=encoding)
 
             printdiag(diag, end='')
 
