@@ -107,7 +107,6 @@ def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
         functions.FunctionTooLong(),
         functions.TooManyFunctions(),
         functions.NoRedundantName(),
-        functions.ConstOnRight(),
         functions.NoAttachedStars(),
         functions.NoRedundantSize(),
         misc.IdentifierTooLong(),
@@ -118,7 +117,8 @@ def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
         misc.LineTooLong(),
         misc.FileTooLong(),
         misc.PreferStandardInt(),
-        misc.ScopeTooDeep()
+        misc.ScopeTooDeep(),
+        misc.ConstOnRight()
     ]
 
     if len(names) > 0:

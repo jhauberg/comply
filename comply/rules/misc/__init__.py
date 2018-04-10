@@ -9,6 +9,7 @@ from comply.rules.misc.prefer_stdint import PreferStandardInt
 from comply.rules.misc.no_todo import NoTodo
 from comply.rules.misc.identifier_too_long import IdentifierTooLong
 from comply.rules.misc.scope_too_deep import ScopeTooDeep
+from comply.rules.misc.const_on_right import ConstOnRight
 
 __all__ = [
     "LineTooLong",
@@ -19,5 +20,6 @@ __all__ = [
     "PreferStandardInt",
     "NoTodo",
     "IdentifierTooLong",
-    "ScopeTooDeep"
+    "ScopeTooDeep",
+    "ConstOnRight"
 ]
