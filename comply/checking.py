@@ -6,7 +6,7 @@ from typing import List
 
 from comply.reporting import Reporter
 from comply.rules import Rule, RuleViolation
-from comply.util.stripping import strip_any_comments
+from comply.util.stripping import strip_any_comments, strip_literals
 
 DEFAULT_ENCODING = 'utf8'
 
@@ -37,6 +37,20 @@ class CheckResult:
         self.severe_violations += other.severe_violations
 
         return self
+
+
+class CheckFile:
+    """ Represents a source file that has been prepared for checking. """
+
+    def __init__(self,
+                 original: str,
+                 stripped: str,
+                 filename: str,
+                 extension: str):
+        self.original = original
+        self.stripped = stripped
+        self.filename = filename
+        self.extension = extension
 
 
 def supported_file_types() -> tuple:
@@ -108,9 +122,9 @@ def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, int
     reporter.report_before_checking(
         path, encoding=None if encoding is DEFAULT_ENCODING else encoding)
 
-    # todo: prepare(text)
+    file = prepare(text, filename, extension, path)
 
-    violations = collect(text, filename, extension, rules)
+    violations = collect(file, rules)
 
     count(result, violations)
 
@@ -118,6 +132,17 @@ def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, int
     reporter.report(violations, path)
 
     return result, CheckResult.FILE_CHECKED
+
+
+def prepare(text: str, filename: str, extension: str, path: str) -> CheckFile:
+    """ Prepare a text for checking. """
+
+    # remove comments and string literals to reduce chance of false-positives
+    # for stuff that isn't actually code
+    stripped_text = strip_any_comments(text)
+    stripped_text = strip_literals(stripped_text)
+
+    return CheckFile(text, stripped_text, filename, extension)
 
 
 def read(path: str) -> (str, str):
@@ -143,18 +168,15 @@ def read(path: str) -> (str, str):
     return None, None
 
 
-def collect(text: str, filename: str, extension: str, rules: List[Rule]) -> List[RuleViolation]:
+def collect(file: CheckFile, rules: List[Rule]) -> List[RuleViolation]:
     """ Return a list of all collected violations in a text. """
 
     violations = []
 
-    # remove block comments to reduce chance of false-positives for stuff that isn't actually code
-    text_without_comments = strip_any_comments(text)
-
     for rule in rules:
-        text_body = text if rule.expects_original_text else text_without_comments
+        body = file.original if rule.expects_original_text else file.stripped
 
-        offenders = rule.collect(text_body, filename, extension)
+        offenders = rule.collect(body, file.filename, file.extension)
 
         violations.extend(offenders)
 

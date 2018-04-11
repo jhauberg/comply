@@ -31,11 +31,7 @@ class NoAttachedStars(Rule):
 
         lines = text.splitlines()
 
-        from comply.util.stripping import strip_literals
-
-        text_without_literals = strip_literals(text)
-
-        for star_match in self.pattern.finditer(text_without_literals):
+        for star_match in self.pattern.finditer(text):
             offending_index = star_match.start()
 
             is_probably_dereference = True
@@ -43,7 +39,7 @@ class NoAttachedStars(Rule):
             index_left_of_star = offending_index + star_match.group().index('*') - 1
 
             for i in range(index_left_of_star, 0, -1):
-                c = text_without_literals[i]
+                c = text[i]
 
                 if c in [',', ';', '=', '!', '+', '-', '/', '(', ')', '[', ']', '\r', '\n']:
                     # found a character that signifies this is probably a dereferencing pointer
@@ -57,7 +53,7 @@ class NoAttachedStars(Rule):
 
             if not is_probably_dereference:
                 offending_line_number, offending_column = RuleViolation.at(offending_index,
-                                                                           text_without_literals)
+                                                                           text)
 
                 line = lines[offending_line_number - 1]
 
