@@ -125,7 +125,7 @@ def strip_literals(text: str) -> str:
 
     stripped = text
 
-    pattern = re.compile(r'[\"\']([\s\S]*?)[\"\']')
+    pattern = re.compile(r'[\"]([\s\S]*?)[\"]')
 
     for match in pattern.finditer(stripped):
         literal = match.group(1)
