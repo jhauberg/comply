@@ -23,13 +23,17 @@ Options:
 
 import os
 import re
+import sys
 import datetime
 
 from docopt import docopt
 
 from pkg_resources import parse_version
 
-from comply import VERSION_PATTERN, exit_if_not_compatible
+from comply import (
+    VERSION_PATTERN,
+    EXIT_CODE_SUCCESS, EXIT_CODE_SUCCESS_WITH_SEVERE_VIOLATIONS, exit_if_not_compatible
+)
 
 from comply.reporting import Reporter, OneLineReporter, HumanReporter
 from comply.printing import printdiag, diagnostics, supports_unicode, is_windows_environment
@@ -103,7 +107,6 @@ def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
         functions.FunctionTooLong(),
         functions.TooManyFunctions(),
         functions.NoRedundantName(),
-        functions.ConstOnRight(),
         functions.NoAttachedStars(),
         functions.NoRedundantSize(),
         misc.IdentifierTooLong(),
@@ -113,7 +116,9 @@ def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
         misc.NoInvisibles(),
         misc.LineTooLong(),
         misc.FileTooLong(),
-        misc.PreferStandardInt()
+        misc.PreferStandardInt(),
+        misc.ScopeTooDeep(),
+        misc.ConstOnRight()
     ]
 
     if len(names) > 0:
@@ -153,19 +158,25 @@ def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
         else:
             reason = None
 
+            file_or_directory = 'File'
+
             if checked == CheckResult.FILE_NOT_FOUND:
                 reason = 'file not found'
+            elif checked == CheckResult.FILE_NOT_READ:
+                reason = 'file not read'
             elif checked == CheckResult.NO_FILES_FOUND:
                 reason = 'no files found'
+
+                file_or_directory = 'Directory'
             elif checked == CheckResult.FILE_NOT_SUPPORTED:
                 reason = 'file not supported'
 
             if reason is not None:
-                printdiag('File \'{path}\' was not checked ({reason}).'.format(
-                    path=os.path.abspath(path), reason=reason))
+                printdiag('{type} \'{path}\' was not checked ({reason}).'.format(
+                    type=file_or_directory, path=os.path.abspath(path), reason=reason))
             else:
-                printdiag('File \'{path}\' was not checked.'.format(
-                    path=os.path.abspath(path)))
+                printdiag('{type} \'{path}\' was not checked.'.format(
+                    type=file_or_directory, path=os.path.abspath(path)))
 
     return report
 
@@ -246,13 +257,24 @@ def main():
 
         score = score_format.format(score)
 
-        printdiag('Found {2} violations in {0}/{1} files (scoring {3})'
+        severe_format = '({0} severe) '.format(
+            report.severe_violations) if report.severe_violations > 0 else ''
+
+        printdiag('Found {2} violations {4}in {0}/{1} files (scoring {3})'
                   .format(report.files_with_violations,
                           report.files,
-                          report.violations,
-                          score))
+                          report.violations + report.severe_violations,
+                          score,
+                          severe_format))
 
     check_for_update()
+
+    if report.severe_violations > 0:
+        # everything went fine; severe violations were encountered
+        sys.exit(EXIT_CODE_SUCCESS_WITH_SEVERE_VIOLATIONS)
+    else:
+        # everything went fine; violations might have been encountered
+        sys.exit(EXIT_CODE_SUCCESS)
 
 
 if __name__ == '__main__':

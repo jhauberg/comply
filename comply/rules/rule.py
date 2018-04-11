@@ -109,7 +109,7 @@ class Rule:
         return RuleViolation(self, at, lines, meta)
 
     def collect(self, text: str, filename: str, extension: str) -> List[RuleViolation]:
-        """ Analyze a given text and return a list of any found rule offenders.
+        """ Analyze a given text and return a list of any found violations.
 
             Subclasses should override and provide rule-specific collection logic.
         """

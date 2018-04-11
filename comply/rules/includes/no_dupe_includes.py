@@ -12,7 +12,8 @@ class NoDuplicateIncludes(Rule):
     def __init__(self):
         Rule.__init__(self, name='no-dupe-includes',
                       description='File already included previously',
-                      suggestion='Remove duplicate include statement.')
+                      suggestion='Remove duplicate include statement.',
+                      expects_original_text=True)
 
     def augment(self, violation: RuleViolation):
         line_number, line = violation.lines[0]

@@ -11,7 +11,7 @@ from comply.util.scope import depth
 def strip_comments(text: str, patterns: list) -> str:
     """ Remove any comments matching provided patterns from a text.
 
-        Any fully stripped line is replaced by "<IGNORE>\n" to avoid triggering [too-many-blanks].
+        Entire comment is replaced by whitespace, leaving linebreaks in place.
     """
 
     stripped = text
@@ -22,9 +22,13 @@ def strip_comments(text: str, patterns: list) -> str:
         while comment_match is not None:
             comment = comment_match.group(0)
 
-            # strip entire comment, leaving newlines and a hint in place to ensure that line
-            # numbering remains correct; the hint makes sure we don't violate [too-many-blanks]
-            replacement = '<IGNORE>\n' * comment.count('\n')
+            replacement = ''
+
+            for c in comment:
+                if c in ['\r', '\n']:
+                    replacement += c
+                else:
+                    replacement += ' '
 
             from_index = comment_match.start()
             to_index = comment_match.end()
@@ -37,28 +41,19 @@ def strip_comments(text: str, patterns: list) -> str:
 
 
 def strip_any_comments(text: str) -> str:
-    """ Remove both line- and block-style comments from a text.
-
-        Any fully stripped line is replaced by "<IGNORE>\n" to avoid triggering [too-many-blanks].
-    """
+    """ Remove both line- and block-style comments from a text. """
 
     return strip_comments(text, [COMMENT_BLOCK_PATTERN, COMMENT_LINE_PATTERN])
 
 
 def strip_line_comments(text: str) -> str:
-    """ Remove any line-style comments from a text.
-
-        Any fully stripped line is replaced by "<IGNORE>\n" to avoid triggering [too-many-blanks].
-    """
+    """ Remove any line-style comments from a text. """
 
     return strip_comments(text, [COMMENT_LINE_PATTERN])
 
 
 def strip_block_comments(text: str) -> str:
-    """ Remove any block-style comments from a text.
-
-        Any fully stripped line is replaced by "<IGNORE>\n" to avoid triggering [too-many-blanks].
-    """
+    """ Remove any block-style comments from a text. """
 
     return strip_comments(text, [COMMENT_BLOCK_PATTERN])
 
@@ -112,36 +107,33 @@ def strip_function_bodies(text: str) -> str:
     return stripped
 
 
-def strip_literals(text: str, keepends: bool=True) -> str:
+def strip_literals(text: str) -> str:
     """ Remove any string literals from a text.
 
-        Any stripped characters are replaced with whitespace.
-        Retains line terminators if keepends is True.
+        Stripped characters are replaced with whitespace; literal markers are left behind.
+
+        For example:
+
+          "A bunch of text", if found, becomes:
+          "               "
     """
 
     stripped = text
 
-    #pattern = r'[\"\'].*?[\"\']'
-    pattern = r'[\"\'][\s\S]*?[\"\']'
+    # match string literals, allowing escaped (\") quotes inside
+    pattern = re.compile(r'\"([^\"\\]*(?:\\.[^\"\\]*)*)\"')
 
-    literal_match = re.search(pattern, stripped)
+    for match in pattern.finditer(stripped):
+        literal = match.group(1)
 
-    while literal_match is not None:
-        literal = literal_match.group()
+        replacement = ' ' * len(literal)
 
-        replacement = ''
+        from_index = match.start(1)
+        to_index = match.end(1)
 
-        for c in literal:
-            if keepends and (c == '\r' or c == '\n'):
-                replacement += c
-            else:
-                replacement += ' '
-
-        from_index = literal_match.start()
-        to_index = literal_match.end()
-
+        # note that we're doing an iterative search *while* we're modifying the text we're
+        # matching on; this works out because the number of characters always remain the same
+        # (i.e. we're just replacing with whitespace)
         stripped = stripped[:from_index] + replacement + stripped[to_index:]
-
-        literal_match = re.search(pattern, stripped)
 
     return stripped
