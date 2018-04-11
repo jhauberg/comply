@@ -8,6 +8,8 @@ from comply.reporting import Reporter
 from comply.rules import Rule, RuleViolation
 from comply.util.stripping import strip_any_comments
 
+DEFAULT_ENCODING = 'utf8'
+
 
 class CheckResult:
     """ Represents the result of running a check on one or more files. """
@@ -16,6 +18,7 @@ class CheckResult:
     FILE_NOT_FOUND = -1
     NO_FILES_FOUND = -2
     FILE_NOT_SUPPORTED = -3
+    FILE_NOT_READ = -4
 
     def __init__(self,
                  files: int=0,
@@ -40,6 +43,25 @@ def supported_file_types() -> tuple:
     """ Return all supported and recognized source filetypes. """
 
     return '.h', '.c'
+
+
+def count(result: CheckResult, violations: List[RuleViolation]):
+    """ Increment violation/file counts for a result. """
+
+    num_severe_violations = 0
+
+    for violation in violations:
+        if violation.which.severity == RuleViolation.DENY:
+            num_severe_violations += 1
+
+    num_violations = len(violations) - num_severe_violations
+
+    result.files += 1
+    result.violations += num_violations
+    result.severe_violations += num_severe_violations
+
+    if num_violations > 0 or num_severe_violations > 0:
+        result.files_with_violations += 1
 
 
 def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, int):
@@ -78,12 +100,34 @@ def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, int
 
     filename = os.path.basename(filename)
 
-    text = None
+    text, encoding = read(path)
 
-    default_encoding = 'utf8'
+    if text is None:
+        return result, CheckResult.FILE_NOT_READ
+
+    reporter.report_before_checking(
+        path, encoding=None if encoding is DEFAULT_ENCODING else encoding)
+
+    # todo: prepare(text)
+
+    violations = collect(text, filename, extension, rules)
+
+    count(result, violations)
+
+    reporter.report_before_results(violations)
+    reporter.report(violations, path)
+
+    return result, CheckResult.FILE_CHECKED
+
+
+def read(path: str) -> (str, str):
+    """ Return text and encoding used to read from file found at path.
+
+        Return None if file could not be read with any supported encoding.
+    """
 
     supported_encodings = [
-        default_encoding,
+        DEFAULT_ENCODING,
         'cp1252'
     ]
 
@@ -91,37 +135,12 @@ def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, int
         try:
             with open(path, 'r', encoding=encoding) as file:
                 text = file.read()
+
+                return text, encoding
         except UnicodeDecodeError:
             pass
-        else:
-            reporter.report_before_checking(
-                path, encoding=None if encoding is default_encoding else encoding)
 
-            break
-
-    if text is not None:
-        violations = collect(text, filename, extension, rules)
-
-        num_severe_violations = 0
-
-        for violation in violations:
-            if violation.which.severity == RuleViolation.DENY:
-                num_severe_violations += 1
-
-        num_violations = len(violations) - num_severe_violations
-
-        result.files += 1
-        result.violations += num_violations
-        result.severe_violations += num_severe_violations
-
-        reporter.report_before_results(violations)
-
-        if num_violations > 0 or num_severe_violations > 0:
-            result.files_with_violations += 1
-
-        reporter.report(violations, path)
-
-    return result, CheckResult.FILE_CHECKED
+    return None, None
 
 
 def collect(text: str, filename: str, extension: str, rules: List[Rule]) -> List[RuleViolation]:
