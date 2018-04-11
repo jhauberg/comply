@@ -142,6 +142,15 @@ def prepare(text: str, filename: str, extension: str, path: str) -> CheckFile:
     stripped_text = strip_any_comments(text)
     stripped_text = strip_literals(stripped_text)
 
+    # debug code for comparing differences before/after stripping
+    write_stripped_file = False
+
+    if write_stripped_file:
+        stripped_file_path = path + '.stripped'
+
+        with open(stripped_file_path, 'w') as stripped_file:
+            stripped_file.write(stripped_text)
+
     return CheckFile(text, stripped_text, filename, extension)
 
 
