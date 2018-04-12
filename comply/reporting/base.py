@@ -6,7 +6,7 @@ from typing import List
 
 from collections import OrderedDict
 
-import comply.printing
+import comply.printing as printing
 
 from comply.rules import RuleViolation
 from comply.printing import printdiag, printout
@@ -93,7 +93,7 @@ class Reporter:
 
                 # if results are being piped or redirected, we don't need to emit a diagnostic
                 # note that the PyCharm bit is just for testing purposes
-                should_notify = comply.printing.results.isatty() or 'PYCHARM' in os.environ
+                should_notify = printing.results.isatty() or 'PYCHARM' in os.environ
 
                 if remaining > 0 and should_notify:
                     # note that this does not require --verbose;
