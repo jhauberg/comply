@@ -15,9 +15,7 @@ class NoTodo(Rule):
                       description='TODO: {todo}',
                       suggestion='Consider promoting this issue to a full report in your issue tracker.')
 
-    @property
-    def severity(self):
-        return RuleViolation.ALLOW
+    pattern = re.compile(r'TODO:|todo:')
 
     def augment(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
@@ -29,8 +27,6 @@ class NoTodo(Rule):
                           line[to_index:])
 
         violation.lines[0] = (line_number, augmented_line)
-
-    pattern = re.compile(r'TODO:|todo:')
 
     def collect(self, file: CheckFile):
         offenders = []
@@ -60,3 +56,7 @@ class NoTodo(Rule):
             offenders.append(offender)
 
         return offenders
+
+    @property
+    def severity(self):
+        return RuleViolation.ALLOW
