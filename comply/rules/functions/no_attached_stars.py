@@ -2,7 +2,7 @@
 
 import re
 
-from comply.rules import Rule, RuleViolation
+from comply.rules import Rule, RuleViolation, CheckFile
 
 from comply.printing import Colors
 
@@ -12,6 +12,8 @@ class NoAttachedStars(Rule):
         Rule.__init__(self, name='no-attached-stars',
                       description='Asterisks should be padded with space on both sides',
                       suggestion='Add spacing to the {left_or_right} of the asterisk.')
+
+    pattern = re.compile(r'\*[^\s,*()=]|[^\s*()]\*')
 
     def augment(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
@@ -24,10 +26,10 @@ class NoAttachedStars(Rule):
 
         violation.lines[0] = (line_number, augmented_line)
 
-    pattern = re.compile(r'\*[^\s,*()=]|[^\s*()]\*')
-
-    def collect(self, text: str, filename: str, extension: str):
+    def collect(self, file: CheckFile):
         offenders = []
+
+        text = file.stripped
 
         lines = text.splitlines()
 

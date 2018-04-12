@@ -1,10 +1,8 @@
 # coding=utf-8
 
-# coding=utf-8
-
 import re
 
-from comply.rules import Rule, RuleViolation
+from comply.rules import Rule, RuleViolation, CheckFile
 from comply.rules.functions.pattern import FUNC_PROT_PATTERN
 
 from comply.printing import Colors
@@ -15,6 +13,8 @@ class NoRedundantConst(Rule):
         Rule.__init__(self, name='no-redundant-const',
                       description='Don\'t provide const qualifiers for parameter names in function prototypes',
                       suggestion='Remove const qualifier for parameter name.')
+
+    pattern = re.compile(FUNC_PROT_PATTERN)
 
     def augment(self, violation: RuleViolation):
         function_linenumber, function_line = violation.lines[0]
@@ -29,10 +29,10 @@ class NoRedundantConst(Rule):
 
         violation.lines[0] = (function_linenumber, (' ' * leading_space) + augmented_line)
 
-    pattern = re.compile(FUNC_PROT_PATTERN)
-
-    def collect(self, text: str, filename: str, extension: str):
+    def collect(self, file: CheckFile):
         offenders = []
+
+        text = file.stripped
 
         from comply.util.stripping import strip_function_bodies
 

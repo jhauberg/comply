@@ -2,7 +2,7 @@
 
 import re
 
-from comply.rules import Rule, RuleViolation
+from comply.rules import Rule, RuleViolation, CheckFile
 from comply.rules.functions.pattern import FUNC_IMPL_PATTERN
 
 
@@ -14,14 +14,12 @@ class TooManyFunctions(Rule):
 
     MAX = 7
 
-    @property
-    def severity(self):
-        return RuleViolation.ALLOW
-
     pattern = re.compile(FUNC_IMPL_PATTERN)
 
-    def collect(self, text: str, filename: str, extension: str):
+    def collect(self, file: CheckFile):
         offenders = []
+
+        text = file.stripped
 
         from comply.util.stripping import strip_function_bodies
 
@@ -42,6 +40,10 @@ class TooManyFunctions(Rule):
             offenders.append(offender)
 
         return offenders
+
+    @property
+    def severity(self):
+        return RuleViolation.ALLOW
 
     @property
     def collection_hint(self):

@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from comply.rules import Rule, RuleViolation
+from comply.rules import Rule, RuleViolation, CheckFile
 
 from comply.printing import Colors
 
@@ -9,10 +9,7 @@ class TooManyBlanks(Rule):
     def __init__(self):
         Rule.__init__(self, name='too-many-blanks',
                       description='Too many consecutive blank lines ({count} > {max})',
-                      suggestion='Remove excess blank lines.',
-                      # prefer original un-modified text so we can provide correct context snippets
-                      # (as opposed to a text stripped of block comments and similar)
-                      expects_original_text=True)
+                      suggestion='Remove excess blank lines.')
 
     MAX = 1
 
@@ -24,12 +21,12 @@ class TooManyBlanks(Rule):
 
                 violation.lines[i] = (linenumber, color + '~~~~~~~~' + Colors.clear)
 
-    def collect(self, text: str, filename: str, extension: str):
+    def collect(self, file: CheckFile):
         offenders = []
 
         max_lines = TooManyBlanks.MAX
 
-        lines = text.splitlines()  # without newlines
+        lines = file.original.splitlines()  # without newlines
 
         consecutive_blanks = 0
 

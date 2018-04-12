@@ -2,7 +2,7 @@
 
 import re
 
-from comply.rules import Rule, RuleViolation
+from comply.rules import Rule, RuleViolation, CheckFile
 from comply.rules.functions.pattern import FUNC_BOTH_PATTERN, FUNC_IMPL_PATTERN
 
 from comply.printing import Colors
@@ -41,8 +41,10 @@ class TooManyParams(Rule):
 
         violation.lines[0] = (function_linenumber, (' ' * leading_space) + augmented_line)
 
-    def collect(self, text: str, filename: str, extension: str):
+    def collect(self, file: CheckFile):
         offenders = []
+
+        text = file.stripped
 
         from comply.util.stripping import strip_function_bodies
 

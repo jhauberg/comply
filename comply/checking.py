@@ -5,52 +5,11 @@ import os
 from typing import List
 
 from comply.reporting import Reporter
-from comply.rules import Rule, RuleViolation
+from comply.rules import Rule, RuleViolation, CheckFile, CheckResult
+
 from comply.util.stripping import strip_any_comments, strip_literals
 
 DEFAULT_ENCODING = 'utf8'
-
-
-class CheckResult:
-    """ Represents the result of running a check on one or more files. """
-
-    FILE_CHECKED = 1
-    FILE_NOT_FOUND = -1
-    NO_FILES_FOUND = -2
-    FILE_NOT_SUPPORTED = -3
-    FILE_NOT_READ = -4
-
-    def __init__(self,
-                 files: int=0,
-                 files_with_violations: int=0,
-                 violations: int=0,
-                 severe_violations: int=0):
-        self.files = files
-        self.files_with_violations = files_with_violations
-        self.violations = violations
-        self.severe_violations = severe_violations
-
-    def __iadd__(self, other):
-        self.files += other.files
-        self.files_with_violations += other.files_with_violations
-        self.violations += other.violations
-        self.severe_violations += other.severe_violations
-
-        return self
-
-
-class CheckFile:
-    """ Represents a source file that has been prepared for checking. """
-
-    def __init__(self,
-                 original: str,
-                 stripped: str,
-                 filename: str,
-                 extension: str):
-        self.original = original
-        self.stripped = stripped
-        self.filename = filename
-        self.extension = extension
 
 
 def supported_file_types() -> tuple:
@@ -109,7 +68,9 @@ def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, int
 
     filename, extension = os.path.splitext(path)
 
-    if extension.lower() not in supported_file_types():
+    extension = extension.lower()
+
+    if extension not in supported_file_types():
         return result, CheckResult.FILE_NOT_SUPPORTED
 
     filename = os.path.basename(filename)
@@ -183,9 +144,7 @@ def collect(file: CheckFile, rules: List[Rule]) -> List[RuleViolation]:
     violations = []
 
     for rule in rules:
-        body = file.original if rule.expects_original_text else file.stripped
-
-        offenders = rule.collect(body, file.filename, file.extension)
+        offenders = rule.collect(file)
 
         violations.extend(offenders)
 

@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from comply.rules import Rule, RuleViolation
+from comply.rules import Rule, RuleViolation, CheckFile
 
 from comply.printing import Colors, supports_unicode
 
@@ -12,10 +12,6 @@ class NoTabs(Rule):
                       suggestion='Replace each tab with spaces (typically 4).')
 
     TAB = '\t'
-
-    @property
-    def severity(self):
-        return RuleViolation.DENY
 
     def augment(self, violation: RuleViolation):
         # assume only one offending line
@@ -36,8 +32,10 @@ class NoTabs(Rule):
         else:
             violation.lines[0] = augmented_line
 
-    def collect(self, text: str, filename: str, extension: str):
+    def collect(self, file: CheckFile):
         offenders = []
+
+        text = file.original
 
         tabs_found = text.count(NoTabs.TAB)
 
@@ -60,6 +58,10 @@ class NoTabs(Rule):
             offenders.append(offender)
 
         return offenders
+
+    @property
+    def severity(self):
+        return RuleViolation.DENY
 
     @property
     def collection_hint(self):

@@ -2,7 +2,7 @@
 
 import re
 
-from comply.rules import Rule, RuleViolation
+from comply.rules import Rule, RuleViolation, CheckFile
 from comply.rules.functions.pattern import FUNC_BODY_PATTERN
 
 from comply.util.scope import depth
@@ -18,8 +18,10 @@ class ScopeTooDeep(Rule):
 
     pattern = re.compile(FUNC_BODY_PATTERN)
 
-    def collect(self, text: str, filename: str, extension: str):
+    def collect(self, file: CheckFile):
         offenders = []
+
+        text = file.stripped
 
         lines = text.splitlines()
 

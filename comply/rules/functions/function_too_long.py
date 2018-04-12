@@ -2,7 +2,7 @@
 
 import re
 
-from comply.rules import Rule, RuleViolation
+from comply.rules import Rule, RuleViolation, CheckFile
 from comply.rules.functions.pattern import FUNC_IMPL_PATTERN
 
 from comply.util.scope import depth
@@ -18,9 +18,7 @@ class FunctionTooLong(Rule):
 
     MAX = 40
 
-    @property
-    def severity(self):
-        return RuleViolation.ALLOW
+    pattern = re.compile(FUNC_IMPL_PATTERN)
 
     def augment(self, violation: RuleViolation):
         name = violation.meta['func'] if 'func' in violation.meta else '<unknown>'
@@ -42,9 +40,9 @@ class FunctionTooLong(Rule):
 
         violation.lines.insert(0, (None, info_line))
 
-    pattern = re.compile(FUNC_IMPL_PATTERN)
+    def collect(self, file: CheckFile):
+        text = file.stripped
 
-    def collect(self, text: str, filename: str, extension: str):
         offenders = []
 
         def check_func_body(body: str, name: str, line_number: int, starting_from_position: (int, int)):
@@ -106,3 +104,7 @@ class FunctionTooLong(Rule):
                     i += 1
 
         return offenders
+
+    @property
+    def severity(self):
+        return RuleViolation.ALLOW

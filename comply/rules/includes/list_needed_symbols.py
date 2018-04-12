@@ -2,9 +2,9 @@
 
 import re
 
-from comply.rules import Rule, RuleViolation
-
+from comply.rules import Rule, RuleViolation, CheckFile
 from comply.rules.includes.pattern import INCLUDE_PATTERN
+
 from comply.printing import Colors
 
 
@@ -12,8 +12,9 @@ class ListNeededSymbols(Rule):
     def __init__(self):
         Rule.__init__(self, name='list-needed-symbols',
                       description='Include statements should indicate which symbols are needed',
-                      suggestion='Add a comment immediately after include statement, listing each needed symbol.',
-                      expects_original_text=True)  # must use original text including comments
+                      suggestion='Add a comment immediately after include statement, listing each needed symbol.')
+
+    pattern = re.compile(INCLUDE_PATTERN + r'(.*)')
 
     def augment(self, violation: RuleViolation):
         # assume only one offending line
@@ -22,10 +23,10 @@ class ListNeededSymbols(Rule):
         violation.lines[0] = (linenumber,
                               line + Colors.good + ' // symbol_t, symbol_func_*' + Colors.clear)
 
-    pattern = re.compile(INCLUDE_PATTERN + r'(.*)')
-
-    def collect(self, text: str, filename: str, extension: str):
+    def collect(self, file: CheckFile):
         offenders = []
+
+        text = file.original
 
         for inclusion in self.pattern.finditer(text):
             suffix = inclusion.group(1)

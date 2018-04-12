@@ -2,7 +2,7 @@
 
 import re
 
-from comply.rules import Rule, RuleViolation
+from comply.rules import Rule, RuleViolation, CheckFile
 
 from comply.printing import Colors
 
@@ -36,8 +36,10 @@ class ConstOnRight(Rule):
 
         violation.lines[0] = (line_number, augmented_line)
 
-    def collect(self, text: str, filename: str, extension: str):
+    def collect(self, file: CheckFile):
         offenders = []
+
+        text = file.stripped
 
         lines = text.splitlines()
 

@@ -2,9 +2,9 @@
 
 import re
 
-from comply.rules import Rule, RuleViolation
-
+from comply.rules import Rule, RuleViolation, CheckFile
 from comply.rules.includes.pattern import INCLUDE_PATTERN
+
 from comply.printing import Colors
 
 
@@ -14,9 +14,7 @@ class NoHeadersInHeader(Rule):
                       description='Avoid including headers in header files',
                       suggestion='If possible, replace \'{inclusion}\' with a forward-declaration for each needed type.')
 
-    @property
-    def severity(self):
-        return RuleViolation.ALLOW
+    pattern = re.compile(INCLUDE_PATTERN)
 
     def augment(self, violation: RuleViolation):
         # assume only one offending line
@@ -24,13 +22,13 @@ class NoHeadersInHeader(Rule):
 
         violation.lines[0] = (linenumber, Colors.bad + line + Colors.clear)
 
-    pattern = re.compile(INCLUDE_PATTERN)
-
-    def collect(self, text: str, filename: str, extension: str):
+    def collect(self, file: CheckFile):
         offenders = []
 
-        if '.h' not in extension:
+        if '.h' not in file.extension:
             return offenders
+
+        text = file.stripped
 
         for inclusion in self.pattern.finditer(text):
             include_statement = inclusion.group(0)
@@ -54,6 +52,10 @@ class NoHeadersInHeader(Rule):
             break
 
         return offenders
+
+    @property
+    def severity(self):
+        return RuleViolation.ALLOW
 
     @property
     def collection_hint(self):
