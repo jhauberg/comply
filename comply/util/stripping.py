@@ -121,7 +121,7 @@ def strip_literals(text: str) -> str:
     stripped = text
 
     # match string literals, allowing escaped (\") quotes inside
-    pattern = re.compile(r'\"([^\"\\]*(?:\\.[^\"\\]*)*)\"')
+    pattern = re.compile(r'(?<!\')\"([^\"\\]*(?:\\.[^\"\\]*)*)\"(?!\')')
 
     for match in pattern.finditer(stripped):
         literal = match.group(1)
