@@ -39,7 +39,7 @@ class SplitByName(Rule):
 
         text = file.stripped
 
-        lines = text.splitlines()
+        lines = file.original.splitlines()
 
         from comply.util.stripping import strip_function_bodies
 

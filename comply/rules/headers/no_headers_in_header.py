@@ -28,7 +28,7 @@ class NoHeadersInHeader(Rule):
         if '.h' not in file.extension:
             return offenders
 
-        text = file.stripped
+        text = file.original
 
         for inclusion in self.pattern.finditer(text):
             include_statement = inclusion.group(0)

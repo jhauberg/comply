@@ -41,7 +41,7 @@ class ConstOnRight(Rule):
 
         text = file.stripped
 
-        lines = text.splitlines()
+        lines = file.original.splitlines()
 
         for match in self.pattern.finditer(text):
             line_number, column = RuleViolation.at(match.start(1), text)

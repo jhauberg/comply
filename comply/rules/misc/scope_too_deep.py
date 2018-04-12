@@ -23,7 +23,7 @@ class ScopeTooDeep(Rule):
 
         text = file.stripped
 
-        lines = text.splitlines()
+        lines = file.original.splitlines()
 
         max_depth = ScopeTooDeep.MAX
 

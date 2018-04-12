@@ -52,8 +52,8 @@ class SymbolListedNotNeeded(Rule):
                     symbol_type = symbol_components[0].strip()
                     sought_symbol = symbol_components[-1].strip()
 
-                    # search for symbol usage after include statement
-                    text_after_usage = text[inclusion.end():]
+                    # search for symbol usage after include statement (in stripped body)
+                    text_after_usage = file.stripped[inclusion.end():]
 
                     if not has_symbol_usage(sought_symbol, text_after_usage):
                         offending_index = text.index(symbol, inclusion.start(1), inclusion.end())

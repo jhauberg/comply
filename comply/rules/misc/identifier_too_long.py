@@ -36,7 +36,7 @@ class IdentifierTooLong(Rule):
 
         text = file.stripped
 
-        lines = text.splitlines()
+        lines = file.original.splitlines()
 
         def check_identifier(identifier: str, occurrence: (int, int)):
             max_identifier_length = IdentifierTooLong.MAX

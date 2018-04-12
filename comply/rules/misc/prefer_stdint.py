@@ -64,7 +64,7 @@ class PreferStandardInt(Rule):
 
         ranges_collected = []
 
-        lines = text.splitlines()
+        lines = file.original.splitlines()
 
         int_types = [int_type for int_type in PreferStandardInt.INT_TYPES]
         # sort by length of type

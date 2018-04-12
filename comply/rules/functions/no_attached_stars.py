@@ -31,7 +31,7 @@ class NoAttachedStars(Rule):
 
         text = file.stripped
 
-        lines = text.splitlines()
+        lines = file.original.splitlines()
 
         for star_match in self.pattern.finditer(text):
             offending_index = star_match.start()
