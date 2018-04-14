@@ -37,7 +37,7 @@ from comply import (
 
 from comply.reporting import Reporter, OneLineReporter, HumanReporter
 from comply.printing import printdiag, diagnostics, supports_unicode, is_windows_environment
-from comply.checking import check, compliance, CheckResult
+from comply.checking import check, compliance
 from comply.version import __version__
 
 import comply.printing
