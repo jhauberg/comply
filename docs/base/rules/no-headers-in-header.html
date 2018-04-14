@@ -1,0 +1,42 @@
+<tr>
+  <td>
+    <p id="no-headers-in-header"><tt>no-headers-in-header</tt></p>
+  </td>
+  <td>
+    <p>Requires that header files do not include any other headers.</p>
+    <details>
+      <summary><strong>Read more</strong></summary>
+      <p>Instead, headers should provide forward-declarations of each needed type and let the implementation include any necessary headers.</p>
+      <pre>
+<strong>mylib_header.h</strong>
+        <samp class="bad">
+#include &lt;mylib/type.h&gt;
+#include &lt;mylib/attr.h&gt;
+
+...
+        </samp>
+<strong>mylib_header.h</strong>
+        <samp class="good">
+struct mylib_t;
+struct attr_t;
+
+...
+
+#endif
+        </samp>
+      </pre>
+    </details>
+  </td>
+  <td>
+    <p class="reasoning">Avoiding header inclusions helps with keeping compile times low.</p>
+    <p class="reasoning">Forces source files to include <em>everything</em> needed. This might seem like it would be a big hassle- that's because it is. The benefit, however, is that a reader will immediately be aware of <em>all</em> dependencies of the specific unit.<br/><br/>It might even make you think a little bit harder about your design in general once the list grows annoyingly long.<br/><br/>Whenever possible, avoid dependencies.</p>
+    <div class="references">
+      <p><strong>References:</strong></p>
+      <ul class="indent">
+        <li>Our Machinery: <a href="http://ourmachinery.com/post/physical-design"><em>Physical Design</em></a></li>
+        <li>Rob Pike: <a href="http://www.lysator.liu.se/c/pikestyle.html"><em>Notes on Programming in C</em></a> (bottom)</li>
+        <li>Malcolm Inglis: <a href="https://github.com/mcinglis/c-style#include-the-definition-of-everything-you-use"><em>c-style</em></a></li>
+     </ul>
+    </div>
+  </td>
+</tr>

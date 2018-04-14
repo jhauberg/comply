@@ -1,0 +1,13 @@
+<tr>
+  <td>
+    <p><tt>symbol-needed-not-listed</tt></p>
+  </td>
+  <td>
+    <p>Requires that any used symbol be listed as needed by an <code>#include</code> statement.</p><br/>
+    <p><em>This rule provides the fuel for <tt>symbol-listed-not-needed</tt>, but must be implemented by a human; it is not available as an automatic check.</em></p>
+  </td>
+  <td>
+    <p class="reasoning">If your code is using a symbol, but not explicitly telling where it got it from, you might have a hard time figuring out just how far your code reaches out.</p>
+    <p class="reasoning">By maintaining these lists obsessively you make it much easier for yourself, and others, to determine the actual dependencies of your code.</p>
+  </td>
+</tr>

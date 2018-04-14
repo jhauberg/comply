@@ -1,0 +1,36 @@
+<tr>
+  <td>
+    <p id="list-needed-symbols"><tt>list-needed-symbols</tt></p>
+  </td>
+  <td>
+    <p>Requires <code>#include</code> statements to be suffixed with a comma-separated list of all the symbols needed from the included header or file.</p>
+    <details>
+      <summary><strong>Read more</strong></summary>
+      <pre>
+        <samp class="bad">
+  #include &lt;stdbool.h&gt;
+        </samp>
+        <samp class="good">
+  #include &lt;stdbool.h&gt; // bool
+        </samp>
+      </pre>
+      <p>You can indicate that you need every symbol of a specific pattern by applying the star-character:</p>
+      <pre>
+        <samp>
+  // Require all symbols starting with 'mylib_'
+  #include &lt;mylib.h&gt; // mylib_*
+        </samp>
+      </pre>
+    </details>
+  </td>
+  <td>
+    <p class="reasoning">Helps in determining dependencies that are no longer needed and could be removed, and encourages use of smaller, more well-defined headers.</p>
+    <p class="reasoning">Fewer dependencies reduce complexity, so if an inclusion does not need any symbols, it should be removed.<br/><br/>If a symbol is expectedly needed in a <em>different</em> source file, the inclusion should be moved to that file.</p>
+    <div class="references">
+      <p><strong>References:</strong></p>
+      <ul class="indent">
+        <li>Malcolm Inglis: <a href="https://github.com/mcinglis/c-style#comment-non-standard-library-includes-to-say-what-symbols-you-use-from-them"><em>c-style</em></a></li>
+      </ul>
+    </div>
+  </td>
+</tr>
