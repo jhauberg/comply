@@ -246,11 +246,12 @@ def main():
 
         total_time_taken = report_in_seconds
 
-        if total_time_taken > 0.01:
-            time_diagnostic = 'Analysis finished in {0:.1f} seconds'.format(
-                total_time_taken)
+        num_rules = len(rules)
 
-            printdiag(time_diagnostic)
+        rules_or_rule = 'rule' if num_rules == 1 else 'rules'
+
+        printdiag('Checked {0} {1} in {2:.1f} seconds'.format(
+            num_rules, rules_or_rule, total_time_taken))
 
         score = compliance(report)
         score_format = '{0:.2f} ⚑' if supports_unicode() else '{0:.2f}'
