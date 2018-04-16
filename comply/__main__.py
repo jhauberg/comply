@@ -99,7 +99,7 @@ def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
         headers.AvoidUnifiedHeaders(),
         includes.ListNeededSymbols(),
         includes.SymbolListedNotNeeded(),
-        includes.SymbolNeededNotListed(),
+        #  includes.SymbolNeededNotListed(),
         includes.NoDuplicateIncludes(),
         functions.NoRedundantConst(),
         functions.TooManyParams(),
