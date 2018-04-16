@@ -30,6 +30,8 @@ template = template.replace('{{ date }}', date)
 
 rules = [file for file in os.listdir(rules_path) if not file.startswith('.')]
 
+num_rules = 0
+
 for i, rule_filename in enumerate(rules):
     rule_path = os.path.join(rules_path, rule_filename)
 
@@ -41,6 +43,8 @@ for i, rule_filename in enumerate(rules):
             rule_content = rule_content + '\n{{ rules }}'
 
         template = template.replace('{{ rules }}', rule_content)
+
+        num_rules += 1
 
 try:
     output_file = open(output_path, 'w')
@@ -54,5 +58,5 @@ else:
 with open(output_path, 'w') as output_file:
     output_file.write(template)
 
-print('Generated \'{output}\' successfully.'.format(
-    output=output_path))
+print('Generated \'{output}\' ({number_of_rules} rules) successfully.'.format(
+    output=output_path, number_of_rules=num_rules))
