@@ -67,8 +67,10 @@ class Reporter:
         if self.is_verbose:
             count = len(violations)
 
+            violation_or_violations = 'violation' if count == 1 else 'violations'
+
             diag = 'Found {0} {1}'.format(
-                count, 'violation' if count == 1 else 'violations')
+                count, violation_or_violations)
 
             printdiag(diag)
 
