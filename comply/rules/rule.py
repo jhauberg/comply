@@ -56,6 +56,27 @@ class RuleViolation:
 
         return line, column
 
+    @staticmethod
+    def lines_between(starting: int, ending: int, text: str) -> List[Tuple[int, str]]:
+        """ Return the lines and line numbers within starting and ending character indices. """
+
+        all_lines = text.splitlines()
+
+        starting_line_number, _ = RuleViolation.at(starting, text)
+        ending_line_number, _ = RuleViolation.at(ending, text)
+
+        lines_in_range = []
+
+        if ending_line_number > starting_line_number:
+            for line_number in range(starting_line_number, ending_line_number + 1):
+                lines_in_range.append((line_number,
+                                       all_lines[line_number - 1]))
+        else:
+            lines_in_range.append((starting_line_number,
+                                   all_lines[starting_line_number - 1]))
+
+        return lines_in_range
+
 
 class Rule:
     """ Represents a single rule. """
