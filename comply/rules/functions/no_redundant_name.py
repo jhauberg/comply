@@ -14,23 +14,26 @@ class NoRedundantName(Rule):
                       description='Parameter \'{param}\' should not be named identically to its type \'{type}\'',
                       suggestion='Rename parameter \'{param}\' to something meaningful or omit it.')
 
+    # note that we intentionally only check function prototypes (implementations often *should*
+    # name parameters identically)
     pattern = re.compile(FUNC_PROT_PATTERN)
 
     params_pattern = re.compile(r'(.*?)(,|$)')
     const_pattern = re.compile(r'(?!const\b)\b\w[^\s]*\b')
 
     def augment(self, violation: RuleViolation):
-        function_linenumber, function_line = violation.lines[0]
+        line_numbers = [l[0] for l in violation.lines]
+        line_index = line_numbers.index(violation.where[0])
 
-        from_index, to_index = violation.meta['range'] if 'range' in violation.meta else (0, 0)
+        function_linenumber, function_line = violation.lines[line_index]
+
+        from_index, to_index = violation.meta['range']
 
         augmented_line = (function_line[:from_index] +
                           Colors.bad + function_line[from_index:to_index] + Colors.clear +
                           function_line[to_index:])
 
-        leading_space = violation.meta['leading_space'] if 'leading_space' in violation.meta else 0
-
-        violation.lines[0] = (function_linenumber, (' ' * leading_space) + augmented_line)
+        violation.lines[line_index] = (function_linenumber, augmented_line)
 
     def collect(self, file: CheckFile):
         offenders = []
@@ -55,37 +58,36 @@ class NoRedundantName(Rule):
                 type_components = list(self.const_pattern.finditer(param))
 
                 if len(type_components) > 1:  # must be more than two word components in the param
-                    func_param_name = type_components[-1]  # last or right-most component
+                    func_param_match = type_components[-1]  # last or right-most component
                     func_param_types = type_components[:-1]
+
+                    func_param_name = func_param_match.group()
 
                     types = [x.group().lower() for x in func_param_types]
 
-                    if func_param_name.group().lower() in types:
-                        param_start = func_param.start(1) + func_param_name.start()
-                        param_end = func_param.end(1)
+                    if func_param_name.lower() in types:
+                        param_start = func_param.start(1) + func_param_match.start()
 
                         offending_index = (function_match.start('params') +
                                            param_start)
 
-                        function_linenumber, function_column = RuleViolation.at(offending_index,
-                                                                                text_without_bodies)
+                        offending_line_number, offending_column = RuleViolation.at(offending_index,
+                                                                                   text)
 
-                        params_start_index = function_match.start('params') - function_match.start()
+                        offending_lines = RuleViolation.lines_between(function_match.start(),
+                                                                      function_match.end(),
+                                                                      file.original)
 
-                        function_result = function_match.group(0)
+                        offending_range = (offending_column - 1,
+                                           offending_column - 1 + len(func_param_name))
 
                         param_type = ' '.join(types)
 
-                        _, leading_space = RuleViolation.at(function_match.start(),
-                                                            text_without_bodies)
-
-                        offender = self.violate(at=(function_linenumber, function_column),
-                                                lines=[(function_linenumber, function_result)],
-                                                meta={'param': func_param_name.group(),
+                        offender = self.violate(at=(offending_line_number, offending_column),
+                                                lines=offending_lines,
+                                                meta={'param': func_param_name,
                                                       'type': param_type,
-                                                      'leading_space': leading_space - 1,
-                                                      'range': (params_start_index + param_start,
-                                                                params_start_index + param_end)})
+                                                      'range': offending_range})
 
                         offenders.append(offender)
 

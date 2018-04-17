@@ -19,17 +19,18 @@ class NoRedundantSize(Rule):
     size_pattern = re.compile(r'\[([^\[\]]+?)\]')
 
     def augment(self, violation: RuleViolation):
-        function_linenumber, function_line = violation.lines[0]
+        line_numbers = [l[0] for l in violation.lines]
+        line_index = line_numbers.index(violation.where[0])
 
-        from_index, to_index = violation.meta['range'] if 'range' in violation.meta else (0, 0)
+        function_linenumber, function_line = violation.lines[line_index]
+
+        from_index, to_index = violation.meta['range']
 
         augmented_line = (function_line[:from_index] +
                           Colors.bad + function_line[from_index:to_index] + Colors.clear +
                           function_line[to_index:])
 
-        leading_space = violation.meta['leading_space'] if 'leading_space' in violation.meta else 0
-
-        violation.lines[0] = (function_linenumber, (' ' * leading_space) + augmented_line)
+        violation.lines[line_index] = (function_linenumber, augmented_line)
 
     def collect(self, file: CheckFile):
         offenders = []
@@ -42,7 +43,6 @@ class NoRedundantSize(Rule):
         text_without_bodies = strip_function_bodies(text)
 
         for function_match in self.pattern.finditer(text_without_bodies):
-            function_result = function_match.group()
             function_parameters = function_match.group('params')
 
             for size_match in self.size_pattern.finditer(function_parameters):
@@ -84,23 +84,20 @@ class NoRedundantSize(Rule):
                     continue
 
                 offending_index = function_match.start('params') + size_match.start(1)
+                offending_line_number, offending_column = RuleViolation.at(offending_index,
+                                                                           text)
 
-                function_linenumber, function_column = RuleViolation.at(offending_index,
-                                                                        text_without_bodies)
+                offending_lines = RuleViolation.lines_between(function_match.start(),
+                                                              function_match.end(),
+                                                              file.original)
 
-                _, leading_space = RuleViolation.at(function_match.start(),
-                                                    text_without_bodies)
+                offending_range = (offending_column - 1,
+                                   offending_column - 1 + len(size))
 
-                params_start_index = function_match.start('params') - function_match.start()
-
-                size_start = params_start_index + size_match.start(1)
-                size_end = params_start_index + size_match.end(1)
-
-                offender = self.violate(at=(function_linenumber, function_column),
-                                        lines=[(function_linenumber, function_result)],
+                offender = self.violate(at=(offending_line_number, offending_column),
+                                        lines=offending_lines,
                                         meta={'size': size,
-                                              'leading_space': leading_space - 1,
-                                              'range': (size_start, size_end)})
+                                              'range': offending_range})
 
                 offenders.append(offender)
 

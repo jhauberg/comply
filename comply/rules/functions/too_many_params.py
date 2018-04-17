@@ -31,18 +31,18 @@ class TooManyParams(Rule):
         # we would have a hard time spanning the color over multiple lines, because
         # a reporter (e.g. 'human') may decide to clear colors per line
         # for now we just mark up the function name
-        from_index, to_index = violation.meta['range'] if 'range' in violation.meta else (0, 0)
+        from_index, to_index = violation.meta['range']
 
         augmented_line = (function_line[:from_index] +
                           Colors.bad + function_line[from_index:to_index] + Colors.clear +
                           function_line[to_index:])
 
-        leading_space = violation.meta['leading_space'] if 'leading_space' in violation.meta else 0
-
-        violation.lines[0] = (function_linenumber, (' ' * leading_space) + augmented_line)
+        violation.lines[0] = (function_linenumber, augmented_line)
 
     def collect(self, file: CheckFile):
         offenders = []
+
+        max_params = TooManyParams.MAX
 
         text = file.stripped
 
@@ -55,25 +55,25 @@ class TooManyParams(Rule):
         for function_match in self.pattern.finditer(text_without_bodies):
             function_name = function_match.group('name')
             function_parameters = function_match.group('params')
-            function_result = function_match.group(0)
-
-            function_linenumber, function_column = RuleViolation.at(function_match.start(),
-                                                                    text_without_bodies)
-
-            max_params = TooManyParams.MAX
 
             # naively splitting by comma (macros may cause trouble here)
             number_of_params = len(function_parameters.split(','))
 
             if number_of_params > max_params:
-                _, leading_space = RuleViolation.at(function_match.start(), text)
+                offending_index = function_match.start()
+                offending_line_number, offending_column = RuleViolation.at(offending_index,
+                                                                           text)
 
-                offender = self.violate(at=(function_linenumber, function_column),
-                                        lines=[(function_linenumber, function_result)],
+                offending_lines = RuleViolation.lines_between(function_match.start(),
+                                                              function_match.end(),
+                                                              file.original)
+
+                offender = self.violate(at=(offending_line_number, offending_column),
+                                        lines=offending_lines,
                                         meta={'count': number_of_params,
                                               'max': max_params,
-                                              'leading_space': leading_space - 1,
-                                              'range': (0, len(function_name))})
+                                              'range': (offending_column - 1,
+                                                        offending_column - 1 + len(function_name))})
 
                 offenders.append(offender)
 
