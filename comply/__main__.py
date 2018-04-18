@@ -118,7 +118,8 @@ def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
         misc.FileTooLong(),
         misc.PreferStandardInt(),
         misc.ScopeTooDeep(),
-        misc.ConstOnRight()
+        misc.ConstOnRight(),
+        misc.NoSpaceName()
     ]
 
     if len(names) > 0:

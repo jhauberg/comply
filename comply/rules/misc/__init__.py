@@ -10,6 +10,7 @@ from comply.rules.misc.no_todo import NoTodo
 from comply.rules.misc.identifier_too_long import IdentifierTooLong
 from comply.rules.misc.scope_too_deep import ScopeTooDeep
 from comply.rules.misc.const_on_right import ConstOnRight
+from comply.rules.misc.no_space_name import NoSpaceName
 
 __all__ = [
     "LineTooLong",
@@ -21,5 +22,6 @@ __all__ = [
     "NoTodo",
     "IdentifierTooLong",
     "ScopeTooDeep",
-    "ConstOnRight"
+    "ConstOnRight",
+    "NoSpaceName"
 ]
