@@ -25,7 +25,10 @@ class TooManyParams(Rule):
     pattern = re.compile(FUNC_BOTH_PATTERN)
 
     def augment(self, violation: RuleViolation):
-        function_linenumber, function_line = violation.lines[0]
+        line_numbers = [l[0] for l in violation.lines]
+        line_index = line_numbers.index(violation.where[0])
+
+        function_line_number, function_line = violation.lines[line_index]
 
         # note that if we wanted to color up starting from the first exceeding parameter
         # we would have a hard time spanning the color over multiple lines, because
@@ -37,7 +40,7 @@ class TooManyParams(Rule):
                           Colors.bad + function_line[from_index:to_index] + Colors.clear +
                           function_line[to_index:])
 
-        violation.lines[0] = (function_linenumber, augmented_line)
+        violation.lines[line_index] = (function_line_number, augmented_line)
 
     def collect(self, file: CheckFile):
         offenders = []
@@ -60,7 +63,7 @@ class TooManyParams(Rule):
             number_of_params = len(function_parameters.split(','))
 
             if number_of_params > max_params:
-                offending_index = function_match.start()
+                offending_index = function_match.start('name')
                 offending_line_number, offending_column = RuleViolation.at(offending_index,
                                                                            text)
 

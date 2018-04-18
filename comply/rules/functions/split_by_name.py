@@ -50,8 +50,8 @@ class SplitByName(Rule):
         for function_match in self.pattern.finditer(text_without_bodies):
             func_name = function_match.group('name')
 
-            func_line_number, func_column = RuleViolation.at(function_match.start(),
-                                                             text_without_bodies)
+            func_line_number, func_column = RuleViolation.at(function_match.start('name'),
+                                                             text)
             func_line_index = func_line_number - 1
 
             line = lines[func_line_index]
