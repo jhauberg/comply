@@ -1,5 +1,7 @@
 # coding=utf-8
 
+import math
+
 
 class Ellipsize:
     middle = 'mid'
@@ -30,10 +32,13 @@ def truncated(text: str, length: int = 40, options: (str, int, str)=Ellipsize.op
         return text
 
     if ellipsis_type == Ellipsize.middle:
-        i = int(length / 2 - ellipsis_length)
-        j = int(length - i - ellipsis_length)
+        i = (length / 2) - (ellipsis_length / 2)
 
-        return '{1}{0}{2}'.format(ellipsis_char, text[:j], text[-i:])
+        # note biased toward the left part (e.g. it may be 1 char longer than the right)
+        a = math.ceil(i)
+        b = math.floor(i)
+
+        return text[:a] + ellipsis_char + text[-b:]
 
     # adjust truncation length to account for the ellipsis
     i = length - ellipsis_length
