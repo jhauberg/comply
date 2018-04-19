@@ -29,6 +29,7 @@ template = template.replace('{{ version }}', __version__)
 template = template.replace('{{ date }}', date)
 
 rules = [file for file in os.listdir(rules_path) if not file.startswith('.')]
+rules = sorted(rules)
 
 num_rules = 0
 
