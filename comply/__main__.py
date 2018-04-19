@@ -101,6 +101,7 @@ def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
         includes.SymbolListedNotNeeded(),
         #  includes.SymbolNeededNotListed(),
         includes.NoDuplicateIncludes(),
+        includes.NoSourceIncludes(),
         functions.NoRedundantConst(),
         functions.TooManyParams(),
         functions.SplitByName(),
