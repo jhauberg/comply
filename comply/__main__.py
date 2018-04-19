@@ -96,7 +96,7 @@ def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
     rules = [
         headers.GuardHeader(),
         headers.NoHeadersInHeader(),
-        headers.AvoidUnifiedHeaders(),
+        headers.NoUnifiedHeaders(),
         includes.ListNeededSymbols(),
         includes.SymbolListedNotNeeded(),
         #  includes.SymbolNeededNotListed(),
