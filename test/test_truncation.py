@@ -30,3 +30,11 @@ def test_text_truncated_at_middle():
 
     assert truncated_text == 'a tr...ext'
 
+
+def test_text_truncated_at_ends():
+    text = 'a truncated piece of text'
+
+    truncated_text = truncated(text, length=10, options=Ellipsize.options(Ellipsize.ends,
+                                                                          index=int(len(text) / 2)))
+
+    assert truncated_text == '...d pi...'
