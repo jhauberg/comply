@@ -3,9 +3,9 @@
     <p><tt>no-redundant-const</tt></p>
   </td>
   <td>
-    <p>Parameter names in function prototypes should not be marked <code>const</code> as that is an implementation detail.</p>
+    <p>Requires that parameter names in function prototypes not be marked <code>const</code>, as that is an implementation detail.</p>
   </td>
   <td>
-    <p class="reasoning">A parameter name might be marked as <code>const</code> in its function prototype, but an implementation does <em>not</em> have to make it so.</p>
+    <p class="reasoning">A parameter name might be marked as <code>const</code> in its function prototype, but an implementation of the prototype does <em>not</em> have to comply with that- only adding confusion.</p>
   </td>
 </tr>

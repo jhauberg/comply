@@ -1,0 +1,61 @@
+<tr>
+  <td>
+    <p><tt>prefer-stdint</tt></p>
+  </td>
+  <td>
+    <p>Requires use of explicitly-sized integer datatypes, as defined in <code>&lt;stdint.h&gt;</code>, rather than the common <code>int</code>, <code>unsigned int</code>, <code>long</code> and so on.</p>
+        <details>
+      <summary><strong>Read more</strong></summary>
+      <p>It's worth noting that when sticking with use of <code>int</code> and the like, the compiler may just do a better job than you at deciding which size is actually the better, and faster, choice.</p>
+      <p>However, leaving that an implicit choice could result in issues down the line. Being explicit lets you avoid making assumptions.</p>
+      <p>The trade-off is potentially losing some (often neglible) performance.</p>
+      <p>Here's a general table of reference:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Integer type</a></th>
+            <th>&lt;stdint.h&gt;</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>unsigned char</code></td>
+            <td><code>uint8_t</code></td>
+          </tr>
+          <tr>
+            <td><code>unsigned short</code></td>
+            <td><code>uint16_t</code></td>
+          </tr>
+          <tr>
+            <td><code>unsigned int</code></td>
+            <td><code>uint32_t</code></td>
+          </tr>
+          <tr>
+            <td><code>unsigned long</code></td>
+            <td><code>uint64_t</code></td>
+          </tr>
+          <tr>
+            <td><code>char</code></td>
+            <td><code>int8_t</code></td>
+          </tr>
+          <tr>
+            <td><code>short</code></td>
+            <td><code>int16_t</code></td>
+          </tr>
+          <tr>
+            <td><code>int</code></td>
+            <td><code>int32_t</code></td>
+          </tr>
+          <tr>
+            <td><code>long</code></td>
+            <td><code>int64_t</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </details>
+  </td>
+  <td>
+    <p class="reasoning">Being explicit about the type and size that you're expecting helps improve portability.<br/></br/>
+      It also increases readability as it does away with the <code>unsigned</code> and <code>signed</code> keywords and makes types read more uniformly.</p>
+  </td>
+</tr>

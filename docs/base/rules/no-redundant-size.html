@@ -1,0 +1,53 @@
+<tr>
+  <td>
+    <p><tt>no-redundant-size</tt></p>
+  </td>
+  <td>
+    <p>Requires that no size is specified for typical array parameters.</p>
+    <details>
+      <summary><strong>Read more</strong></summary>
+      <p>You can force your compiler to enforce the size specification with a slight modification of your function, as seen below:</p>
+      <pre>
+<strong>foo.c</strong>
+        <samp class="bad">
+void foo(int arr[10]);
+
+void foo(int arr[10]) {
+    
+}
+
+int arr[6] = {
+    0, 1, 2, 3, 4, 5
+};
+
+// compiles even though function is expecting 10
+foo(arr);
+        </samp>
+<strong>foo.c</strong>
+        <samp class="good">
+void foo(int (* arr)[10]);
+
+void foo(int (* arr)[10]) {
+    
+}
+
+int foo[6] = {
+    0, 1, 2, 3, 4, 5
+};
+
+// compiles with error
+foo(&amp;arr);
+        </samp>
+      </pre>
+    </details>
+  </td>
+  <td>
+    <p class="reasoning">The size specification for typical pointer-degrading array parameters is not enforced, thus making it a source of confusion that should be avoided.</p>
+    <div class="references">
+      <p><strong>References:</strong></p>
+      <ul class="indent">
+        <li>Glennan Carnie: <a href="https://blog.feabhas.com/2013/11/shock-horror-i-learned-something-about-arrays-in-c/"><em>Shock horror! I learned something about arrays in C</em></a></li>
+     </ul>
+    </div>
+  </td>
+</tr>
