@@ -22,8 +22,7 @@ class NoRedundantName(Rule):
     const_pattern = re.compile(r'(?!const\b)\b\w[^\s]*\b')
 
     def augment(self, violation: RuleViolation):
-        line_numbers = [l[0] for l in violation.lines]
-        line_index = line_numbers.index(violation.where[0])
+        line_index = violation.index_of_violating_line()
 
         function_linenumber, function_line = violation.lines[line_index]
 

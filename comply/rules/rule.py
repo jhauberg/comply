@@ -34,6 +34,16 @@ class RuleViolation:
     def __repr__(self):
         return '{0} at {1}'.format(self.which, self.lines)
 
+    def index_of_violating_line(self) -> int:
+        """ Return the index of the line where this violation occurs.
+
+            Note that the index *is not* the line number.
+        """
+
+        line_numbers = [line[0] for line in self.lines]
+
+        return line_numbers.index(self.where[0])
+
     @staticmethod
     def at_top() -> (int, int):
         """ Return the line number and column at the top of a text. """
