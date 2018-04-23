@@ -5,6 +5,8 @@ import sys
 import datetime
 import inspect
 
+from typing import List
+
 sys.path.append("..")  # required to import from the 'comply' package
 
 import comply.rules
@@ -12,26 +14,51 @@ import comply.rules
 from comply.version import __version__
 from comply.rules import *
 
-# find all rule subclasses
-rule_types = [rule_class.__name__ for rule_class in Rule.__subclasses__()]
 
-rules = []
+def find_missing_rule_templates(rules: List[Rule], template_paths: List[str]):
+    missing_rules = [rule for rule in rules if rule.name not in
+                     [os.path.splitext(path)[0] for path in template_paths]]
 
-# find all sub-modules inside the .rules package (mod[1] is module object- mod[0] is just the name)
-modules = [mod[1] for mod in inspect.getmembers(comply.rules, inspect.ismodule)]
+    for missing_rule in missing_rules:
+        print('No rule template found for \'{rule}\'.'
+              .format(rule=missing_rule.name))
 
-for rule_type in rule_types:
-    # brute-force our way through each module until we find the one with this rule
-    for rule_module in modules:
-        try:
-            rule_attr = getattr(rule_module, rule_type)
-        except AttributeError as e:
-            pass
-        else:
-            # so we can instantiate it and hold on to it for later
-            rules.append(rule_attr())
 
-            break
+def rule_for_template(rules: List[Rule], template_name: str) -> Rule:
+    rule_matches = [rule for rule in rules
+                    if rule.name == template_name]
+
+    if len(rule_matches) == 0:
+        return None
+
+    return rule_matches[0]
+
+
+def find_all_rules() -> List[Rule]:
+    # find all rule subclasses
+    rule_types = [rule_class.__name__ for rule_class in Rule.__subclasses__()]
+
+    # will hold Rule-subclassed object instances
+    rules = []
+
+    # find all sub-modules inside the .rules package (mod[1] is module object- mod[0] is just the name)
+    modules = [mod[1] for mod in inspect.getmembers(comply.rules, inspect.ismodule)]
+
+    for rule_type in rule_types:
+        # brute-force our way through each module until we find the one with this rule
+        for rule_module in modules:
+            try:
+                rule_attr = getattr(rule_module, rule_type)
+            except AttributeError as e:
+                pass
+            else:
+                # so we can instantiate it and hold on to it for later
+                rules.append(rule_attr())
+
+                break
+
+    return rules
+
 
 template_path = 'base/index.html'
 rule_template_path = 'base/rules'
@@ -59,36 +86,40 @@ rule_templates = sorted(rule_templates)
 num_rules = 0
 num_excepted_rules = 0
 
-for i, rule_filename in enumerate(rule_templates):
-    rule_path = os.path.join(rule_template_path, rule_filename)
-    rule_name, _ = os.path.splitext(rule_filename)
+rules = find_all_rules()
 
-    rule_matches = [rule for rule in rules
-                    if rule.name == rule_name]
+if len(rules) == 0:
+    print('No rules found.')
+else:
+    find_missing_rule_templates(rules, rule_templates)
 
-    if len(rule_matches) == 0:
-        print('Rule \'{rule}\' was not found in the rules package. '
-              'Are you sure it\'s named right?'
-              .format(rule=rule_name))
+    for i, rule_filename in enumerate(rule_templates):
+        rule_path = os.path.join(rule_template_path, rule_filename)
+        rule_name, _ = os.path.splitext(rule_filename)
 
-        num_excepted_rules += 1
+        rule = rule_for_template(rules, rule_name)
 
-        continue
-    else:
-        rule = rule_matches[0]
+        if rule is None:
+            print('Rule \'{rule}\' was not found in the rules package. '
+                  'Are you sure it\'s named right?'
+                  .format(rule=rule_name))
 
-    with open(rule_path) as rule_file:
-        rule_content = rule_file.read()
+            num_excepted_rules += 1
 
-        rule_content = rule_content.replace('{{ rule_name }}', rule.name)
+            continue
 
-        if i != len(rule_templates) - num_excepted_rules - 1:
-            # append template field at end so we can continue adding rule blocks
-            rule_content = rule_content + '\n{{ rules }}'
+        with open(rule_path) as rule_file:
+            rule_content = rule_file.read()
 
-        template = template.replace('{{ rules }}', rule_content)
+            rule_content = rule_content.replace('{{ rule_name }}', rule.name)
 
-        num_rules += 1
+            if i != len(rule_templates) - num_excepted_rules - 1:
+                # append template field at end so we can continue adding rule blocks
+                rule_content = rule_content + '\n{{ rules }}'
+
+            template = template.replace('{{ rules }}', rule_content)
+
+            num_rules += 1
 
 try:
     output_file = open(output_path, 'w')
