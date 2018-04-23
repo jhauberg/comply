@@ -39,9 +39,10 @@ def find_all_rules() -> List[Rule]:
     rule_types = [rule_class.__name__ for rule_class in Rule.__subclasses__()]
 
     # will hold Rule-subclassed object instances
-    rules = []
+    rule_instances = []
 
-    # find all sub-modules inside the .rules package (mod[1] is module object- mod[0] is just the name)
+    # find all sub-modules inside the .rules package
+    # (mod[1] is module object- mod[0] is just the name)
     modules = [mod[1] for mod in inspect.getmembers(comply.rules, inspect.ismodule)]
 
     for rule_type in rule_types:
@@ -53,11 +54,23 @@ def find_all_rules() -> List[Rule]:
                 pass
             else:
                 # so we can instantiate it and hold on to it for later
-                rules.append(rule_attr())
+                rule_instances.append(rule_attr())
 
                 break
 
-    return rules
+    return rule_instances
+
+
+def fill_rule_template(tmp: str, rule: Rule) -> str:
+    tmp = tmp.replace('{{ rule_name }}', rule.name)
+
+    severity = ('deny' if rule.severity > RuleViolation.WARN else
+                ('warn' if rule.severity > RuleViolation.ALLOW else
+                 'allow'))
+
+    tmp = tmp.replace('{{ rule_severity }}', severity)
+
+    return tmp
 
 
 template_path = 'base/index.html'
@@ -109,15 +122,14 @@ else:
             continue
 
         with open(rule_path) as rule_file:
-            rule_content = rule_file.read()
-
-            rule_content = rule_content.replace('{{ rule_name }}', rule.name)
+            rule_template = rule_file.read()
+            rule_template = fill_rule_template(rule_template, rule)
 
             if i != len(rule_templates) - num_excepted_rules - 1:
                 # append template field at end so we can continue adding rule blocks
-                rule_content = rule_content + '\n{{ rules }}'
+                rule_template = rule_template + '\n{{ rules }}'
 
-            template = template.replace('{{ rules }}', rule_content)
+            template = template.replace('{{ rules }}', rule_template)
 
             num_rules += 1
 

@@ -194,6 +194,18 @@ hr {
   background-color: #eef7ee;
 }
 
+.allow {
+  background-color: #86c7ec;
+}
+
+.deny {
+  background-color: #ec5252;
+}
+
+.warn {
+  background-color: #ecd052;
+}
+
 .rules {
   width: 90%;
   margin-top: 1.6cm;
