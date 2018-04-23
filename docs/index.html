@@ -37,7 +37,7 @@
       
       <footer>
         <p>
-          Listings are based on <strong><a href="https://github.com/jhauberg/comply/releases/tag/0.10.0">comply 0.10.0</a></strong> and were last edited on <strong>April 20, 2018</strong>
+          Listings are based on <strong><a href="https://github.com/jhauberg/comply/releases/tag/0.10.0">comply 0.10.0</a></strong> and were last edited on <strong>April 23, 2018</strong>
         </p>
       </footer>
     </section>
@@ -55,7 +55,7 @@
         <tbody>
           <tr>
   <td>
-    <p><tt>const-on-right</tt></p>
+    <p><tt class="warn">const-on-right</tt></p>
   </td>
   <td>
     <p>Requires that <code>const</code> qualifiers always be placed on the right side of the type declaration.</p>
@@ -73,7 +73,7 @@
 
 <tr>
   <td>
-    <p><tt>file-too-long</tt></p>
+    <p><tt class="warn">file-too-long</tt></p>
   </td>
   <td>
     <p>Requires files to not exceed 600 lines.</p>
@@ -85,7 +85,7 @@
 
 <tr>
   <td>
-    <p><tt>func-too-long</tt></p>
+    <p><tt class="allow">func-too-long</tt></p>
   </td>
   <td>
     <p>Requires that function bodies do not exceed 40 lines.</p>
@@ -98,7 +98,7 @@
 
 <tr>
   <td>
-    <p><tt>guard-header</tt></p>
+    <p><tt class="warn">guard-header</tt></p>
   </td>
   <td>
     <p>Requires that the contents of headers be wrapped in include guards named identically to the filename of the header.</p>
@@ -136,7 +136,7 @@
 
 <tr>
   <td>
-    <p><tt>identifier-too-long</tt></p>
+    <p><tt class="allow">identifier-too-long</tt></p>
   </td>
   <td>
     <p>Requires that identifiers be shorter than 31 characters.</p>
@@ -149,7 +149,7 @@
 
 <tr>
   <td>
-    <p><tt>line-too-long</tt></p>
+    <p><tt class="warn">line-too-long</tt></p>
   </td>
   <td>
     <p>Requires lines to not exceed 80 characters.</p>
@@ -167,7 +167,7 @@
 
 <tr>
   <td>
-    <p id="list-needed-symbols"><tt>list-needed-symbols</tt></p>
+    <p id="list-needed-symbols"><tt class="warn">list-needed-symbols</tt></p>
   </td>
   <td>
     <p>Requires <code>#include</code> directives to be suffixed with a comma-separated list of all the symbols needed from the included header or file.</p>
@@ -204,7 +204,7 @@
 
 <tr>
   <td>
-    <p><tt>no-attached-stars</tt></p>
+    <p><tt class="warn">no-attached-stars</tt></p>
   </td>
   <td>
     <p>Requires that type declarations pad pointer stars (<code>*</code>) with space on both sides.</p>
@@ -217,7 +217,7 @@
 
 <tr>
   <td>
-    <p><tt>no-dupe-includes</tt></p>
+    <p><tt class="warn">no-dupe-includes</tt></p>
   </td>
   <td>
     <p>Requires that files are not included twice in the same source file.</p>
@@ -229,7 +229,7 @@
 
 <tr>
   <td>
-    <p id="no-headers-in-header"><tt>no-headers-in-header</tt></p>
+    <p id="no-headers-in-header"><tt class="allow">no-headers-in-header</tt></p>
   </td>
   <td>
     <p>Requires that header files do not include any other headers.</p>
@@ -272,7 +272,7 @@ struct attr_t;
 
 <tr>
   <td>
-  	<p id="no-invisibles"><tt>no-invisibles</tt></p>
+  	<p id="no-invisibles"><tt class="deny">no-invisibles</tt></p>
   </td>
   <td>
   	<p>Requires that files contain no invisible characters.</p>
@@ -284,7 +284,7 @@ struct attr_t;
 
 <tr>
   <td>
-    <p><tt>no-redundant-const</tt></p>
+    <p><tt class="warn">no-redundant-const</tt></p>
   </td>
   <td>
     <p>Requires that parameter names in function prototypes not be marked <code>const</code>, as that is an implementation detail.</p>
@@ -296,7 +296,7 @@ struct attr_t;
 
 <tr>
   <td>
-    <p><tt>no-redundant-name</tt></p>
+    <p><tt class="warn">no-redundant-name</tt></p>
   </td>
   <td>
     <p>Requires that parameter names in function prototypes not be named identically to their type.</p>
@@ -314,7 +314,7 @@ struct attr_t;
 
 <tr>
   <td>
-    <p><tt>no-redundant-size</tt></p>
+    <p><tt class="warn">no-redundant-size</tt></p>
   </td>
   <td>
     <p>Requires that no size is specified for typical array parameters.</p>
@@ -368,19 +368,7 @@ foo(&amp;arr);
 
 <tr>
   <td>
-    <p><tt>no-src-includes</tt></p>
-  </td>
-  <td>
-    <p>Requires that source files files are not included in other source files.</p>
-  </td>
-  <td>
-    <p class="reasoning">Any <code>#include</code> directive should be limited to header files to avoid potentially compiling the same units twice, resulting in multiple symbol definitions.</p>
-  </td>
-</tr>
-
-<tr>
-  <td>
-    <p><tt>no-space-name</tt></p>
+    <p><tt class="allow">no-space-name</tt></p>
   </td>
   <td>
     <p>Requires that filenames do not include whitespace.</p>
@@ -392,7 +380,19 @@ foo(&amp;arr);
 
 <tr>
   <td>
-    <p><tt>no-tabs</tt></p>
+    <p><tt class="warn">no-src-includes</tt></p>
+  </td>
+  <td>
+    <p>Requires that source files files are not included in other source files.</p>
+  </td>
+  <td>
+    <p class="reasoning">Any <code>#include</code> directive should be limited to header files to avoid potentially compiling the same units twice, resulting in multiple symbol definitions.</p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="deny">no-tabs</tt></p>
   </td>
   <td>
     <p>Requires that files contain no tabs.</p>
@@ -410,7 +410,7 @@ foo(&amp;arr);
 
 <tr>
   <td>
-    <p><tt>no-todo</tt></p>
+    <p><tt class="allow">no-todo</tt></p>
   </td>
   <td>
     <p>Requires that <code>todo</code> reminders be considered as candidates for full reports in a bug/issue tracker.</p>
@@ -423,7 +423,7 @@ foo(&amp;arr);
 
 <tr>
   <td>
-    <p><tt>no-unified-headers</tt></p>
+    <p><tt class="allow">no-unified-headers</tt></p>
   </td>
   <td>
     <p>Requires that a headers' only purpose is not only to include other headers.</p>
@@ -441,7 +441,7 @@ foo(&amp;arr);
 
 <tr>
   <td>
-    <p><tt>prefer-stdint</tt></p>
+    <p><tt class="warn">prefer-stdint</tt></p>
   </td>
   <td>
     <p>Requires use of explicitly-sized integer datatypes, as defined in <code>&lt;stdint.h&gt;</code>, rather than the common <code>int</code>, <code>unsigned int</code>, <code>long</code> and so on.</p>
@@ -503,7 +503,7 @@ foo(&amp;arr);
 
 <tr>
   <td>
-    <p><tt>scope-too-deep</tt></p>
+    <p><tt class="warn">scope-too-deep</tt></p>
   </td>
   <td>
     <p>Requires that scope depths do not go more than 4 levels deep.</p>
@@ -515,7 +515,7 @@ foo(&amp;arr);
 
 <tr>
   <td>
-    <p><tt>split-by-name</tt></p>
+    <p><tt class="warn">split-by-name</tt></p>
   </td>
   <td>
     <p>Requires that function implementations list name and return type on separate lines.</p>
@@ -533,7 +533,7 @@ foo(&amp;arr);
 
 <tr>
   <td>
-    <p><tt>symbol-listed-not-needed</tt></p>
+    <p><tt class="warn">symbol-listed-not-needed</tt></p>
   </td>
   <td>
     <p>Requires that any symbol listed as needed by an <code>#include</code> statement should also be used in the same source file.</p><br/>
@@ -546,7 +546,7 @@ foo(&amp;arr);
 
 <tr>
   <td>
-    <p><tt>symbol-needed-not-listed</tt></p>
+    <p><tt class="warn">symbol-needed-not-listed</tt></p>
   </td>
   <td>
     <p>Requires that any used symbol be listed as needed by an <code>#include</code> statement.</p><br/>
@@ -560,7 +560,7 @@ foo(&amp;arr);
 
 <tr>
   <td>
-  	<p id="too-many-blanks"><tt>too-many-blanks</tt></p>
+  	<p id="too-many-blanks"><tt class="warn">too-many-blanks</tt></p>
   </td>
   <td>
   	<p>Requires that files do not contain voids of two or more consecutive blank lines.</p>
@@ -572,7 +572,19 @@ foo(&amp;arr);
 
 <tr>
   <td>
-    <p><tt>too-many-params</tt></p>
+    <p><tt class="allow">too-many-funcs</tt></p>
+  </td>
+  <td>
+    <p>Requires that a source file contains no more than 7 function implementations.</p>
+  </td>
+  <td>
+    <p class="reasoning">Similar to <tt>func-too-long</tt>, having many function implementations in a single unit is often a sign that the file has too much going on, and should preferably be split up into more files.</p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="warn">too-many-params</tt></p>
   </td>
   <td>
     <p>Requires that a function has less than 5 parameters.</p>
@@ -580,18 +592,6 @@ foo(&amp;arr);
   <td>
     <p class="reasoning">When a function has many parameters, it is often a sign that it is doing too much and should be refactored into smaller parts.</p>
     <p class="reasoning">Each parameter adds to the complexity of a function, and the more it has, the harder it becomes to understand (and use).<br/><br/>A common practice is to bundle parameters into a <code>struct</code> when many parameters are absolutely necessary. This practice, however, does <em>not</em> reduce the complexity of the function- but it <em>does</em> improve its readability.</p>
-  </td>
-</tr>
-
-<tr>
-  <td>
-    <p><tt>too-many-funcs</tt></p>
-  </td>
-  <td>
-    <p>Requires that a source file contains no more than 7 function implementations.</p>
-  </td>
-  <td>
-    <p class="reasoning">Similar to <tt>func-too-long</tt>, having many function implementations in a single unit is often a sign that the file has too much going on, and should preferably be split up into more files.</p>
   </td>
 </tr>
 
