@@ -96,10 +96,20 @@ template = template.replace('{{ date }}', date)
 rule_templates = [file for file in os.listdir(rule_template_path) if not file.startswith('.')]
 rule_templates = sorted(rule_templates)
 
+rules = find_all_rules()
+rules = sorted(rules, reverse=True, key=lambda rule: rule.severity)
+
+sort_templates_by_severity = False
+
+if sort_templates_by_severity:
+    # sort templates so that the name-part of the filename matches the index of the rule
+    # as positioned in the rules list (since they are already sorted by severity)
+    rule_templates = sorted(rule_templates,
+                            key=lambda x: ([r.name for r in rules].
+                                           index(os.path.splitext(x)[0])))
+
 num_rules = 0
 num_excepted_rules = 0
-
-rules = find_all_rules()
 
 if len(rules) == 0:
     print('No rules found.')
