@@ -2,9 +2,7 @@
 
 import re
 
-from collections import OrderedDict
-
-from comply.rules import Rule, RuleViolation
+from comply.rules import Rule, RuleViolation, CheckFile
 
 from comply.printing import Colors
 
@@ -59,12 +57,14 @@ class PreferStandardInt(Rule):
 
         violation.lines[0] = (line_number, augmented_line)
 
-    def collect(self, text: str, filename: str, extension: str):
+    def collect(self, file: CheckFile):
         offenders = []
+
+        text = file.stripped
 
         ranges_collected = []
 
-        lines = text.splitlines()
+        lines = file.original.splitlines()
 
         int_types = [int_type for int_type in PreferStandardInt.INT_TYPES]
         # sort by length of type

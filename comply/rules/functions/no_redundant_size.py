@@ -2,7 +2,7 @@
 
 import re
 
-from comply.rules import Rule, RuleViolation
+from comply.rules import Rule, RuleViolation, CheckFile
 from comply.rules.functions.pattern import FUNC_BOTH_PATTERN
 
 from comply.printing import Colors
@@ -14,25 +14,27 @@ class NoRedundantSize(Rule):
                       description='Don\'t specify array sizes in function signatures',
                       suggestion='Remove redundant size specifier \'{size}\'.')
 
-    def augment(self, violation: RuleViolation):
-        function_linenumber, function_line = violation.lines[0]
+    pattern = re.compile(FUNC_BOTH_PATTERN)
 
-        from_index, to_index = violation.meta['range'] if 'range' in violation.meta else (0, 0)
+    size_pattern = re.compile(r'\[([^\[\]]+?)\]')
+
+    def augment(self, violation: RuleViolation):
+        line_index = violation.index_of_violating_line()
+
+        function_linenumber, function_line = violation.lines[line_index]
+
+        from_index, to_index = violation.meta['range']
 
         augmented_line = (function_line[:from_index] +
                           Colors.bad + function_line[from_index:to_index] + Colors.clear +
                           function_line[to_index:])
 
-        leading_space = violation.meta['leading_space'] if 'leading_space' in violation.meta else 0
+        violation.lines[line_index] = (function_linenumber, augmented_line)
 
-        violation.lines[0] = (function_linenumber, (' ' * leading_space) + augmented_line)
-
-    pattern = re.compile(FUNC_BOTH_PATTERN)
-
-    size_pattern = re.compile(r'\[([^\[\]]+?)\]')
-
-    def collect(self, text: str, filename: str, extension: str):
+    def collect(self, file: CheckFile):
         offenders = []
+
+        text = file.stripped
 
         from comply.util.stripping import strip_function_bodies
 
@@ -40,7 +42,6 @@ class NoRedundantSize(Rule):
         text_without_bodies = strip_function_bodies(text)
 
         for function_match in self.pattern.finditer(text_without_bodies):
-            function_result = function_match.group()
             function_parameters = function_match.group('params')
 
             for size_match in self.size_pattern.finditer(function_parameters):
@@ -82,23 +83,22 @@ class NoRedundantSize(Rule):
                     continue
 
                 offending_index = function_match.start('params') + size_match.start(1)
+                offending_line_number, offending_column = RuleViolation.at(offending_index,
+                                                                           text)
 
-                function_linenumber, function_column = RuleViolation.at(offending_index,
-                                                                        text_without_bodies)
+                character_range = (function_match.start(),
+                                   function_match.end())
 
-                _, leading_space = RuleViolation.at(function_match.start(),
-                                                    text_without_bodies)
+                offending_lines = RuleViolation.lines_in(character_range,
+                                                         file.original)
 
-                params_start_index = function_match.start('params') - function_match.start()
+                offending_range = (offending_column - 1,
+                                   offending_column - 1 + len(size))
 
-                size_start = params_start_index + size_match.start(1)
-                size_end = params_start_index + size_match.end(1)
-
-                offender = self.violate(at=(function_linenumber, function_column),
-                                        lines=[(function_linenumber, function_result)],
+                offender = self.violate(at=(offending_line_number, offending_column),
+                                        lines=offending_lines,
                                         meta={'size': size,
-                                              'leading_space': leading_space - 1,
-                                              'range': (size_start, size_end)})
+                                              'range': offending_range})
 
                 offenders.append(offender)
 

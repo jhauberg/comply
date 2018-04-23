@@ -2,7 +2,7 @@
 
 import re
 
-from comply.rules import Rule, RuleViolation
+from comply.rules import Rule, RuleViolation, CheckFile
 
 from comply.printing import Colors
 
@@ -23,22 +23,25 @@ class GuardHeader(Rule):
             (3, Colors.good + '#endif' + Colors.clear)
         ]
 
-    def collect(self, text: str, filename: str, extension: str):
+    def collect(self, file: CheckFile):
         offenders = []
 
-        if '.h' not in extension:
+        if '.h' not in file.extension:
             return offenders
 
-        guard_name = filename.strip() + extension
+        guard_name = file.filename.strip() + file.extension
 
         guard_name = guard_name.replace(' ', '_')
         guard_name = guard_name.replace('-', '_')
         guard_name = guard_name.replace('.', '_')
 
-        pattern = r'^[\s\S]*#ifndef {0}\s*(?:\n|\r\n)\s*#define {0}[\s\S]*#endif\s*$'.format(
-            guard_name)
+        pattern = re.compile(
+            r'^[\s\S]*#ifndef {guard}\s*(?:\n|\r\n)\s*#define {guard}[\s\S]*#endif\s*$'.format(
+                guard=guard_name))
 
-        match = re.match(pattern, text)
+        text = file.stripped
+
+        match = pattern.match(text)
 
         if match is None:
             offender = self.violate(at=RuleViolation.at_top(),

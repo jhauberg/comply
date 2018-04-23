@@ -29,12 +29,6 @@ abbr {
   cursor: help
 }
 
-tt {
-  background: rgb(240, 240, 240);
-  padding: 5px 5px 5px 6px;
-  vertical-align: 3%;
-}
-
 h1 { 
   font-weight: 400;
   margin-top: 3rem;
@@ -120,7 +114,13 @@ th:last-child, td:last-child {
   padding-right: 0;
 }
 
-code {
+tt {
+  background: rgb(240, 240, 240);
+  padding: 5px 5px 5px 6px;
+  vertical-align: 3%;
+}
+
+samp {
   padding: .1rem .4rem;
   margin: 0 .2rem;
   font-size: 90%;
@@ -129,7 +129,7 @@ code {
   overflow-x: auto;
 }
 
-pre > code {
+pre > samp {
   display: block;
   padding: 0rem 1rem;
   white-space: pre;
@@ -192,6 +192,18 @@ hr {
 
 .good {
   background-color: #eef7ee;
+}
+
+.allow {
+  background-color: #86c7ec;
+}
+
+.deny {
+  background-color: #ec5252;
+}
+
+.warn {
+  background-color: #ecd052;
 }
 
 .rules {

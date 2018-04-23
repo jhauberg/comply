@@ -2,8 +2,7 @@
 
 import re
 
-from comply.rules import Rule, RuleViolation
-
+from comply.rules import Rule, RuleViolation, CheckFile
 from comply.rules.includes.list_needed_symbols import is_symbol_list
 from comply.rules.includes.pattern import INCLUDE_PATTERN
 
@@ -14,8 +13,9 @@ class SymbolListedNotNeeded(Rule):
     def __init__(self):
         Rule.__init__(self, name='symbol-listed-not-needed',
                       description='Unused symbol \'{symbol}\' should not be listed as needed',
-                      suggestion='Remove symbol \'{symbol}\' from list.',
-                      expects_original_text=True)  # must use original text including comments
+                      suggestion='Remove symbol \'{symbol}\' from list.')
+
+    pattern = re.compile(INCLUDE_PATTERN + r'(.*)')
 
     def augment(self, violation: RuleViolation):
         from_index, to_index = violation.meta['range'] if 'range' in violation.meta else (0, 0)
@@ -29,10 +29,10 @@ class SymbolListedNotNeeded(Rule):
 
         violation.lines[0] = (linenumber, augmented_line)
 
-    pattern = re.compile(INCLUDE_PATTERN + r'(.*)')
-
-    def collect(self, text: str, filename: str, extension: str):
+    def collect(self, file: CheckFile):
         offenders = []
+
+        text = file.original
 
         for inclusion in self.pattern.finditer(text):
             suffix = inclusion.group(1).strip()
@@ -52,8 +52,8 @@ class SymbolListedNotNeeded(Rule):
                     symbol_type = symbol_components[0].strip()
                     sought_symbol = symbol_components[-1].strip()
 
-                    # search for symbol usage after include statement
-                    text_after_usage = text[inclusion.end():]
+                    # search for symbol usage after include statement (in stripped body)
+                    text_after_usage = file.stripped[inclusion.end():]
 
                     if not has_symbol_usage(sought_symbol, text_after_usage):
                         offending_index = text.index(symbol, inclusion.start(1), inclusion.end())
@@ -67,7 +67,8 @@ class SymbolListedNotNeeded(Rule):
                         offender = self.violate(at=(linenumber, column),
                                                 lines=[offending_line],
                                                 meta={'symbol': symbol_type,
-                                                      'range': (column - 1, column - 1 + len(symbol))})
+                                                      'range': (column - 1,
+                                                                column - 1 + len(symbol))})
 
                         offenders.append(offender)
 

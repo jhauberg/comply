@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from comply.rules import Rule, RuleViolation
+from comply.rules import Rule, RuleViolation, CheckFile
 
 from comply.printing import Colors
 
@@ -9,15 +9,10 @@ class NoInvisibles(Rule):
     def __init__(self):
         Rule.__init__(self, name='no-invisibles',
                       description='Avoid invisible characters (found {count})',
-                      suggestion='Delete each occurence or replace with a space.',
-                      expects_original_text=True)
+                      suggestion='Delete each occurence or replace with a space.')
 
     INVISIBLES = ['\u200b', '\u200c', '\u200d',
                   '\uFEFF']
-
-    @property
-    def severity(self):
-        return RuleViolation.DENY
 
     def augment(self, violation: RuleViolation):
         # assume only one offending line
@@ -39,8 +34,10 @@ class NoInvisibles(Rule):
         else:
             violation.lines[0] = augmented_line
 
-    def collect(self, text: str, filename: str, extension: str):
+    def collect(self, file: CheckFile):
         offenders = []
+
+        text = file.original
 
         invisibles_found = 0
 
@@ -77,6 +74,10 @@ class NoInvisibles(Rule):
             offenders.append(offender)
 
         return offenders
+
+    @property
+    def severity(self):
+        return RuleViolation.DENY
 
     @property
     def collection_hint(self):

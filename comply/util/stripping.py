@@ -22,13 +22,7 @@ def strip_comments(text: str, patterns: list) -> str:
         while comment_match is not None:
             comment = comment_match.group(0)
 
-            replacement = ''
-
-            for c in comment:
-                if c in ['\r', '\n']:
-                    replacement += c
-                else:
-                    replacement += ' '
+            replacement = blanked(comment)
 
             from_index = comment_match.start()
             to_index = comment_match.end()
@@ -36,6 +30,8 @@ def strip_comments(text: str, patterns: list) -> str:
             stripped = stripped[:from_index] + replacement + stripped[to_index:]
 
             comment_match = re.search(pattern, stripped)
+
+    assert len(stripped) == len(text)
 
     return stripped
 
@@ -61,7 +57,9 @@ def strip_block_comments(text: str) -> str:
 def strip_function_bodies(text: str) -> str:
     """ Remove any function bodies from a text.
 
-        Any stripped line is replaced by a newline, additonally some special rules are applied:
+        Entire body is replaced by whitespace, only leaving linebreaks in place.
+
+        Additonally some special rules are applied:
 
           Inner bodies are stripped including braces
           Outer bodies are stripped leaving collapsed braces behind ({})
@@ -90,12 +88,11 @@ def strip_function_bodies(text: str) -> str:
 
         body = body_match.group()
 
-        # leave newlines in place to ensure that line numbering remains correct
-        replacement = '\n' * body.count('\n')
+        replacement = blanked(body)
 
         if leave_braces_behind:
             # leave behind a collapsed function body
-            replacement = '{}' + replacement
+            replacement = '{}' + replacement[1:-1]
 
         from_index = body_match.start()
         to_index = body_match.end()
@@ -103,6 +100,8 @@ def strip_function_bodies(text: str) -> str:
         stripped = stripped[:from_index] + replacement + stripped[to_index:]
 
         body_match = re.search(FUNC_BODY_PATTERN, stripped)
+
+    assert len(stripped) == len(text)
 
     return stripped
 
@@ -121,7 +120,7 @@ def strip_literals(text: str) -> str:
     stripped = text
 
     # match string literals, allowing escaped (\") quotes inside
-    pattern = re.compile(r'\"([^\"\\]*(?:\\.[^\"\\]*)*)\"')
+    pattern = re.compile(r'(?<!\')\"([^\"\\]*(?:\\.[^\"\\]*)*)\"(?!\')')
 
     for match in pattern.finditer(stripped):
         literal = match.group(1)
@@ -136,4 +135,22 @@ def strip_literals(text: str) -> str:
         # (i.e. we're just replacing with whitespace)
         stripped = stripped[:from_index] + replacement + stripped[to_index:]
 
+    assert len(stripped) == len(text)
+
     return stripped
+
+
+def blanked(text: str, keepends: bool=True) -> str:
+    """ Return text with every character replaced by whitespace.
+
+        Newlines are kept
+    """
+    blanked_text = ''
+
+    for c in text:
+        if keepends and c in ['\r', '\n']:
+            blanked_text += c
+        else:
+            blanked_text += ' '
+
+    return blanked_text

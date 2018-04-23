@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from comply.rules import Rule, RuleViolation
+from comply.rules import Rule, RuleViolation, CheckFile
 
 from comply.printing import Colors
 
@@ -9,8 +9,7 @@ class LineTooLong(Rule):
     def __init__(self):
         Rule.__init__(self, name='line-too-long',
                       description='Line is too long ({length} > {max})',
-                      suggestion='Use shorter names or split statements to multiple lines.',
-                      expects_original_text=True)
+                      suggestion='Use shorter names or split statements to multiple lines.')
 
     MAX = 80
 
@@ -26,8 +25,10 @@ class LineTooLong(Rule):
 
         violation.lines[0] = (linenumber, breaker_line)
 
-    def collect(self, text: str, filename: str, extension: str):
+    def collect(self, file: CheckFile):
         offenders = []
+
+        text = file.original
 
         index = 0
 

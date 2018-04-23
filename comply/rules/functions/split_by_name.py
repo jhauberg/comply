@@ -2,7 +2,7 @@
 
 import re
 
-from comply.rules import Rule, RuleViolation
+from comply.rules import Rule, RuleViolation, CheckFile
 from comply.rules.functions.pattern import FUNC_IMPL_PATTERN
 
 from comply.printing import Colors
@@ -13,6 +13,8 @@ class SplitByName(Rule):
         Rule.__init__(self, name='split-by-name',
                       description='Function names should be placed at the beginning of a line',
                       suggestion='Split function name and return type to separate lines.')
+
+    pattern = re.compile(FUNC_IMPL_PATTERN)
 
     def augment(self, violation: RuleViolation):
         function_linenumber, function_line = violation.lines[0]
@@ -32,12 +34,12 @@ class SplitByName(Rule):
 
         violation.lines = offending_lines
 
-    pattern = re.compile(FUNC_IMPL_PATTERN)
-
-    def collect(self, text: str, filename: str, extension: str):
+    def collect(self, file: CheckFile):
         offenders = []
 
-        lines = text.splitlines()
+        text = file.stripped
+
+        lines = file.original.splitlines()
 
         from comply.util.stripping import strip_function_bodies
 
@@ -48,8 +50,8 @@ class SplitByName(Rule):
         for function_match in self.pattern.finditer(text_without_bodies):
             func_name = function_match.group('name')
 
-            func_line_number, func_column = RuleViolation.at(function_match.start(),
-                                                             text_without_bodies)
+            func_line_number, func_column = RuleViolation.at(function_match.start('name'),
+                                                             text)
             func_line_index = func_line_number - 1
 
             line = lines[func_line_index]

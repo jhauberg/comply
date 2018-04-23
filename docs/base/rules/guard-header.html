@@ -1,0 +1,37 @@
+<tr>
+  <td>
+    <p><tt class="{{ rule_severity }}">{{ rule_name }}</tt></p>
+  </td>
+  <td>
+    <p>Requires that the contents of headers be wrapped in include guards named identically to the filename of the header.</p>
+    <details>
+      <summary><strong>Read more</strong></summary>
+      <pre>
+<strong>mylib_header.h</strong>
+        <samp class="bad">
+
+...
+
+        </samp>
+<strong>mylib_header.h</strong>
+        <samp class="good">
+#ifndef mylib_header_h
+#define mylib_header_h
+
+...
+
+#endif
+        </samp>
+      </pre>
+      <p>
+        <em>Fully implementing and strictly enforcing <a href="#no-headers-in-header"><tt>no-headers-in-header</tt></a> actually makes this rule unnecessary.</em>
+      </p>
+      <p>
+        <em>Regardless, it is still advised to enforce it as a precaution against unruly includers.</em>
+      </p>
+    </details>
+  </td>
+  <td>
+    <p class="reasoning">Helps prevent redundant inclusions and improves compilation times.</p>
+  </td>
+</tr>

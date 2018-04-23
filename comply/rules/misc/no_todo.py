@@ -2,9 +2,10 @@
 
 import re
 
-from comply.rules import Rule, RuleViolation
+from comply.rules import Rule, RuleViolation, CheckFile
 
 from comply.util.truncation import truncated, Ellipsize
+
 from comply.printing import Colors
 
 
@@ -12,12 +13,9 @@ class NoTodo(Rule):
     def __init__(self):
         Rule.__init__(self, name='no-todo',
                       description='TODO: {todo}',
-                      suggestion='Consider promoting this issue to a full report in your issue tracker.',
-                      expects_original_text=True)
+                      suggestion='Consider promoting this issue to a full report in your issue tracker.')
 
-    @property
-    def severity(self):
-        return RuleViolation.ALLOW
+    pattern = re.compile(r'TODO:|todo:')
 
     def augment(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
@@ -30,10 +28,10 @@ class NoTodo(Rule):
 
         violation.lines[0] = (line_number, augmented_line)
 
-    pattern = re.compile(r'TODO:|todo:')
-
-    def collect(self, text: str, filename: str, extension: str):
+    def collect(self, file: CheckFile):
         offenders = []
+
+        text = file.original
 
         lines = text.splitlines()
 
@@ -58,3 +56,7 @@ class NoTodo(Rule):
             offenders.append(offender)
 
         return offenders
+
+    @property
+    def severity(self):
+        return RuleViolation.ALLOW

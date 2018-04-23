@@ -2,7 +2,7 @@
 
 import re
 
-from comply.rules import Rule, RuleViolation
+from comply.rules import Rule, RuleViolation, CheckFile
 
 from comply.printing import Colors
 
@@ -31,10 +31,12 @@ class IdentifierTooLong(Rule):
 
         violation.lines[0] = (line_number, augmented_line)
 
-    def collect(self, text: str, filename: str, extension: str):
+    def collect(self, file: CheckFile):
         offenders = []
 
-        lines = text.splitlines()
+        text = file.stripped
+
+        lines = file.original.splitlines()
 
         def check_identifier(identifier: str, occurrence: (int, int)):
             max_identifier_length = IdentifierTooLong.MAX

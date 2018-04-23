@@ -86,7 +86,7 @@ You can then go through all listed files and manually delete each one.
 
 ## Usage
 
-> *It's recommended to enable all warnings and errors that your compiler provides and run `comply` as a supplement once your project compiles.*
+> *You should enable all warnings and errors that your compiler provides and run `comply` only as a supplement once your project cleanly compiles.*
 
 When installed, you can run `comply` on the command line and provide it with single files or entire directories:
 
@@ -224,13 +224,13 @@ This is both good and bad.
 
 **Bad**
 
-Theoretically, it performs *worse* than the alternatives (e.g. `clang-tidy`) in many cases. It may be less capable of parsing the language correctly in many edge-cases (of which C has a lot) and may even have a higher tendency toward false-positives which a compiler-backed linter would generally not.
+Theoretically, it performs *worse* than the alternatives (e.g. `clang-tidy`) in many cases. It is less capable of parsing the language correctly in many edge-cases (of which C has a lot) and may even have a higher tendency toward false-positives which a compiler/AST-backed linter would generally not.
 
-You could argue that it takes on more responsibility than it needs to.
+You could argue that it takes on more responsibility than it needs to (an option could be to integrate [pycparser](https://github.com/eliben/pycparser) to reduce issues with some of the more complicated rules- though that has its own set of problems).
 
 **Good**
 
-However, on the upside, it makes `comply` simpler in its usage, as it does not need to compile anything before running its checks and thus does not need any configuration (e.g. include paths and such).
+However, on the upside, it makes `comply` simpler in its usage, as it does not need to compile or pre-process anything before running its checks and thus does not need any configuration (e.g. include paths and such).
 
 Just point and shoot.
 

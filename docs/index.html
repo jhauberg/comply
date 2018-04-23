@@ -21,15 +21,6 @@
         <p class="tip">
           Use these listings as a general guideline during development or as a reference when fixing violations.
         </p>
-        <br/>
-        <div class="indent">
-          <div class="jump-list-title">Jump to:</div>
-          <ul class="indent jump-list">
-            <li><a href="#include-statements">Include statements</a></li>
-            <li><a href="#functions">Functions</a></li>
-            <li><a href="#misc">Miscellaneous</a></li>
-          </ul>
-        </div>
       </div>
 
       <p>
@@ -46,18 +37,13 @@
       
       <footer>
         <p>
-          Rules are based on <strong><a href="https://github.com/jhauberg/comply/releases/tag/0.5.0">comply 0.5.0</a></strong> and was last edited on <strong>February 5th 2018</strong>
+          Listings are based on <strong><a href="https://github.com/jhauberg/comply/releases/tag/0.10.0">comply 0.10.0</a></strong> and were last edited on <strong>April 23, 2018</strong>
         </p>
       </footer>
     </section>
-  
     <hr>
-
     <section>
-      <h2 id="include-statements">Include statements</h2>
-      <p>
-        Rules related to <tt>#include</tt> statements.
-      </p>
+      <h2>Rule listing</h2>
       <table class="rules">
         <thead>
           <tr>
@@ -68,198 +54,547 @@
         </thead>
         <tbody>
           <tr>
-            <td><p id="list-needed-symbols"><tt>list-needed-symbols</tt></p></td>
-            <td>
-              <p>Requires <tt>#include</tt> statements to be suffixed with a comma-separated list of all the symbols needed from the included header or file.</p>
-              <details>
-                <summary><strong>Read more</strong></summary>
-              <pre>
-                <code class="bad">
-#include &lt;stdbool.h&gt;
-                </code>
-                <code class="good">
-#include &lt;stdbool.h&gt; // bool
-                </code>
-              </pre>
-              <p>You can indicate that you need every symbol of a specific pattern by applying the star-character:</p>
-              <pre>
-                <code>
-// Require all symbols starting with 'mylib_'
-#include &lt;mylib.h&gt; // mylib_*
-                </code>
-              </pre>
-            </details>
-            </td>
-            <td><p class="reasoning">Helps in determining dependencies that are no longer needed and could be removed, and encourages use of smaller, more well-defined headers.</p>
-              <p class="reasoning">Fewer dependencies reduce complexity, so if an inclusion does not need any symbols, it should be removed.<br/><br/>If a symbol is expectedly needed in a <em>different</em> source file, the inclusion should be moved to that file.</p>
-              <div class="references"><p><strong>References:</strong></p>
-                <ul class="indent">
-                  <li>Malcolm Inglis: <a href="https://github.com/mcinglis/c-style#comment-non-standard-library-includes-to-say-what-symbols-you-use-from-them"><em>c-style</em></a></li>
-              </ul>
-              </div>
-              </td>
-          </tr>
-          <tr>
-            <td><p><tt>symbol-listed-not-needed</tt></p></td>
-            <td><p>Requires that any symbol listed as needed by an <tt>#include</tt> statement should also be used in the same source file.</p><br/>
-              <p><em>See <a href="#list-needed-symbols"><tt>list-needed-symbols</tt></a></em></p></td>
-            <td><p class="reasoning">Helps determining symbols that are no longer used, potentially leading to being able to remove the inclusion completely, reducing dependencies and improving maintainability.</p></td>
-          </tr>
-          <tr>
-            <td><p><tt>symbol-needed-not-listed</tt></p></td>
-            <td><p>Requires that any used symbol be listed as needed by an <tt>#include</tt> statement.</p><br/>
-              <p><em>This rule provides the fuel for <tt>symbol-listed-not-needed</tt>, but must be implemented by a human; it is not available as an automatic check.</em></p></td>
-            <td><p class="reasoning">If your code is using a symbol, but not explicitly telling where it got it from, you might have a hard time figuring out just how far your code reaches out.</p>
-              <p class="reasoning">By maintaining these lists obsessively you make it much easier for yourself, and others, to determine the actual dependencies of your code.</p>
-            </td>
-          </tr>
-          <tr>
-            <td><p id="no-headers-in-header"><tt>no-headers-in-header</tt></p></td>
-            <td><p>Requires that header files do not include any other headers.</p>
-              <details>
-                <summary><strong>Read more</strong></summary>
-              <p>Instead, headers should provide forward-declarations of each needed type and let the implementation include any necessary headers.</p>
-              <pre>
-  <strong>mylib_header.h</strong>
-                <code class="bad">
-#include &lt;mylib/type.h&gt;
-#include &lt;mylib/attr.h&gt;
+  <td>
+    <p><tt class="warn">const-on-right</tt></p>
+  </td>
+  <td>
+    <p>Requires that <code>const</code> qualifiers always be placed on the right side of the type declaration.</p>
+  </td>
+  <td>
+    <p class="reasoning">Placing <code>const</code> anywhere but on the right makes for an inconsistent reading of types.</p>
+    <div class="references">
+      <p><strong>References:</strong></p>
+      <ul class="indent">
+        <li>Malcolm Inglis: <a href="https://github.com/mcinglis/c-style#always-put-const-on-the-right-and-read-types-right-to-left"><em>c-style</em></a></li>
+      </ul>
+    </div>
+  </td>
+</tr>
 
-...
-                </code>
-  <strong>mylib_header.h</strong>
-                <code class="good">
-struct mylib_t;
-struct attr_t;
+<tr>
+  <td>
+    <p><tt class="warn">file-too-long</tt></p>
+  </td>
+  <td>
+    <p>Requires files to not exceed 600 lines.</p>
+  </td>
+  <td>
+    <p class="reasoning">Files that are very long can be difficult to comprehend and may indicate that the complexity of the code is too high.<p/><p class="reasoning">Considerations should be made whether code can be refactored or split up into smaller units.</p>
+  </td>
+ </tr>
+
+<tr>
+  <td>
+    <p><tt class="allow">func-too-long</tt></p>
+  </td>
+  <td>
+    <p>Requires that function bodies do not exceed 40 lines.</p>
+  </td>
+  <td>
+    <p class="reasoning">A large function can be difficult to read and comprehend- especially if it requires scrolling to fully fit on the viewers screen.</p>
+    <p class="reasoning">Similar to <tt>too-many-params</tt>, when a function is large, it is often a sign that it is doing too much and should be refactored into smaller parts.</p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="warn">guard-header</tt></p>
+  </td>
+  <td>
+    <p>Requires that the contents of headers be wrapped in include guards named identically to the filename of the header.</p>
+    <details>
+      <summary><strong>Read more</strong></summary>
+      <pre>
+<strong>mylib_header.h</strong>
+        <samp class="bad">
 
 ...
 
-#endif
-                </code>
-              </pre>
-              </details>
-            </td>
-            <td><p class="reasoning">Avoiding header inclusions helps with keeping compile times low.</p>
-              <p class="reasoning">Forces source files to include <em>everything</em> needed. This might seem like it would be a big hassle- that's because it is. The benefit, however, is that a reader will immediately be aware of <em>all</em> dependencies of the specific unit.<br/><br/>It might even make you think a little bit harder about your design in general once the list grows annoyingly long.<br/><br/>Whenever possible, avoid dependencies.</p>
-              <div class="references"><p><strong>References:</strong></p>
-                <ul class="indent">
-                  <li>Our Machinery: <a href="http://ourmachinery.com/post/physical-design"><em>Physical Design</em></a></li>
-                  <li>Rob Pike: <a href="http://www.lysator.liu.se/c/pikestyle.html"><em>Notes on Programming in C</em></a> (bottom)</li>
-                  <li>Malcolm Inglis: <a href="https://github.com/mcinglis/c-style#include-the-definition-of-everything-you-use"><em>c-style</em></a></li>
-              </ul>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td><p><tt>guard-header</tt></p></td>
-            <td><p>Requires that the contents of headers be wrapped in <em>include guards</em> named identically to the filename of the header.</p>
-              <details>
-                <summary><strong>Read more</strong></summary>
-              <pre>
-  <strong>mylib_header.h</strong>
-                <code class="bad">
-
-...
-
-                </code>
-  <strong>mylib_header.h</strong>
-                <code class="good">
+        </samp>
+<strong>mylib_header.h</strong>
+        <samp class="good">
 #ifndef mylib_header_h
 #define mylib_header_h
 
 ...
 
 #endif
-                </code>
-              </pre>
-              <p>
-                <em>Fully implementing and strictly enforcing <a href="#no-headers-in-header"><tt>no-headers-in-header</tt></a> actually makes this rule unnecessary.</em></p><p><em>Regardless, it is still advised to enforce it as a precaution against unruly includers.</em></p>
-              </details>
-            </td>
-            <td><p class="reasoning">Helps prevent double inclusion errors.</p></td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-
-    <section>
-      <h2 id="misc">Functions</h2>
+        </samp>
+      </pre>
       <p>
-        Rules related to functions; including prototypes and implementations.
+        <em>Fully implementing and strictly enforcing <a href="#no-headers-in-header"><tt>no-headers-in-header</tt></a> actually makes this rule unnecessary.</em>
       </p>
-      <table class="rules">
+      <p>
+        <em>Regardless, it is still advised to enforce it as a precaution against unruly includers.</em>
+      </p>
+    </details>
+  </td>
+  <td>
+    <p class="reasoning">Helps prevent redundant inclusions and improves compilation times.</p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="allow">identifier-too-long</tt></p>
+  </td>
+  <td>
+    <p>Requires that identifiers be shorter than 31 characters.</p>
+  </td>
+  <td>
+    <p class="reasoning">The longer a name, the more it hurts readability and comprehension.</p>
+    <p class="reasoning">Compilers actually have a strict limit on how long identifiers can be, and 31 characters was once that limit.</p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="warn">line-too-long</tt></p>
+  </td>
+  <td>
+    <p>Requires lines to not exceed 80 characters.</p>
+  </td>
+  <td>
+    <p class="reasoning">Any line of code should fit on the screen it is being viewed on under any scenario; whether single file or side-by-side.<br/><br/>Lines that are too long can be difficult to visually comprehend, and wrapping or scrolling makes it harder to read.<p/><p class="reasoning">Lines shorter than 80 characters fits on most viewers and will improve readability significantly.</p>
+    <div class="references">
+      <p><strong>References:</strong></p>
+      <ul class="indent">
+        <li>Malcolm Inglis: <a href="https://github.com/mcinglis/c-style#never-have-more-than-79-characters-per-line"><em>c-style</em></a></li>
+      </ul>
+    </div>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p id="list-needed-symbols"><tt class="warn">list-needed-symbols</tt></p>
+  </td>
+  <td>
+    <p>Requires <code>#include</code> directives to be suffixed with a comma-separated list of all the symbols needed from the included header or file.</p>
+    <details>
+      <summary><strong>Read more</strong></summary>
+      <pre>
+        <samp class="bad">
+  #include &lt;stdbool.h&gt;
+        </samp>
+        <samp class="good">
+  #include &lt;stdbool.h&gt; // bool
+        </samp>
+      </pre>
+      <p>You can indicate that you need every symbol of a specific pattern by applying the star-character:</p>
+      <pre>
+        <samp>
+  // Require all symbols starting with 'mylib_'
+  #include &lt;mylib.h&gt; // mylib_*
+        </samp>
+      </pre>
+    </details>
+  </td>
+  <td>
+    <p class="reasoning">Helps in determining dependencies that are no longer needed and could be removed, and encourages use of smaller, more well-defined headers.</p>
+    <p class="reasoning">Fewer dependencies reduce complexity, so if an inclusion does not need any symbols, it should be removed.<br/><br/>If a symbol is expectedly needed in a <em>different</em> source file, the inclusion should be moved to that file.</p>
+    <div class="references">
+      <p><strong>References:</strong></p>
+      <ul class="indent">
+        <li>Malcolm Inglis: <a href="https://github.com/mcinglis/c-style#comment-non-standard-library-includes-to-say-what-symbols-you-use-from-them"><em>c-style</em></a></li>
+      </ul>
+    </div>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="warn">no-attached-stars</tt></p>
+  </td>
+  <td>
+    <p>Requires that type declarations pad pointer stars (<code>*</code>) with space on both sides.</p>
+  </td>
+  <td>
+    <p class="reasoning">No padding for <code>*</code> makes for an inconsistent reading of types- especially when combined with <code>const</code> qualifiers.<br/><br/>
+    Additionally, padding provides a clear separation between declarations and pointer dereferencing.</p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="warn">no-dupe-includes</tt></p>
+  </td>
+  <td>
+    <p>Requires that files are not included twice in the same source file.</p>
+  </td>
+  <td>
+    <p class="reasoning">Any <code>#include</code> directive should be limited to header files, and those should never be included more than once.</p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p id="no-headers-in-header"><tt class="allow">no-headers-in-header</tt></p>
+  </td>
+  <td>
+    <p>Requires that header files do not include any other headers.</p>
+    <details>
+      <summary><strong>Read more</strong></summary>
+      <p>Instead, headers should provide forward-declarations of each needed type and let the implementation include any necessary headers.</p>
+      <pre>
+<strong>mylib_header.h</strong>
+        <samp class="bad">
+#include &lt;mylib/type.h&gt;
+#include &lt;mylib/attr.h&gt;
+
+...
+        </samp>
+<strong>mylib_header.h</strong>
+        <samp class="good">
+struct mylib_t;
+struct attr_t;
+
+...
+
+#endif
+        </samp>
+      </pre>
+    </details>
+  </td>
+  <td>
+    <p class="reasoning">Avoiding header inclusions helps with keeping compile times low.</p>
+    <p class="reasoning">Forces source files to include <em>everything</em> needed. This might seem like it would be a big hassle- that's because it is. The benefit, however, is that a reader will immediately be aware of <em>all</em> dependencies of the specific unit.<br/><br/>It might even make you think a little bit harder about your design in general once the list grows annoyingly long.</p>
+    <div class="references">
+      <p><strong>References:</strong></p>
+      <ul class="indent">
+        <li>Our Machinery: <a href="http://ourmachinery.com/post/physical-design"><em>Physical Design</em></a></li>
+        <li>Rob Pike: <a href="http://www.lysator.liu.se/c/pikestyle.html"><em>Notes on Programming in C</em></a> (bottom)</li>
+        <li>Malcolm Inglis: <a href="https://github.com/mcinglis/c-style#include-the-definition-of-everything-you-use"><em>c-style</em></a></li>
+     </ul>
+    </div>
+  </td>
+</tr>
+
+<tr>
+  <td>
+  	<p id="no-invisibles"><tt class="deny">no-invisibles</tt></p>
+  </td>
+  <td>
+  	<p>Requires that files contain no invisible characters.</p>
+  </td>
+  <td>
+  	<p class="reasoning">Invisible characters serve no useful purpose unless escaped and used in literals.</p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="warn">no-redundant-const</tt></p>
+  </td>
+  <td>
+    <p>Requires that parameter names in function prototypes not be marked <code>const</code>, as that is an implementation detail.</p>
+  </td>
+  <td>
+    <p class="reasoning">A parameter name might be marked as <code>const</code> in its function prototype, but an implementation of the prototype does <em>not</em> have to comply with that- only adding confusion.</p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="warn">no-redundant-name</tt></p>
+  </td>
+  <td>
+    <p>Requires that parameter names in function prototypes not be named identically to their type.</p>
+  </td>
+  <td>
+    <p class="reasoning">Reducing the amount of redundant information in a source file will always improve its readability.</p>
+    <div class="references">
+      <p><strong>References:</strong></p>
+      <ul class="indent">
+        <li>Malcolm Inglis: <a href="https://github.com/mcinglis/c-style#dont-write-argument-names-in-function-prototypes-if-they-just-repeat-the-type"><em>c-style</em></a></li>
+      </ul>
+    </div>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="warn">no-redundant-size</tt></p>
+  </td>
+  <td>
+    <p>Requires that no size is specified for typical array parameters.</p>
+    <details>
+      <summary><strong>Read more</strong></summary>
+      <p>You can force your compiler to enforce the size specification with a slight modification of your function, as seen below:</p>
+      <pre>
+<strong>foo.c</strong>
+        <samp class="bad">
+void foo(int arr[10]);
+
+void foo(int arr[10]) {
+    
+}
+
+int arr[6] = {
+    0, 1, 2, 3, 4, 5
+};
+
+// compiles even though function is expecting 10
+foo(arr);
+        </samp>
+<strong>foo.c</strong>
+        <samp class="good">
+void foo(int (* arr)[10]);
+
+void foo(int (* arr)[10]) {
+    
+}
+
+int foo[6] = {
+    0, 1, 2, 3, 4, 5
+};
+
+// compiles with error
+foo(&amp;arr);
+        </samp>
+      </pre>
+    </details>
+  </td>
+  <td>
+    <p class="reasoning">The size specification for typical pointer-degrading array parameters is not enforced, thus making it a source of confusion that should be avoided.</p>
+    <div class="references">
+      <p><strong>References:</strong></p>
+      <ul class="indent">
+        <li>Glennan Carnie: <a href="https://blog.feabhas.com/2013/11/shock-horror-i-learned-something-about-arrays-in-c/"><em>Shock horror! I learned something about arrays in C</em></a></li>
+     </ul>
+    </div>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="allow">no-space-name</tt></p>
+  </td>
+  <td>
+    <p>Requires that filenames do not include whitespace.</p>
+  </td>
+  <td>
+    <p class="reasoning">This is mostly a matter of convention, but also helps avoid issues when interacting with external tools.</p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="warn">no-src-includes</tt></p>
+  </td>
+  <td>
+    <p>Requires that source files files are not included in other source files.</p>
+  </td>
+  <td>
+    <p class="reasoning">Any <code>#include</code> directive should be limited to header files to avoid potentially compiling the same units twice, resulting in multiple symbol definitions.</p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="deny">no-tabs</tt></p>
+  </td>
+  <td>
+    <p>Requires that files contain no tabs.</p>
+  </td>
+  <td>
+    <p class="reasoning">Similar to the reasoning behind <tt>line-too-long</tt>, tabs can have varying amount of indentation and will cause inconsistent line lengths depending on the viewer.</p>
+    <div class="references">
+      <p><strong>References:</strong></p>
+      <ul class="indent">
+        <li>Malcolm Inglis: <a href="https://github.com/mcinglis/c-style#we-cant-get-tabs-right-so-use-spaces-everywhere"><em>c-style</em></a></li>
+      </ul>
+    </div>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="allow">no-todo</tt></p>
+  </td>
+  <td>
+    <p>Requires that <code>todo</code> reminders be considered as candidates for full reports in a bug/issue tracker.</p>
+  </td>
+  <td>
+    <p class="reasoning">These reminders are great for those times where something is not working entirely correctly, but are not important/clear enough to justify writing a full bug report, yet still require a reminder that persist better than a post-it note.<br/><br/>
+      However, it is dangerous to <em>todo-and-forget</em>; in time, these reminders may turn stale- the context might be forgotten, or the issue silently fixed- yet the <code>todo</code> remains.<br/><br/>This is a problem, because future-you may no longer understand why, or even <em>what</em>, is wrong. You might not dare deleting it, rendering the <code>todo</code> as nothing but a source of confusion.</p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="allow">no-unified-headers</tt></p>
+  </td>
+  <td>
+    <p>Requires that a headers' only purpose is not only to include other headers.</p>
+  </td>
+  <td>
+    <p class="reasoning">Though convenient, unified headers do not promote modularity and increase compile times.</p>
+    <div class="references">
+      <p><strong>References:</strong></p>
+      <ul class="indent">
+        <li>Malcolm Inglis: <a href="https://github.com/mcinglis/c-style#avoid-unified-headers"><em>c-style</em></a></li>
+      </ul>
+    </div>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="warn">prefer-stdint</tt></p>
+  </td>
+  <td>
+    <p>Requires use of explicitly-sized integer datatypes, as defined in <code>&lt;stdint.h&gt;</code>, rather than the common <code>int</code>, <code>unsigned int</code>, <code>long</code> and so on.</p>
+        <details>
+      <summary><strong>Read more</strong></summary>
+      <p>It's worth noting that when sticking with use of <code>int</code> and the like, the compiler may just do a better job than you at deciding which size is actually the better, and faster, choice.</p>
+      <p>However, leaving that an implicit choice could result in issues down the line. Being explicit lets you avoid making assumptions.</p>
+      <p>The trade-off is potentially losing some (often neglible) performance.</p>
+      <p>Here's a general table of reference:</p>
+      <table>
         <thead>
           <tr>
-            <th>Name</a></th>
-            <th>Description</th>
-            <th>Why is this important?</th>
+            <th>Integer type</a></th>
+            <th>&lt;stdint.h&gt;</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><p><tt>no-redundant-const</tt></p></td>
-            <td><p>Parameter names in function prototypes should not be marked const as that is an implementation detail.</p>
-            todo: read more examples</td>
-            <td><p class="reasoning">A parameter name might be marked as const in its function prototype, but an implementation does <em>not</em> have to make it so.</p>
-            </td>
+            <td><code>unsigned char</code></td>
+            <td><code>uint8_t</code></td>
+          </tr>
+          <tr>
+            <td><code>unsigned short</code></td>
+            <td><code>uint16_t</code></td>
+          </tr>
+          <tr>
+            <td><code>unsigned int</code></td>
+            <td><code>uint32_t</code></td>
+          </tr>
+          <tr>
+            <td><code>unsigned long</code></td>
+            <td><code>uint64_t</code></td>
+          </tr>
+          <tr>
+            <td><code>char</code></td>
+            <td><code>int8_t</code></td>
+          </tr>
+          <tr>
+            <td><code>short</code></td>
+            <td><code>int16_t</code></td>
+          </tr>
+          <tr>
+            <td><code>int</code></td>
+            <td><code>int32_t</code></td>
+          </tr>
+          <tr>
+            <td><code>long</code></td>
+            <td><code>int64_t</code></td>
           </tr>
         </tbody>
       </table>
-    </section>
+    </details>
+  </td>
+  <td>
+    <p class="reasoning">Being explicit about the type and size that you're expecting helps improve portability.<br/></br/>
+      It also increases readability as it does away with the <code>unsigned</code> and <code>signed</code> keywords and makes types read more uniformly.</p>
+  </td>
+</tr>
 
-    <section>
-      <h2 id="misc">Miscellaneous</h2>
-      <p>
-        Rules related to code in general.
-      </p>
-      <table class="rules">
-        <thead>
-          <tr>
-            <th>Name</a></th>
-            <th>Description</th>
-            <th>Why is this important?</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><p><tt>line-too-long</tt></p></td>
-            <td><p>Requires lines to not exceed 80 characters.</p></td>
-            <td><p class="reasoning">Any line of code should fit on the screen it is being viewed on under any scenario; whether single file or side-by-side.<br/><br/>Lines that are too long can be difficult to visually comprehend, and wrapping or scrolling makes it harder to read.<p/><p class="reasoning">Lines shorter than 80 characters fits on most viewers and will improve readability significantly.</p>
-              <div class="references"><p><strong>References:</strong></p>
-                <ul class="indent">
-                  <li>Malcolm Inglis: <a href="https://github.com/mcinglis/c-style#never-have-more-than-79-characters-per-line"><em>c-style</em></a></li>
-              </ul>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td><p><tt>file-too-long</tt></p></td>
-            <td><p>Requires files to not exceed 600 lines.</p></td>
-            <td><p class="reasoning">Files that are very long can be difficult to comprehend and may indicate that the complexity of the code is too high.<p/><p class="reasoning">Considerations should be made whether code can be refactored or split up into smaller units.</p></td>
-          </tr>
-          <tr>
-            <td><p><tt>no-tabs</tt></p></td>
-            <td><p>Requires that files contain no tabs.</p></td>
-            <td><p class="reasoning">Similar to the reasoning behind <tt>line-too-long</tt>, tabs can have varying amount of indentation and will cause inconsistent line lengths depending on the viewer.</p>
-              <div class="references"><p><strong>References:</strong></p>
-                <ul class="indent">
-                  <li>Malcolm Inglis: <a href="https://github.com/mcinglis/c-style#we-cant-get-tabs-right-so-use-spaces-everywhere"><em>c-style</em></a></li>
-              </ul>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td><p><tt>no-invisibles</tt></p></td>
-            <td><p>Requires that files contain no invisible characters.</p></td>
-            <td><p class="reasoning">Invisible characters serve no purpose unless escaped and used as a literal.</p>
-            </td>
-          </tr>
-          <tr>
-            <td><p><tt>no-consecutive-blanks</tt></p></td>
-            <td><p>Requires that files do not contain voids of two or more consecutive blank lines.</p></td>
-            <td><p class="reasoning">Blank lines serve no purpose and only add clutter.<br/><br/>They are occasionally used as a way of partitioning or grouping chunks of code, but this is not recommended. Prefer splitting into separate source files.</p>
-            </td>
-          </tr>
+<tr>
+  <td>
+    <p><tt class="warn">scope-too-deep</tt></p>
+  </td>
+  <td>
+    <p>Requires that scope depths do not go more than 4 levels deep.</p>
+  </td>
+  <td>
+    <p class="reasoning">A deeply nested scope is often a sign of too high complexity.<br/><br/>Anything happening at a scope deeper than 4 levels becomes difficult to comprehend and understand in relation to its parent scopes.</p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="warn">split-by-name</tt></p>
+  </td>
+  <td>
+    <p>Requires that function implementations list name and return type on separate lines.</p>
+  </td>
+  <td>
+    <p class="reasoning">This style provides a quick and consistent reading of functions, and helps reduce line length when return types are long and complicated.</p>
+    <div class="references">
+      <p><strong>References:</strong></p>
+      <ul class="indent">
+        <li>Stack Exchange discussion: <a href="https://github.com/mcinglis/c-style#avoid-unified-headers"><em>Reason for placing function type and method name on different lines in C</em></a></li>
+      </ul>
+    </div>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="warn">symbol-listed-not-needed</tt></p>
+  </td>
+  <td>
+    <p>Requires that any symbol listed as needed by an <code>#include</code> statement should also be used in the same source file.</p><br/>
+    <p><em>See <a href="#list-needed-symbols"><tt>list-needed-symbols</tt></a></em></p>
+  </td>
+  <td>
+    <p class="reasoning">Helps determining symbols that are no longer used, potentially leading to being able to remove the inclusion completely, reducing dependencies and improving maintainability.</p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="warn">symbol-needed-not-listed</tt></p>
+  </td>
+  <td>
+    <p>Requires that any used symbol be listed as needed by an <code>#include</code> statement.</p><br/>
+    <p><em>This rule provides the fuel for <tt>symbol-listed-not-needed</tt>, but must be implemented by a human; it is not available as an automatic check.</em></p>
+  </td>
+  <td>
+    <p class="reasoning">If your code is using a symbol, but not explicitly telling where it got it from, you might have a hard time figuring out just how far your code reaches out.</p>
+    <p class="reasoning">By maintaining these lists obsessively you make it much easier for yourself, and others, to determine the actual dependencies of your code.</p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+  	<p id="too-many-blanks"><tt class="warn">too-many-blanks</tt></p>
+  </td>
+  <td>
+  	<p>Requires that files do not contain voids of two or more consecutive blank lines.</p>
+  </td>
+  <td>
+  	<p class="reasoning">Blank lines are occasionally used as a way of partitioning or grouping chunks of code, but this is not recommended. Prefer splitting into separate source files.</p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="allow">too-many-funcs</tt></p>
+  </td>
+  <td>
+    <p>Requires that a source file contains no more than 7 function implementations.</p>
+  </td>
+  <td>
+    <p class="reasoning">Similar to <tt>func-too-long</tt>, having many function implementations in a single unit is often a sign that the file has too much going on, and should preferably be split up into more files.</p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="warn">too-many-params</tt></p>
+  </td>
+  <td>
+    <p>Requires that a function has less than 5 parameters.</p>
+  </td>
+  <td>
+    <p class="reasoning">When a function has many parameters, it is often a sign that it is doing too much and should be refactored into smaller parts.</p>
+    <p class="reasoning">Each parameter adds to the complexity of a function, and the more it has, the harder it becomes to understand (and use).<br/><br/>A common practice is to bundle parameters into a <code>struct</code> when many parameters are absolutely necessary. This practice, however, does <em>not</em> reduce the complexity of the function- but it <em>does</em> improve its readability.</p>
+  </td>
+</tr>
+
         </tbody>
       </table>
     </section>
