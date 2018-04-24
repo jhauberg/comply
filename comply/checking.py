@@ -18,7 +18,7 @@ def supported_file_types() -> tuple:
     return '.h', '.c'
 
 
-def count(result: CheckResult, violations: List[RuleViolation]):
+def increment(result: CheckResult, violations: List[RuleViolation]):
     """ Increment violation/file counts for a result. """
 
     num_severe_violations = 0
@@ -87,7 +87,7 @@ def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, int
 
     violations = collect(file, rules)
 
-    count(result, violations)
+    increment(result, violations)
 
     reporter.report_before_results(violations)
     reporter.report(violations, path)
