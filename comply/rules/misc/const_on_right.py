@@ -51,7 +51,7 @@ class ConstOnRight(Rule):
             offending_index = column - 1
             offending_range = (offending_index, offending_index + len(match.group(1)))
 
-            type_line_number, type_column = RuleViolation.at(match.start(2), text)
+            _, type_column = RuleViolation.at(match.start(2), text)
 
             insertion_index = type_column - 1 + len(match.group(2))
 
