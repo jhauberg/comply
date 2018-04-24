@@ -37,12 +37,12 @@ def increment(result: CheckResult, violations: List[RuleViolation]):
         result.files_with_violations += 1
 
 
-def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, int):
+def check(path: str, rules: List[Rule], reporter: Reporter=None) -> (CheckResult, int):
     """ Run a check on the file found at path, if any.
 
         If the path points to a directory, a check is run on each subsequent filepath.
 
-        Return a result and whether the path was checked.
+        Return a result and a code to determine whether the path was checked or not.
     """
 
     result = CheckResult()
@@ -80,8 +80,9 @@ def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, int
     if text is None:
         return result, CheckResult.FILE_NOT_READ
 
-    reporter.report_before_checking(
-        path, encoding=None if encoding is DEFAULT_ENCODING else encoding)
+    if reporter is not None:
+        reporter.report_before_checking(
+            path, encoding=None if encoding is DEFAULT_ENCODING else encoding)
 
     file = prepare(text, filename, extension, path)
 
@@ -89,8 +90,9 @@ def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, int
 
     increment(result, violations)
 
-    reporter.report_before_results(violations)
-    reporter.report(violations, path)
+    if reporter is not None:
+        reporter.report_before_results(violations)
+        reporter.report(violations, path)
 
     return result, CheckResult.FILE_CHECKED
 
