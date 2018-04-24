@@ -47,7 +47,7 @@ def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, int
 
     result = CheckResult()
 
-    if not os.path.exists(path):
+    if path is None or len(path) == 0 or not os.path.exists(path):
         return result, CheckResult.FILE_NOT_FOUND
 
     if os.path.isdir(path):
