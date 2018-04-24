@@ -143,8 +143,9 @@ def strip_literals(text: str) -> str:
 def blanked(text: str, keepends: bool=True) -> str:
     """ Return text with every character replaced by whitespace.
 
-        Newlines are kept
+        Newlines are kept as-is.
     """
+
     blanked_text = ''
 
     for c in text:
