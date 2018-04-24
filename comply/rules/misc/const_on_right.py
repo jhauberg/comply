@@ -16,7 +16,7 @@ class ConstOnRight(Rule):
     # match both struct/enum and standard type declarations
     type_pattern = r'((?:struct|enum)\s+?.+?\b|.+?\b)'
 
-    pattern = re.compile(r'(?:[\n;,(]|(?:static|typedef))\s*\b(const)\b\s+?' + type_pattern)
+    pattern = re.compile(r'(?:^|[\n;,(]|(?:static|typedef))\s*\b(const)\b\s+?' + type_pattern)
 
     def augment(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
