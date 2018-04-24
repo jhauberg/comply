@@ -41,6 +41,16 @@ def result_from_violations(violations: List[RuleViolation]) -> CheckResult:
     return result
 
 
+def check_text(text: str, rules: List[Rule]) -> (CheckResult, int):
+    """ Run a check on a piece of text. """
+
+    file = prepare(text, 'N/A', 'N/A', 'N/A')
+
+    violations = collect(file, rules)
+
+    result = result_from_violations(violations)
+
+    return result, CheckResult.FILE_CHECKED
 
 
 def check(path: str, rules: List[Rule], reporter: Reporter=None) -> (CheckResult, int):
