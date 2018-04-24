@@ -109,12 +109,14 @@ def strip_function_bodies(text: str) -> str:
 def strip_literals(text: str) -> str:
     """ Remove any string literals from a text.
 
-        Stripped characters are replaced with whitespace; literal markers are left behind.
+        Stripped characters are replaced with whitespace; literal quote-markers are left behind.
 
         For example:
 
           "A bunch of text", if found, becomes:
           "               "
+
+        Note that character literals are not stripped.
     """
 
     stripped = text
