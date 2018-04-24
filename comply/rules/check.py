@@ -11,20 +11,22 @@ class CheckResult:
     NO_FILES_FOUND = -4
 
     def __init__(self,
-                 files: int=0,
-                 files_with_violations: int=0,
-                 violations: int=0,
-                 severe_violations: int=0):
-        self.files = files
-        self.files_with_violations = files_with_violations
+                 violations: list=list(),
+                 num_files: int=0,
+                 num_files_with_violations: int=0,
+                 num_violations: int=0,
+                 num_severe_violations: int=0):
         self.violations = violations
-        self.severe_violations = severe_violations
+        self.num_files = num_files
+        self.num_files_with_violations = num_files_with_violations
+        self.num_violations = num_violations
+        self.num_severe_violations = num_severe_violations
 
-    def __iadd__(self, other):
-        self.files += other.files
-        self.files_with_violations += other.files_with_violations
-        self.violations += other.violations
-        self.severe_violations += other.severe_violations
+    def __iadd__(self, other: 'CheckResult'):
+        self.num_files += other.num_files
+        self.num_files_with_violations += other.num_files_with_violations
+        self.num_violations += other.num_violations
+        self.num_severe_violations += other.num_severe_violations
 
         return self
 

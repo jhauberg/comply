@@ -18,23 +18,29 @@ def supported_file_types() -> tuple:
     return '.h', '.c'
 
 
-def increment(result: CheckResult, violations: List[RuleViolation]):
+def result_from_violations(violations: List[RuleViolation]) -> CheckResult:
     """ Increment violation/file counts for a result. """
+
+    result = CheckResult(violations)
 
     num_severe_violations = 0
 
     for violation in violations:
         if violation.which.severity == RuleViolation.DENY:
-            num_severe_violations += 1
+            num_severe_violations = 1
 
     num_violations = len(violations) - num_severe_violations
 
-    result.files += 1
-    result.violations += num_violations
-    result.severe_violations += num_severe_violations
+    result.num_files = 1
+    result.num_violations = num_violations
+    result.num_severe_violations = num_severe_violations
 
     if num_violations > 0 or num_severe_violations > 0:
-        result.files_with_violations += 1
+        result.num_files_with_violations = 1
+
+    return result
+
+
 
 
 def check(path: str, rules: List[Rule], reporter: Reporter=None) -> (CheckResult, int):
@@ -88,7 +94,7 @@ def check(path: str, rules: List[Rule], reporter: Reporter=None) -> (CheckResult
 
     violations = collect(file, rules)
 
-    increment(result, violations)
+    result = result_from_violations(violations)
 
     if reporter is not None:
         reporter.report_before_results(violations)
@@ -156,14 +162,14 @@ def collect(file: CheckFile, rules: List[Rule]) -> List[RuleViolation]:
 def compliance(result: CheckResult) -> float:
     """ Return the compliance score for a full result (all files checked). """
 
-    f = result.files_with_violations
-    v = result.violations
+    f = result.num_files_with_violations
+    v = result.num_violations
 
     if f == 0 or v == 0:
         return 1.0
 
     min_f = 0
-    max_f = result.files
+    max_f = result.num_files
 
     min_v = 0
     max_v = v + f  # arbitrary max

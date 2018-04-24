@@ -150,13 +150,13 @@ def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
 def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
     """  Run checks and print a report. """
 
-    report = CheckResult()
+    result = CheckResult()
 
     for path in inputs:
-        result, checked = check(path, rules, reporter)
+        file_result, checked = check(path, rules, reporter)
 
         if checked == CheckResult.FILE_CHECKED:
-            report += result
+            result += file_result
         else:
             reason = None
 
@@ -180,7 +180,7 @@ def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
                 printdiag('{type} \'{path}\' was not checked.'.format(
                     type=file_or_directory, path=os.path.abspath(path)))
 
-    return report
+    return result
 
 
 def expand_identifiers(identifiers: list) -> list:
@@ -242,7 +242,7 @@ def main():
 
     report = make_report(inputs, rules, reporter)
 
-    if reporter.is_verbose and report.files > 0:
+    if reporter.is_verbose and report.num_files > 0:
         time_since_report = datetime.datetime.now() - time_started_report
         report_in_seconds = time_since_report / datetime.timedelta(seconds=1)
 
@@ -261,18 +261,18 @@ def main():
         score = score_format.format(score)
 
         severe_format = '({0} severe) '.format(
-            report.severe_violations) if report.severe_violations > 0 else ''
+            report.num_severe_violations) if report.num_severe_violations > 0 else ''
 
         printdiag('Found {2} violations {4}in {0}/{1} files (scoring {3})'
-                  .format(report.files_with_violations,
-                          report.files,
-                          report.violations + report.severe_violations,
+                  .format(report.num_files_with_violations,
+                          report.num_files,
+                          report.num_violations + report.num_severe_violations,
                           score,
                           severe_format))
 
     check_for_update()
 
-    if report.severe_violations > 0:
+    if report.num_severe_violations > 0:
         # everything went fine; severe violations were encountered
         sys.exit(EXIT_CODE_SUCCESS_WITH_SEVERE_VIOLATIONS)
     else:
