@@ -143,6 +143,8 @@ else:
 
             num_rules += 1
 
+template = template.replace('{{ rules_count }}', str(num_rules))
+
 try:
     output_file = open(output_path, 'w')
 except IOError:
