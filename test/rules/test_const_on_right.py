@@ -17,7 +17,7 @@ def test_const_on_right_1():
              'const struct mytype_t * const c = NULL;']
 
     for text in texts:
-        result, _ = check_text(text, [RULE])
+        result = check_text(text, [RULE])
 
         assert len(result.violations) == 1
 
@@ -29,13 +29,13 @@ def test_const_on_right_1():
 def test_const_on_right_2():
     text = 'int const a = * (const int *)b;'
 
-    result, _ = check_text(text, [RULE])
+    result = check_text(text, [RULE])
 
     assert len(result.violations) == 1
 
     line_number, column = result.violations[0].where
 
-    assert line_number == 1 and column == 12
+    assert line_number == 1 and column == 18
 
 
 def test_const_on_right_3():
@@ -43,7 +43,7 @@ def test_const_on_right_3():
             'card__compare_by_suit(const struct card * const lhs,\n'
             '                      const struct card * const rhs)')
 
-    result, _ = check_text(text, [RULE])
+    result = check_text(text, [RULE])
 
     assert len(result.violations) == 3
 
@@ -66,6 +66,6 @@ def test_const_on_right_false_positive():
     text = ('int\n'
             'const a = 1;')
 
-    result, _ = check_text(text, [RULE])
+    result = check_text(text, [RULE])
 
     assert len(result.violations) == 1

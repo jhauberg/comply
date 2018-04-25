@@ -13,7 +13,7 @@ RULE = NoTabs()
 
 def test_no_tabs():
     text = 'source with a	tab'
-    result, _ = check_text(text, [RULE])
+    result = check_text(text, [RULE])
 
     assert result.num_severe_violations == 1
     assert len(result.violations) == 1
@@ -21,4 +21,3 @@ def test_no_tabs():
     line_number, column = result.violations[0].where
 
     assert line_number == 1 and column == 14
-
