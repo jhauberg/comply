@@ -5,7 +5,7 @@ import sys
 sys.path.append("..")
 
 from comply.rules.misc import NoTabs
-from comply.checking import check, check_text
+from comply.checking import check_text
 
 
 RULE = NoTabs()
