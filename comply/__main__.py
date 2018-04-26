@@ -90,10 +90,36 @@ def make_reporter(reporting_mode: str) -> Reporter:
     return Reporter()
 
 
+def validate_names(names: list, rules: list):
+    """ Determine whether or not the provided names exist as named rules. """
+
+    for name in names:
+        if not is_name_valid(name, rules):
+            # attempt fixing the name to provide a suggestion
+            suggested_name = name.replace('_', '-').replace(' ', '-')
+
+            if is_name_valid(suggested_name, rules):
+                printdiag('Rule \'{rule}\' does not exist. Did you mean \'{suggestion}\'?'.format(
+                    rule=name, suggestion=suggested_name))
+            else:
+                printdiag('Rule \'{rule}\' does not exist.'.format(
+                    rule=name))
+
+
+def is_name_valid(name: str, rules: list) -> bool:
+    """ Determine whether or not a name corresponds with a named rule. """
+
+    for rule in rules:
+        if rule.name == name:
+            return True
+
+    return False
+
+
 def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
     """ Return a list of rules to run checks on. """
 
-    rules = [
+    all_rules = [
         headers.GuardHeader(),
         headers.NoHeadersInHeader(),
         headers.NoUnifiedHeaders(),
@@ -125,8 +151,13 @@ def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
         misc.PadPointerDeclarations()
     ]
 
+    rules = all_rules
+
     if len(names) > 0:
+        validate_names(names, rules)
+
         # only run checks for certain rules
+        # (note that --strict mode is overruled when --check has at least one rule)
         rules = [rule for rule
                  in rules
                  if rule.name in names]
@@ -138,6 +169,8 @@ def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
                      if rule.severity > RuleViolation.ALLOW]
 
     if len(exceptions) > 0:
+        validate_names(exceptions, rules)
+
         # don't run checks for certain rules
         rules = [rule for rule
                  in rules
@@ -145,12 +178,14 @@ def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
 
     # sort rules in descending order, first by severity, then collection hint,
     # making sure severe violations are listed before less severe violations
-    return sorted(rules, reverse=True, key=lambda rule: (rule.severity,
-                                                         rule.collection_hint))
+    return sorted(rules,
+                  reverse=True,
+                  key=lambda rule: (rule.severity,
+                                    rule.collection_hint))
 
 
 def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
-    """  Run checks and print a report. """
+    """ Run checks and print a report. """
 
     result = CheckResult()
 
@@ -185,21 +220,19 @@ def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
     return result
 
 
-def expand_identifiers(identifiers: list) -> list:
-    """ Return an expanded list of identifiers from a list of (potentially) comma-separated
-        identifiers.
+def expand_names(names: list) -> list:
+    """ Return an expanded list of names from a list of (potentially) comma-separated names.
 
         E.g. given a list of ['a', 'b,c,d'], returns ['a', 'b', 'c', 'd']
     """
 
-    expanded_identifiers = []
+    expanded_names = []
 
-    for identifier in identifiers:
-        expanded_identifiers.extend(
-            [i.strip() for i in
-             identifier.split(',')])
+    for name in names:
+        expanded_names.extend(
+            [i.strip() for i in name.split(',')])
 
-    return expanded_identifiers
+    return expanded_names
 
 
 def main():
@@ -220,8 +253,8 @@ def main():
 
     is_strict = arguments['--strict']
 
-    checks = expand_identifiers(arguments['--check'])
-    exceptions = expand_identifiers(arguments['--except'])
+    checks = expand_names(arguments['--check'])
+    exceptions = expand_names(arguments['--except'])
 
     rules = make_rules(checks, exceptions, is_strict)
 
