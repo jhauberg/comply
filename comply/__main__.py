@@ -109,6 +109,7 @@ def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
         functions.TooManyFunctions(),
         functions.NoRedundantName(),
         functions.NoRedundantSize(),
+        functions.NoUnnamedInts(),
         misc.IdentifierTooLong(),
         misc.TooManyBlanks(),
         misc.NoTabs(),
