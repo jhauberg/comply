@@ -11,6 +11,7 @@ from comply.rules.misc.identifier_too_long import IdentifierTooLong
 from comply.rules.misc.scope_too_deep import ScopeTooDeep
 from comply.rules.misc.const_on_right import ConstOnRight
 from comply.rules.misc.no_space_name import NoSpaceName
+from comply.rules.misc.pad_keywords import PadKeywords
 from comply.rules.misc.pad_pointer_declarations import PadPointerDeclarations
 
 __all__ = [
@@ -24,6 +25,7 @@ __all__ = [
     "IdentifierTooLong",
     "ScopeTooDeep",
     "ConstOnRight",
-    "NoSpaceName"
+    "NoSpaceName",
+    "PadKeywords",
     "PadPointerDeclarations"
 ]

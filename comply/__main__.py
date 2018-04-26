@@ -119,7 +119,8 @@ def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
         misc.PreferStandardInt(),
         misc.ScopeTooDeep(),
         misc.ConstOnRight(),
-        misc.NoSpaceName()
+        misc.NoSpaceName(),
+        misc.PadKeywords(),
         misc.PadPointerDeclarations()
     ]
 
