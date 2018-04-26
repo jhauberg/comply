@@ -54,5 +54,9 @@ class FileTooLong(Rule):
         return offenders
 
     @property
+    def severity(self):
+        return RuleViolation.ALLOW
+
+    @property
     def collection_hint(self):
         return RuleViolation.ONCE_PER_FILE
