@@ -7,18 +7,18 @@ from comply.rules import Rule, RuleViolation, CheckFile
 from comply.printing import Colors
 
 
-class NoAttachedStars(Rule):
+class PadPointerDeclarations(Rule):
     def __init__(self):
-        Rule.__init__(self, name='no-attached-stars',
-                      description='Asterisks should be padded with space on both sides',
-                      suggestion='Add spacing to the {left_or_right} of the asterisk.')
+        Rule.__init__(self, name='pad-pointer-decls',
+                      description='Pointer declarations should be padded with space on both sides',
+                      suggestion='Add a single whitespace to the {left_or_right} of the asterisk.')
 
     pattern = re.compile(r'\*[^\s,*()=]|[^\s*()]\*')
 
     def augment(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
 
-        from_index, to_index = violation.meta['range'] if 'range' in violation.meta else (0, 0)
+        from_index, to_index = violation.meta['range']
 
         augmented_line = (line[:from_index] +
                           Colors.bad + line[from_index:to_index] + Colors.clear +
@@ -64,9 +64,11 @@ class NoAttachedStars(Rule):
                 offending_range = (offending_column - 1, offending_column - 1 + length)
                 offending_snippet = star_match.group()
 
-                left_or_right = 'right' if offending_snippet.startswith('*') else 'left'
+                should_pad_right = offending_snippet.startswith('*')
 
-                offender = self.violate(at=(offending_line_number, offending_column),
+                left_or_right = 'right' if should_pad_right else 'left'
+
+                offender = self.violate(at=(offending_line_number, offending_column + (1 if not should_pad_right else 0)),
                                         lines=[(offending_line_number, line)],
                                         meta={'left_or_right': left_or_right,
                                               'range': offending_range})

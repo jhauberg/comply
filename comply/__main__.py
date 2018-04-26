@@ -108,7 +108,6 @@ def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
         functions.FunctionTooLong(),
         functions.TooManyFunctions(),
         functions.NoRedundantName(),
-        functions.NoAttachedStars(),
         functions.NoRedundantSize(),
         misc.IdentifierTooLong(),
         misc.TooManyBlanks(),
@@ -121,6 +120,7 @@ def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
         misc.ScopeTooDeep(),
         misc.ConstOnRight(),
         misc.NoSpaceName()
+        misc.PadPointerDeclarations()
     ]
 
     if len(names) > 0:
