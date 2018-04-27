@@ -6,7 +6,7 @@ Make your C follow the rules
 
 Usage:
   comply <input>... [--reporter=<name>] [--check=<rule>]... [--except=<rule>]...
-                    [--limit=<amount>] [--verbose] [--strict]
+                    [--limit=<amount>] [--strict] [--only-severe] [--verbose]
   comply -h | --help
   comply --version
 
@@ -15,7 +15,8 @@ Options:
   -c --check=<rule>       Only run checks for a specific rule
   -e --except=<rule>      Don't run checks for a specific rule
   -i --limit=<amount>     Limit the amount of reported violations
-  -s --strict             Show all violations (similar violations not suppressed)
+  -s --strict             Report all violations (and don't suppress similar ones)
+  -S --only-severe        Report only severe violations
   -v --verbose            Show diagnostic messages
   -h --help               Show program help
   --version               Show program version
@@ -116,7 +117,7 @@ def is_name_valid(name: str, rules: list) -> bool:
     return False
 
 
-def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
+def make_rules(names: list, exceptions: list, severities: list) -> list:
     """ Return a list of rules to run checks on. """
 
     all_rules = [
@@ -162,11 +163,9 @@ def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
                  in rules
                  if rule.name in names]
     else:
-        if not is_strict:
-            # remove any rules of low severity
-            rules = [rule for rule
-                     in rules
-                     if rule.severity > RuleViolation.ALLOW]
+        rules = [rule for rule
+                 in rules
+                 if rule.severity in severities]
 
     if len(exceptions) > 0:
         validate_names(exceptions, rules)
@@ -252,11 +251,16 @@ def main():
     arguments = docopt(__doc__, version='comply ' + __version__)
 
     is_strict = arguments['--strict']
+    only_severe = arguments['--only-severe']
 
     checks = expand_names(arguments['--check'])
     exceptions = expand_names(arguments['--except'])
 
-    rules = make_rules(checks, exceptions, is_strict)
+    severities = ([RuleViolation.DENY] if only_severe else
+                  ([RuleViolation.DENY, RuleViolation.WARN] if not is_strict else
+                   [RuleViolation.DENY, RuleViolation.WARN, RuleViolation.ALLOW]))
+
+    rules = make_rules(checks, exceptions, severities)
 
     reporting_mode = arguments['--reporter']
 
