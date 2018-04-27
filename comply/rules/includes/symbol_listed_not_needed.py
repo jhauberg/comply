@@ -52,6 +52,9 @@ class SymbolListedNotNeeded(Rule):
                     symbol_type = symbol_components[0].strip()
                     sought_symbol = symbol_components[-1].strip()
 
+                    if not is_valid_symbol(sought_symbol):
+                        continue
+
                     # search for symbol usage after include statement (in stripped body)
                     text_after_usage = file.stripped[inclusion.end():]
 
@@ -73,6 +76,10 @@ class SymbolListedNotNeeded(Rule):
                         offenders.append(offender)
 
         return offenders
+
+
+def is_valid_symbol(symbol: str) -> bool:
+    return ' ' not in symbol
 
 
 def has_symbol_usage(symbol: str, text: str) -> bool:
