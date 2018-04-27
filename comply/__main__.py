@@ -38,7 +38,7 @@ from comply import (
 
 from comply.reporting import Reporter, OneLineReporter, HumanReporter
 from comply.printing import printdiag, diagnostics, supports_unicode, is_windows_environment
-from comply.checking import check, compliance
+from comply.checking import check
 from comply.version import __version__
 
 import comply.printing
@@ -294,20 +294,20 @@ def main():
         printdiag('Checked {0} {1} in {2:.1f} seconds'.format(
             num_rules, rules_or_rule, total_time_taken))
 
-        score = compliance(report)
-        score_format = '{0:.2f} ⚑' if supports_unicode() else '{0:.2f}'
-
-        score = score_format.format(score)
-
         severe_format = '({0} severe) '.format(
             report.num_severe_violations) if report.num_severe_violations > 0 else ''
 
-        printdiag('Found {2} violations {4}in {0}/{1} files (scoring {3})'
-                  .format(report.num_files_with_violations,
-                          report.num_files,
-                          report.num_violations + report.num_severe_violations,
-                          score,
-                          severe_format))
+        total_violations = report.num_violations + report.num_severe_violations
+
+        violation_or_violations = 'violation' if total_violations == 1 else 'violations'
+
+        printdiag('Found {num_violations} {violations} {severe}⚑'
+                  'in {num_files_violated}/{num_files} files'
+                  .format(num_files_violated=report.num_files_with_violations,
+                          num_files=report.num_files,
+                          num_violations=total_violations,
+                          violations=violation_or_violations,
+                          severe=severe_format))
 
     check_for_update()
 

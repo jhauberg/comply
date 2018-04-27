@@ -167,34 +167,3 @@ def collect(file: CheckFile, rules: List[Rule]) -> List[RuleViolation]:
         violations.extend(offenders)
 
     return violations
-
-
-def compliance(result: CheckResult) -> float:
-    """ Return the compliance score for a full result (all files checked). """
-
-    f = result.num_files_with_violations
-    v = result.num_violations
-
-    if f == 0 or v == 0:
-        return 1.0
-
-    min_f = 0
-    max_f = result.num_files
-
-    min_v = 0
-    max_v = v + f  # arbitrary max
-
-    vp = (v - min_v) / (max_v - min_v)
-    fp = (f - min_f) / (max_f - min_f)
-
-    # weigh files heavier than violations;
-    #  e.g. 100 violations in 1 file should score better than 100 violations over 2 files
-    v_weight = 0.4
-    f_weight = 0.6
-
-    v_score = vp * v_weight
-    f_score = fp * f_weight
-
-    score = 1.0 - (v_score + f_score)
-
-    return score
