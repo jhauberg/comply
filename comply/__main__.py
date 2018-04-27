@@ -301,7 +301,7 @@ def main():
 
         violation_or_violations = 'violation' if total_violations == 1 else 'violations'
 
-        printdiag('Found {num_violations} {violations} {severe}⚑'
+        printdiag('Found {num_violations} {violations} {severe}'
                   'in {num_files_violated}/{num_files} files'
                   .format(num_files_violated=report.num_files_with_violations,
                           num_files=report.num_files,
