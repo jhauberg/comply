@@ -68,10 +68,10 @@ class Colors:
     underlined = '\x1b[4m'
     vague = '\x1b[0;37m'
     dark = '\x1b[0;90m'
-    bad = '\x1b[0;31m'
-    good = '\x1b[0;32m'
+    bad = '\x1b[0;91m'
+    good = '\x1b[0;92m'
     warn = '\x1b[0;33m'
-    allow = '\x1b[0;94m'
+    allow = '\x1b[0;34m'
     deny = '\x1b[0;31m'
     clear = '\x1b[0m'
 
