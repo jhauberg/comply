@@ -10,8 +10,8 @@ from comply.printing import Colors
 class GuardHeader(Rule):
     def __init__(self):
         Rule.__init__(self, name='guard-header',
-                      description='Header files should define an include guard to prevent double inclusion',
-                      suggestion='Wrap your header inside an include guard named "{guard}".')
+                      description='Header files should provide an include guard to prevent double inclusion',
+                      suggestion='Wrap your header in an include guard named "{guard}" or use "#pragma once".')
 
     def augment(self, violation: RuleViolation):
         guard = violation.meta['guard'] if 'guard' in violation.meta else '???'
@@ -27,6 +27,9 @@ class GuardHeader(Rule):
         offenders = []
 
         if '.h' not in file.extension:
+            return offenders
+
+        if '#pragma once' in file.stripped:
             return offenders
 
         guard_name = file.filename.strip() + file.extension
