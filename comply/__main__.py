@@ -137,6 +137,8 @@ def make_rules(names: list, exceptions: list, severities: list) -> list:
         functions.NoRedundantName(),
         functions.NoRedundantSize(),
         functions.NoUnnamedInts(),
+        functions.NoAmbiguousFunctions(),
+        functions.NoAmbiguousFunctionsImpl(),
         misc.IdentifierTooLong(),
         misc.TooManyBlanks(),
         misc.NoTabs(),

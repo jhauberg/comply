@@ -8,6 +8,7 @@ from comply.rules.functions.too_many_functions import TooManyFunctions
 from comply.rules.functions.no_redundant_name import NoRedundantName
 from comply.rules.functions.no_redundant_size import NoRedundantSize
 from comply.rules.functions.no_unnamed_ints import NoUnnamedInts
+from comply.rules.functions.no_ambiguous_functions import NoAmbiguousFunctions, NoAmbiguousFunctionsImpl
 
 __all__ = [
     "NoRedundantConst",
@@ -17,5 +18,7 @@ __all__ = [
     "TooManyFunctions",
     "NoRedundantName",
     "NoRedundantSize",
-    "NoUnnamedInts"
+    "NoUnnamedInts",
+    "NoAmbiguousFunctions",
+    "NoAmbiguousFunctionsImpl"
 ]
