@@ -12,7 +12,7 @@ class NoSourceIncludes(Rule):
     def __init__(self):
         Rule.__init__(self, name='no-src-includes',
                       description='Don\' include source files',
-                      suggestion='Remove include directive.')
+                      suggestion='Remove #include directive.')
 
     pattern = re.compile(INCLUDE_PATTERN)
 

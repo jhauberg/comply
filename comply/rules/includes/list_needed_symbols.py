@@ -11,8 +11,8 @@ from comply.printing import Colors
 class ListNeededSymbols(Rule):
     def __init__(self):
         Rule.__init__(self, name='list-needed-symbols',
-                      description='Include statements should indicate which symbols are needed',
-                      suggestion='Add a comment immediately after include statement, listing each needed symbol.')
+                      description='#include directives should indicate which symbols are needed',
+                      suggestion='Add a comment listing each needed symbol immediately after the #include directive.')
 
     pattern = re.compile(INCLUDE_PATTERN + r'(.*)')
 

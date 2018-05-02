@@ -12,7 +12,7 @@ class NoDuplicateIncludes(Rule):
     def __init__(self):
         Rule.__init__(self, name='no-dupe-includes',
                       description='File already included previously',
-                      suggestion='Remove duplicate include statement.')
+                      suggestion='Remove duplicate #include directive.')
 
     pattern = re.compile(INCLUDE_PATTERN)
 
