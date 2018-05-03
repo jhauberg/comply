@@ -48,6 +48,11 @@ class HumanReporter(Reporter):
                           (Colors.warn if rule.severity > RuleViolation.ALLOW else
                            Colors.allow))
 
+        if reason is None or len(reason) == 0:
+            reason = ('Severe violation' if rule.severity > RuleViolation.WARN else
+                      ('Cautioned violation' if rule.severity > RuleViolation.ALLOW else
+                       'Allowed violation'))
+
         why = '{tint}{0} {vague}[{1}]'.format(reason, rule.name,
                                               tint=severity_color,
                                               vague=Colors.vague) + Colors.clear
@@ -81,10 +86,10 @@ class HumanReporter(Reporter):
                 if i != len(violation.lines) - 1:
                     context += '\n'
 
-            output += '{lines}\n{strong}{suggestion}'.format(
-                lines=context, suggestion=solution, strong=Colors.strong)
-        else:
-            output += '{strong}{suggestion}'.format(
+            output += context
+
+        if solution is not None and len(solution) > 0:
+            output += '\n{strong}{suggestion}'.format(
                 suggestion=solution, strong=Colors.strong)
 
         return '\n' + output + Colors.clear

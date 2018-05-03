@@ -71,5 +71,5 @@ class NoAmbiguousFunctionsImpl(NoAmbiguousFunctions):
         NoAmbiguousFunctions.__init__(self)
 
         self.name = 'void-zero-param-func'
-        self.description = 'Zero-parameter functions should specify parameters as \'void\''
+        self.description = 'Parameter-less functions should specify parameters as \'void\''
         self.pattern = re.compile(FUNC_IMPL_PATTERN)

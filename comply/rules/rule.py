@@ -99,7 +99,11 @@ class Rule:
         self.suggestion = suggestion
 
     def __repr__(self):
-        return '[{0}]'.format(self.name)
+        name = (self.name
+                if self.name is not None
+                else '<unnamed>')
+
+        return '[{0}]'.format(name)
 
     def reason(self, violation: RuleViolation=None):
         """ Return a reason for why a given violation occurred.
@@ -110,10 +114,15 @@ class Rule:
             Subclasses may override to provide customized formatting.
         """
 
-        if self.description is not None and violation.meta is not None:
-            return self.description.format(**violation.meta)
+        description = self.description
 
-        return self.description
+        if description is None or len(description) == 0:
+            return description
+
+        if violation.meta is None or len(violation.meta) == 0:
+            return description
+
+        return description.format(**violation.meta)
 
     def solution(self, violation: RuleViolation=None):
         """ Return a solution for fixing a given violation.
@@ -124,10 +133,15 @@ class Rule:
             Subclasses may override to provide customized formatting.
         """
 
-        if self.suggestion is not None and violation.meta is not None:
-            return self.suggestion.format(**violation.meta)
+        suggestion = self.suggestion
 
-        return self.suggestion
+        if suggestion is None or len(suggestion) == 0:
+            return suggestion
+
+        if violation.meta is None or len(violation.meta) == 0:
+            return suggestion
+
+        return suggestion.format(**violation.meta)
 
     def augment(self, violation: RuleViolation):
         """ Augment a violation to improve hints of its occurrence.
