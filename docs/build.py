@@ -36,7 +36,20 @@ def rule_for_template(rules: List[Rule], template_name: str) -> Rule:
 
 def find_all_rules() -> List[Rule]:
     # find all rule subclasses
-    rule_types = [rule_class.__name__ for rule_class in Rule.__subclasses__()]
+    rule_types = [rule_class for rule_class in Rule.__subclasses__()]
+
+    for idx, rule_type in enumerate(rule_types):
+        sub_rule_types = [rule_class for rule_class in rule_type.__subclasses__()]
+
+        next_idx = idx + 1
+
+        # extend types by any found sub-types; this is practically recursive, as the next
+        # enumeration iteration will automatically hit the newly discovered sub-types and then
+        # find any sub-sub-types from the sub-types, and so on, indefinitely
+        rule_types[next_idx:next_idx] = sub_rule_types
+
+    # convert types to names (strings)
+    rule_type_names = [rule_type.__name__ for rule_type in rule_types]
 
     # will hold Rule-subclassed object instances
     rule_instances = []
@@ -45,11 +58,11 @@ def find_all_rules() -> List[Rule]:
     # (mod[1] is module object- mod[0] is just the name)
     modules = [mod[1] for mod in inspect.getmembers(comply.rules, inspect.ismodule)]
 
-    for rule_type in rule_types:
+    for rule_type_name in rule_type_names:
         # brute-force our way through each module until we find the one with this rule
         for rule_module in modules:
             try:
-                rule_attr = getattr(rule_module, rule_type)
+                rule_attr = getattr(rule_module, rule_type_name)
             except AttributeError as e:
                 pass
             else:
