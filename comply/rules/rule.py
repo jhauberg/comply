@@ -67,6 +67,14 @@ class RuleViolation:
         return line, column
 
     @staticmethod
+    def lines_in_match(match, text: str) -> List[Tuple[int, str]]:
+        """ Return the lines and line numbers of which the match spans. """
+
+        character_range = (match.start(), match.end())
+
+        return RuleViolation.lines_in(character_range, text)
+
+    @staticmethod
     def lines_in(character_indices: (int, int), text: str) -> List[Tuple[int, str]]:
         """ Return the lines and line numbers within starting and ending character indices. """
 
