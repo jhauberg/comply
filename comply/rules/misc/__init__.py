@@ -13,6 +13,7 @@ from comply.rules.misc.const_on_right import ConstOnRight
 from comply.rules.misc.no_space_name import NoSpaceName
 from comply.rules.misc.pad_keywords import PadKeywords
 from comply.rules.misc.pad_pointer_declarations import PadPointerDeclarations
+from comply.rules.misc.logical_continuation import LogicalContinuation
 
 __all__ = [
     "LineTooLong",
@@ -27,5 +28,6 @@ __all__ = [
     "ConstOnRight",
     "NoSpaceName",
     "PadKeywords",
-    "PadPointerDeclarations"
+    "PadPointerDeclarations",
+    "LogicalContinuation"
 ]

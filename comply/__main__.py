@@ -151,7 +151,8 @@ def make_rules(names: list, exceptions: list, severities: list) -> list:
         misc.ConstOnRight(),
         misc.NoSpaceName(),
         misc.PadKeywords(),
-        misc.PadPointerDeclarations()
+        misc.PadPointerDeclarations(),
+        misc.LogicalContinuation()
     ]
 
     rules = all_rules
