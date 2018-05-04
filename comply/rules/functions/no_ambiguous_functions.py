@@ -48,7 +48,7 @@ class NoAmbiguousFunctions(Rule):
                 offending_line_number, offending_column = RuleViolation.at(offending_index,
                                                                            text)
 
-                character_range = (offending_index,
+                character_range = (function_match.start(),
                                    function_match.end())
 
                 offending_lines = RuleViolation.lines_in(character_range,
@@ -66,10 +66,10 @@ class NoAmbiguousFunctions(Rule):
         return offenders
 
 
-class NoAmbiguousFunctionsImpl(NoAmbiguousFunctions):
+class ExplicitlyVoidFunctions(NoAmbiguousFunctions):
     def __init__(self):
         NoAmbiguousFunctions.__init__(self)
 
-        self.name = 'void-zero-param-func'
+        self.name = 'explicitly-void-funcs'
         self.description = 'Parameter-less functions should specify parameters as \'void\''
         self.pattern = re.compile(FUNC_IMPL_PATTERN)
