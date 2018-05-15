@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from comply.rules.misc import NoTabs
+from comply.rules.standard import NoTabs
 from comply.checking import check_text
 
 

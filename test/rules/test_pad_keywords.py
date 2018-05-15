@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from comply.rules.misc import PadKeywords
+from comply.rules.standard import PadKeywords
 from comply.checking import check_text
 
 

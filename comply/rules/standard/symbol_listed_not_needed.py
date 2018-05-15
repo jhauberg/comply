@@ -3,7 +3,7 @@
 import re
 
 from comply.rules.rule import *
-from comply.rules.includes.list_needed_symbols import is_symbol_list
+from comply.rules.standard.list_needed_symbols import is_symbol_list
 from comply.rules.patterns import INCLUDE_PATTERN
 
 from comply.printing import Colors

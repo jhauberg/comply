@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from comply.rules.misc import ConstOnRight
+from comply.rules.standard import ConstOnRight
 from comply.checking import check_text
 
 

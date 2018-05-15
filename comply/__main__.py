@@ -45,7 +45,7 @@ from comply.version import __version__
 import comply.printing
 
 from comply.rules.report import CheckResult
-from comply.rules.rule import RuleViolation
+from comply.rules.rule import Rule, RuleViolation
 from comply.rules import *
 
 
@@ -120,42 +120,33 @@ def is_name_valid(name: str, rules: list) -> bool:
     return False
 
 
-def make_rules(names: list, exceptions: list, severities: list) -> list:
+def make_rules(modules: list) -> list:
+    """ Return a list of instances of all Rule-subclasses found in the provided modules. """
+
+    classes = []
+
+    def is_rule_implementation(var):
+        return var != Rule and type(var) == type and issubclass(var, Rule)
+
+    for module in modules:
+        for item in dir(module):
+            attr = getattr(module, item)
+
+            if is_rule_implementation(attr):
+                classes.append(attr)
+
+    instances = [c() for c in classes]
+
+    return instances
+
+
+def filter_rules(names: list, exceptions: list, severities: list) -> list:
     """ Return a list of rules to run checks on. """
 
-    all_rules = [
-        headers.GuardHeader(),
-        headers.NoHeadersInHeader(),
-        headers.NoUnifiedHeaders(),
-        includes.ListNeededSymbols(),
-        includes.SymbolListedNotNeeded(),
-        includes.NoDuplicateIncludes(),
-        includes.NoSourceIncludes(),
-        functions.NoRedundantConst(),
-        functions.TooManyParams(),
-        functions.SplitByName(),
-        functions.FunctionTooLong(),
-        functions.TooManyFunctions(),
-        functions.NoRedundantName(),
-        functions.NoRedundantSize(),
-        functions.NoUnnamedInts(),
-        functions.NoAmbiguousFunctions(),
-        functions.ExplicitlyVoidFunctions(),
-        misc.IdentifierTooLong(),
-        misc.TooManyBlanks(),
-        misc.NoTabs(),
-        misc.NoTodo(),
-        misc.NoInvisibles(),
-        misc.LineTooLong(),
-        misc.FileTooLong(),
-        misc.PreferStandardInt(),
-        misc.ScopeTooDeep(),
-        misc.ConstOnRight(),
-        misc.NoSpaceName(),
-        misc.PadKeywords(),
-        misc.PadPointerDeclarations(),
-        misc.LogicalContinuation()
-    ]
+    rulesets = [comply.rules.standard,
+                comply.rules.experimental]
+
+    all_rules = make_rules(rulesets)
 
     rules = all_rules
 
@@ -265,7 +256,7 @@ def main():
                   ([RuleViolation.DENY, RuleViolation.WARN] if not is_strict else
                    [RuleViolation.DENY, RuleViolation.WARN, RuleViolation.ALLOW]))
 
-    rules = make_rules(checks, exceptions, severities)
+    rules = filter_rules(checks, exceptions, severities)
 
     reporting_mode = arguments['--reporter']
 
