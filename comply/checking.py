@@ -103,7 +103,7 @@ def check(path: str, rules: List[Rule], reporter: Reporter=None) -> (CheckResult
 
     file = prepare(text, filename, extension, path)
 
-    violations = collect(file, rules)
+    violations = collect(file, rules, reporter.report_progress)
 
     result = result_from_violations(violations)
 
@@ -162,14 +162,17 @@ def read(path: str) -> (str, str):
     return None, None
 
 
-def collect(file: CheckFile, rules: List[Rule]) -> List[RuleViolation]:
+def collect(file: CheckFile, rules: List[Rule], progress_callback=None) -> List[RuleViolation]:
     """ Return a list of all collected violations in a text. """
 
     violations = []
 
-    for rule in rules:
+    for i, rule in enumerate(rules):
         offenders = rule.collect(file)
 
         violations.extend(offenders)
+
+        if progress_callback is not None:
+            progress_callback(i + 1, len(rules))
 
     return violations
