@@ -7,7 +7,7 @@ from comply.checking import check_text
 RULE = PadKeywords()
 
 
-def test_pad_keywords_1():
+def test_pad_keywords_triggers():
     texts = ['if() { ... }',
              'for() { ... }',
              'while() { ... }',
@@ -17,10 +17,20 @@ def test_pad_keywords_1():
         result = check_text(text, [RULE])
 
         assert len(result.violations) == 1
+        assert result.violations[0].where == (1, 1)
 
-        line_number, column = result.violations[0].where
 
-        assert line_number == 1 and column == 1
+def test_pad_keywords_non_triggers():
+    texts = ['my_format = "switcheroo";',
+             'myformat = forx',
+             'myif();',
+             'myfunc(iflags);',
+             '#ifndef']
+
+    for text in texts:
+        result = check_text(text, [RULE])
+
+        assert len(result.violations) == 0
 
 
 def test_pad_keywords_2():
@@ -30,13 +40,8 @@ def test_pad_keywords_2():
 
     assert len(result.violations) == 2
 
-    line_number, column = result.violations[0].where
-
-    assert line_number == 1 and column == 20
-
-    line_number, column = result.violations[1].where
-
-    assert line_number == 1 and column == 45
+    assert result.violations[0].where == (1, 20)
+    assert result.violations[1].where == (1, 45)
 
 
 def test_pad_keywords_3():
@@ -46,17 +51,4 @@ def test_pad_keywords_3():
 
     assert len(result.violations) == 1
 
-    line_number, column = result.violations[0].where
-
-    assert line_number == 1 and column == 14
-
-
-def test_pad_keywords_4():
-    texts = ['my_format = "switcheroo";',
-             'myformat = forx',
-             '#ifndef']
-
-    for text in texts:
-        result = check_text(text, [RULE])
-
-        assert len(result.violations) == 0
+    assert result.violations[0].where == (1, 14)

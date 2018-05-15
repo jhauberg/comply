@@ -7,7 +7,7 @@ from comply.checking import check_text
 RULE = ConstOnRight()
 
 
-def test_const_on_right_1():
+def test_const_on_right_triggers():
     texts = ['const int a = 1;',
              'const int * const b = &a;',
              'const struct mytype_t * const c = NULL;']
@@ -17,9 +17,7 @@ def test_const_on_right_1():
 
         assert len(result.violations) == 1
 
-        line_number, column = result.violations[0].where
-
-        assert line_number == 1 and column == 1
+        assert result.violations[0].where == (1, 1)
 
 
 def test_const_on_right_2():
@@ -29,9 +27,7 @@ def test_const_on_right_2():
 
     assert len(result.violations) == 1
 
-    line_number, column = result.violations[0].where
-
-    assert line_number == 1 and column == 18
+    assert result.violations[0].where == (1, 18)
 
 
 def test_const_on_right_3():
@@ -43,17 +39,9 @@ def test_const_on_right_3():
 
     assert len(result.violations) == 3
 
-    line_number, column = result.violations[0].where
-
-    assert line_number == 1 and column == 1
-
-    line_number, column = result.violations[1].where
-
-    assert line_number == 2 and column == 23
-
-    line_number, column = result.violations[2].where
-
-    assert line_number == 3 and column == 23
+    assert result.violations[0].where == (1, 1)
+    assert result.violations[1].where == (2, 23)
+    assert result.violations[2].where == (3, 23)
 
 
 def test_const_on_right_false_positive():
