@@ -59,11 +59,11 @@ class HumanReporter(Reporter):
 
         solution = rule.solution(violation)
 
-        output = '{reason} in\n{location}\n'.format(
+        output = '{reason} in\n{location}'.format(
             reason=why, location=location)
 
         if len(violation.lines) > 0:
-            context = ''
+            context = '\n'
 
             for i, (linenumber, line) in enumerate(violation.lines):
                 # a "line" can, in some cases, actually span several lines
