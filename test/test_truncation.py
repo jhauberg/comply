@@ -1,9 +1,5 @@
 # coding=utf-8
 
-import sys
-
-sys.path.append("..")
-
 from comply.util.truncation import truncated, Ellipsize
 
 

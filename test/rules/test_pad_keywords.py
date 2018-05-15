@@ -1,9 +1,5 @@
 # coding=utf-8
 
-import sys
-
-sys.path.append("..")
-
 from comply.rules.misc import PadKeywords
 from comply.checking import check_text
 
