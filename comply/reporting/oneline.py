@@ -2,7 +2,7 @@
 
 import os
 
-from comply.rules import RuleViolation
+from comply.rules.rule import RuleViolation
 
 from comply.reporting.base import Reporter
 
@@ -41,6 +41,9 @@ class OneLineReporter(Reporter):
                 severity = ('error' if rule.severity > RuleViolation.WARN else
                             ('warning' if rule.severity > RuleViolation.ALLOW else
                              'note'))
+
+                if reason is None or len(reason) == 0:
+                    reason = '({0})'.format(rule.name)
 
                 why = '{0} [{1}]'.format(reason, rule.name)
                 output = '{0} {1}: {2}'.format(location, severity, why)

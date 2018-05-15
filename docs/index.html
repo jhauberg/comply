@@ -16,6 +16,7 @@
     <img src="logo.svg" alt="comply" align="left" style="width: 2cm; margin-left: -1cm; margin-right: .25cm;">
     <h1><strong>comply</strong></h1>
     <p class="subtitle">Strict style compliance</p>
+
     <section>
       <div class="example" style="width: 45%;">
         <p class="tip">
@@ -27,7 +28,7 @@
         <tt>comply</tt> is an open-source utility that helps you write better C.
       </p>
       <p>
-        This page provides a listing of each rule that <tt>comply</tt> will validate your code against when running its checks.
+        This page provides a listing of all the 32 rules that <tt>comply</tt> checks your code against when running its analysis.
       </p>
       <br/>
       <br/>
@@ -37,13 +38,14 @@
       
       <footer>
         <p>
-          Listings are based on <strong><a href="https://github.com/jhauberg/comply/releases/tag/0.10.0">comply 0.10.0</a></strong> and were last edited on <strong>April 23, 2018</strong>
+          Listings are based on <strong><a href="https://github.com/jhauberg/comply/releases/tag/0.11.0">comply 0.11.0</a></strong> and were last edited on <strong>May 15, 2018</strong>
         </p>
       </footer>
     </section>
+
     <hr>
+
     <section>
-      <h2>Rule listing</h2>
       <table class="rules">
         <thead>
           <tr>
@@ -73,7 +75,19 @@
 
 <tr>
   <td>
-    <p><tt class="warn">file-too-long</tt></p>
+  	<p><tt class="warn">explicitly-void-funcs</tt></p>
+  </td>
+  <td>
+  	<p>Requires that functions that take zero parameters explicitly specify parameters as <code>void</code>.</p>
+  </td>
+  <td>
+    <p class="reasoning">Technically, this is not required for the compiler to do its job. But being explicit helps in keeping a clear and consistent interface.</p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="allow">file-too-long</tt></p>
   </td>
   <td>
     <p>Requires files to not exceed 600 lines.</p>
@@ -204,14 +218,25 @@
 
 <tr>
   <td>
-    <p><tt class="warn">no-attached-stars</tt></p>
+  	<p><tt class="warn">logical-continuation</tt></p>
   </td>
   <td>
-    <p>Requires that type declarations pad pointer stars (<code>*</code>) with space on both sides.</p>
+  	<p>Requires that lines never begin with a logical continuation.</p>
   </td>
   <td>
-    <p class="reasoning">No padding for <code>*</code> makes for an inconsistent reading of types- especially when combined with <code>const</code> qualifiers.<br/><br/>
-    Additionally, padding provides a clear separation between declarations and pointer dereferencing.</p>
+    <p class="reasoning"></p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+  	<p><tt class="warn">no-ambiguous-funcs</tt></p>
+  </td>
+  <td>
+  	<p>Requires that no function prototype provide an ambiguous interface.</p>
+  </td>
+  <td>
+    <p class="reasoning">This mainly pertains to functions with parameter-less declarations. In C, a function declaration with no parameters is ambiguous, as it implicitly declares a function that can take an arbitrary number of parameters.</p>
   </td>
 </tr>
 
@@ -441,6 +466,43 @@ foo(&amp;arr);
 
 <tr>
   <td>
+  	<p id="no-unnamed-ints"><tt class="allow">no-unnamed-ints</tt></p>
+  </td>
+  <td>
+  	<p>Requires that integer parameters be explicitly named in function prototypes.</p>
+  </td>
+  <td>
+    <p class="reasoning">The majority of function prototypes will suffer from having unnamed integer parameters as their meaning can otherwise be difficult to derive.<br/><br/>There are exceptions, of course, a good example is a math function such as <code>max(int, int)</code>. But in general, it is always preferable to provide parameter names.</p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="warn">pad-keywords</tt></p>
+  </td>
+  <td>
+    <p>Requires that control keywords (<code>if</code>, <code>else</code>, <code>for</code>, <code>switch</code> and <code>while</code>) be padded with space on both sides.</p>
+  </td>
+  <td>
+    <p class="reasoning">For improved readability, control keywords should always be padded to clearly separate them from macros and function calls.</p>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <p><tt class="warn">pad-pointer-decls</tt></p>
+  </td>
+  <td>
+    <p>Requires that pointer declarations pad the asterisk (<code>*</code>) with space on both sides.</p>
+  </td>
+  <td>
+    <p class="reasoning">No padding for <code>*</code>'s makes for an inconsistent reading of types- especially when combined with <code>const</code> qualifiers.<br/><br/>
+    Additionally, padding provides a clear separation between declarations and pointer dereferencing.</p>
+  </td>
+</tr>
+
+<tr>
+  <td>
     <p><tt class="warn">prefer-stdint</tt></p>
   </td>
   <td>
@@ -498,6 +560,12 @@ foo(&amp;arr);
   <td>
     <p class="reasoning">Being explicit about the type and size that you're expecting helps improve portability.<br/></br/>
       It also increases readability as it does away with the <code>unsigned</code> and <code>signed</code> keywords and makes types read more uniformly.</p>
+    <div class="references">
+      <p><strong>References:</strong></p>
+      <ul class="indent">
+        <li>Matt Stancliff: <a href="https://matt.sh/howto-c"><em>How to C in 2016: Writing Code- Types</em></a></li>
+     </ul>
+    </div>
   </td>
 </tr>
 

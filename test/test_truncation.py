@@ -1,40 +1,41 @@
 # coding=utf-8
 
-import sys
-
-sys.path.append("..")
-
 from comply.util.truncation import truncated, Ellipsize
 
 
-def test_text_truncated_at_end():
-    text = 'a truncated piece of text'
+TEXT = 'a truncated piece of text'
+LENGTH = 10
 
-    truncated_text = truncated(text, length=10, options=Ellipsize.options(Ellipsize.end))
+
+def test_text_truncated_at_end():
+    truncated_text = truncated(TEXT,
+                               length=LENGTH,
+                               options=Ellipsize.options(Ellipsize.end))
 
     assert truncated_text == 'a trunc...'
 
 
 def test_text_truncated_at_start():
-    text = 'a truncated piece of text'
-
-    truncated_text = truncated(text, length=10, options=Ellipsize.options(Ellipsize.start))
+    truncated_text = truncated(TEXT,
+                               length=LENGTH,
+                               options=Ellipsize.options(Ellipsize.start))
 
     assert truncated_text == '...of text'
 
 
 def test_text_truncated_at_middle():
-    text = 'a truncated piece of text'
-
-    truncated_text = truncated(text, length=10, options=Ellipsize.options(Ellipsize.middle))
+    truncated_text = truncated(TEXT,
+                               length=LENGTH,
+                               options=Ellipsize.options(Ellipsize.middle))
 
     assert truncated_text == 'a tr...ext'
 
 
 def test_text_truncated_at_ends():
-    text = 'a truncated piece of text'
+    middle_index = int(len(TEXT) / 2)
 
-    truncated_text = truncated(text, length=10, options=Ellipsize.options(Ellipsize.ends,
-                                                                          index=int(len(text) / 2)))
+    truncated_text = truncated(TEXT,
+                               length=LENGTH,
+                               options=Ellipsize.options(Ellipsize.ends, index=middle_index))
 
     assert truncated_text == '...d pi...'

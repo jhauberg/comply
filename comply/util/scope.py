@@ -5,6 +5,10 @@ def depth(index: int, text: str):
     """ Determine depth of scope at a character index.
 
         Return 0 if not inside any scope.
+
+        Note that a scope does not have to be properly balanced for this to return its depth.
+
+        For example, in the string 'a { b { c', the index of 'c' would have a depth of 2.
     """
 
     depth_count = 0

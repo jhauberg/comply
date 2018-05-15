@@ -5,7 +5,8 @@ import os
 from typing import List
 
 from comply.reporting import Reporter
-from comply.rules import Rule, RuleViolation, CheckFile, CheckResult
+from comply.rules.rule import Rule, RuleViolation
+from comply.rules.report import CheckFile, CheckResult
 
 from comply.util.stripping import strip_any_comments, strip_literals
 
@@ -18,36 +19,52 @@ def supported_file_types() -> tuple:
     return '.h', '.c'
 
 
-def count(result: CheckResult, violations: List[RuleViolation]):
+def result_from_violations(violations: List[RuleViolation]) -> CheckResult:
     """ Increment violation/file counts for a result. """
+
+    result = CheckResult(violations)
 
     num_severe_violations = 0
 
     for violation in violations:
         if violation.which.severity == RuleViolation.DENY:
-            num_severe_violations += 1
+            num_severe_violations = 1
 
     num_violations = len(violations) - num_severe_violations
 
-    result.files += 1
-    result.violations += num_violations
-    result.severe_violations += num_severe_violations
+    result.num_files = 1
+    result.num_violations = num_violations
+    result.num_severe_violations = num_severe_violations
 
     if num_violations > 0 or num_severe_violations > 0:
-        result.files_with_violations += 1
+        result.num_files_with_violations = 1
+
+    return result
 
 
-def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, int):
+def check_text(text: str, rules: List[Rule]) -> CheckResult:
+    """ Run a check on a piece of text. """
+
+    file = prepare(text, 'N/A', 'N/A', 'N/A')
+
+    violations = collect(file, rules)
+
+    result = result_from_violations(violations)
+
+    return result
+
+
+def check(path: str, rules: List[Rule], reporter: Reporter=None) -> (CheckResult, int):
     """ Run a check on the file found at path, if any.
 
         If the path points to a directory, a check is run on each subsequent filepath.
 
-        Return a result and whether the path was checked.
+        Return a result and a code to determine whether the path was checked or not.
     """
 
     result = CheckResult()
 
-    if not os.path.exists(path):
+    if path is None or len(path) == 0 or not os.path.exists(path):
         return result, CheckResult.FILE_NOT_FOUND
 
     if os.path.isdir(path):
@@ -80,17 +97,19 @@ def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, int
     if text is None:
         return result, CheckResult.FILE_NOT_READ
 
-    reporter.report_before_checking(
-        path, encoding=None if encoding is DEFAULT_ENCODING else encoding)
+    if reporter is not None:
+        reporter.report_before_checking(
+            path, encoding=None if encoding is DEFAULT_ENCODING else encoding)
 
     file = prepare(text, filename, extension, path)
 
     violations = collect(file, rules)
 
-    count(result, violations)
+    result = result_from_violations(violations)
 
-    reporter.report_before_results(violations)
-    reporter.report(violations, path)
+    if reporter is not None:
+        reporter.report_before_results(violations)
+        reporter.report(violations, path)
 
     return result, CheckResult.FILE_CHECKED
 
@@ -98,10 +117,15 @@ def check(path: str, rules: List[Rule], reporter: Reporter) -> (CheckResult, int
 def prepare(text: str, filename: str, extension: str, path: str) -> CheckFile:
     """ Prepare a text for checking. """
 
+    stripped_text = text
+
     # remove comments and string literals to reduce chance of false-positives
     # for stuff that isn't actually code
-    stripped_text = strip_any_comments(text)
+    # start by stripping single-line literals; this will help stripping comments, as
+    # comment-starting characters could easily be found inside literals
     stripped_text = strip_literals(stripped_text)
+    # finally strip both block and line-comments
+    stripped_text = strip_any_comments(stripped_text)
 
     # debug code for comparing differences before/after stripping
     write_stripped_file = False
@@ -149,34 +173,3 @@ def collect(file: CheckFile, rules: List[Rule]) -> List[RuleViolation]:
         violations.extend(offenders)
 
     return violations
-
-
-def compliance(result: CheckResult) -> float:
-    """ Return the compliance score for a full result (all files checked). """
-
-    f = result.files_with_violations
-    v = result.violations
-
-    if f == 0 or v == 0:
-        return 1.0
-
-    min_f = 0
-    max_f = result.files
-
-    min_v = 0
-    max_v = v + f  # arbitrary max
-
-    vp = (v - min_v) / (max_v - min_v)
-    fp = (f - min_f) / (max_f - min_f)
-
-    # weigh files heavier than violations;
-    #  e.g. 100 violations in 1 file should score better than 100 violations over 2 files
-    v_weight = 0.4
-    f_weight = 0.6
-
-    v_score = vp * v_weight
-    f_score = fp * f_weight
-
-    score = 1.0 - (v_score + f_score)
-
-    return score

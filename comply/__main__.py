@@ -6,7 +6,7 @@ Make your C follow the rules
 
 Usage:
   comply <input>... [--reporter=<name>] [--check=<rule>]... [--except=<rule>]...
-                    [--limit=<amount>] [--verbose] [--strict]
+                    [--limit=<amount>] [--strict] [--only-severe] [--verbose]
   comply -h | --help
   comply --version
 
@@ -15,7 +15,8 @@ Options:
   -c --check=<rule>       Only run checks for a specific rule
   -e --except=<rule>      Don't run checks for a specific rule
   -i --limit=<amount>     Limit the amount of reported violations
-  -s --strict             Show all violations (similar violations not suppressed)
+  -s --strict             Report all violations (and don't suppress similar ones)
+  -S --only-severe        Report only severe violations
   -v --verbose            Show diagnostic messages
   -h --help               Show program help
   --version               Show program version
@@ -32,16 +33,19 @@ from pkg_resources import parse_version
 
 from comply import (
     VERSION_PATTERN,
-    EXIT_CODE_SUCCESS, EXIT_CODE_SUCCESS_WITH_SEVERE_VIOLATIONS, exit_if_not_compatible
+    EXIT_CODE_SUCCESS, EXIT_CODE_SUCCESS_WITH_SEVERE_VIOLATIONS,
+    exit_if_not_compatible
 )
 
 from comply.reporting import Reporter, OneLineReporter, HumanReporter
 from comply.printing import printdiag, diagnostics, supports_unicode, is_windows_environment
-from comply.checking import check, compliance
+from comply.checking import check
 from comply.version import __version__
 
 import comply.printing
 
+from comply.rules.report import CheckResult
+from comply.rules.rule import Rule, RuleViolation
 from comply.rules import *
 
 
@@ -90,52 +94,78 @@ def make_reporter(reporting_mode: str) -> Reporter:
     return Reporter()
 
 
-def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
+def validate_names(names: list, rules: list):
+    """ Determine whether or not the provided names exist as named rules. """
+
+    for name in names:
+        if not is_name_valid(name, rules):
+            # attempt fixing the name to provide a suggestion
+            suggested_name = name.replace('_', '-').replace(' ', '-')
+
+            if is_name_valid(suggested_name, rules):
+                printdiag('Rule \'{rule}\' does not exist. Did you mean \'{suggestion}\'?'.format(
+                    rule=name, suggestion=suggested_name))
+            else:
+                printdiag('Rule \'{rule}\' does not exist.'.format(
+                    rule=name))
+
+
+def is_name_valid(name: str, rules: list) -> bool:
+    """ Determine whether or not a name corresponds with a named rule. """
+
+    for rule in rules:
+        if rule.name == name:
+            return True
+
+    return False
+
+
+def make_rules(modules: list) -> list:
+    """ Return a list of instances of all Rule-subclasses found in the provided modules. """
+
+    classes = []
+
+    def is_rule_implementation(var):
+        return var != Rule and type(var) == type and issubclass(var, Rule)
+
+    for module in modules:
+        for item in dir(module):
+            attr = getattr(module, item)
+
+            if is_rule_implementation(attr):
+                classes.append(attr)
+
+    instances = [c() for c in classes]
+
+    return instances
+
+
+def filter_rules(names: list, exceptions: list, severities: list) -> list:
     """ Return a list of rules to run checks on. """
 
-    rules = [
-        headers.GuardHeader(),
-        headers.NoHeadersInHeader(),
-        headers.NoUnifiedHeaders(),
-        includes.ListNeededSymbols(),
-        includes.SymbolListedNotNeeded(),
-        #  includes.SymbolNeededNotListed(),
-        includes.NoDuplicateIncludes(),
-        includes.NoSourceIncludes(),
-        functions.NoRedundantConst(),
-        functions.TooManyParams(),
-        functions.SplitByName(),
-        functions.FunctionTooLong(),
-        functions.TooManyFunctions(),
-        functions.NoRedundantName(),
-        functions.NoAttachedStars(),
-        functions.NoRedundantSize(),
-        misc.IdentifierTooLong(),
-        misc.TooManyBlanks(),
-        misc.NoTabs(),
-        misc.NoTodo(),
-        misc.NoInvisibles(),
-        misc.LineTooLong(),
-        misc.FileTooLong(),
-        misc.PreferStandardInt(),
-        misc.ScopeTooDeep(),
-        misc.ConstOnRight(),
-        misc.NoSpaceName()
-    ]
+    rulesets = [comply.rules.standard,
+                comply.rules.experimental]
+
+    all_rules = make_rules(rulesets)
+
+    rules = all_rules
 
     if len(names) > 0:
+        validate_names(names, rules)
+
         # only run checks for certain rules
+        # (note that --strict mode is overruled when --check has at least one rule)
         rules = [rule for rule
                  in rules
                  if rule.name in names]
     else:
-        if not is_strict:
-            # remove any rules of low severity
-            rules = [rule for rule
-                     in rules
-                     if rule.severity > RuleViolation.ALLOW]
+        rules = [rule for rule
+                 in rules
+                 if rule.severity in severities]
 
     if len(exceptions) > 0:
+        validate_names(exceptions, rules)
+
         # don't run checks for certain rules
         rules = [rule for rule
                  in rules
@@ -143,20 +173,22 @@ def make_rules(names: list, exceptions: list, is_strict: bool) -> list:
 
     # sort rules in descending order, first by severity, then collection hint,
     # making sure severe violations are listed before less severe violations
-    return sorted(rules, reverse=True, key=lambda rule: (rule.severity,
-                                                         rule.collection_hint))
+    return sorted(rules,
+                  reverse=True,
+                  key=lambda rule: (rule.severity,
+                                    rule.collection_hint))
 
 
 def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
-    """  Run checks and print a report. """
+    """ Run checks and print a report. """
 
-    report = CheckResult()
+    result = CheckResult()
 
     for path in inputs:
-        result, checked = check(path, rules, reporter)
+        file_result, checked = check(path, rules, reporter)
 
         if checked == CheckResult.FILE_CHECKED:
-            report += result
+            result += file_result
         else:
             reason = None
 
@@ -180,24 +212,22 @@ def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
                 printdiag('{type} \'{path}\' was not checked.'.format(
                     type=file_or_directory, path=os.path.abspath(path)))
 
-    return report
+    return result
 
 
-def expand_identifiers(identifiers: list) -> list:
-    """ Return an expanded list of identifiers from a list of (potentially) comma-separated
-        identifiers.
+def expand_names(names: list) -> list:
+    """ Return an expanded list of names from a list of (potentially) comma-separated names.
 
         E.g. given a list of ['a', 'b,c,d'], returns ['a', 'b', 'c', 'd']
     """
 
-    expanded_identifiers = []
+    expanded_names = []
 
-    for identifier in identifiers:
-        expanded_identifiers.extend(
-            [i.strip() for i in
-             identifier.split(',')])
+    for name in names:
+        expanded_names.extend(
+            [i.strip() for i in name.split(',')])
 
-    return expanded_identifiers
+    return expanded_names
 
 
 def main():
@@ -217,11 +247,16 @@ def main():
     arguments = docopt(__doc__, version='comply ' + __version__)
 
     is_strict = arguments['--strict']
+    only_severe = arguments['--only-severe']
 
-    checks = expand_identifiers(arguments['--check'])
-    exceptions = expand_identifiers(arguments['--except'])
+    checks = expand_names(arguments['--check'])
+    exceptions = expand_names(arguments['--except'])
 
-    rules = make_rules(checks, exceptions, is_strict)
+    severities = ([RuleViolation.DENY] if only_severe else
+                  ([RuleViolation.DENY, RuleViolation.WARN] if not is_strict else
+                   [RuleViolation.DENY, RuleViolation.WARN, RuleViolation.ALLOW]))
+
+    rules = filter_rules(checks, exceptions, severities)
 
     reporting_mode = arguments['--reporter']
 
@@ -242,7 +277,7 @@ def main():
 
     report = make_report(inputs, rules, reporter)
 
-    if reporter.is_verbose and report.files > 0:
+    if reporter.is_verbose and report.num_files > 0:
         time_since_report = datetime.datetime.now() - time_started_report
         report_in_seconds = time_since_report / datetime.timedelta(seconds=1)
 
@@ -255,24 +290,24 @@ def main():
         printdiag('Checked {0} {1} in {2:.1f} seconds'.format(
             num_rules, rules_or_rule, total_time_taken))
 
-        score = compliance(report)
-        score_format = '{0:.2f} ⚑' if supports_unicode() else '{0:.2f}'
-
-        score = score_format.format(score)
-
         severe_format = '({0} severe) '.format(
-            report.severe_violations) if report.severe_violations > 0 else ''
+            report.num_severe_violations) if report.num_severe_violations > 0 else ''
 
-        printdiag('Found {2} violations {4}in {0}/{1} files (scoring {3})'
-                  .format(report.files_with_violations,
-                          report.files,
-                          report.violations + report.severe_violations,
-                          score,
-                          severe_format))
+        total_violations = report.num_violations + report.num_severe_violations
+
+        violation_or_violations = 'violation' if total_violations == 1 else 'violations'
+
+        printdiag('Found {num_violations} {violations} {severe}'
+                  'in {num_files_violated}/{num_files} files'
+                  .format(num_files_violated=report.num_files_with_violations,
+                          num_files=report.num_files,
+                          num_violations=total_violations,
+                          violations=violation_or_violations,
+                          severe=severe_format))
 
     check_for_update()
 
-    if report.severe_violations > 0:
+    if report.num_severe_violations > 0:
         # everything went fine; severe violations were encountered
         sys.exit(EXIT_CODE_SUCCESS_WITH_SEVERE_VIOLATIONS)
     else:
