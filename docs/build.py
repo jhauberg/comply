@@ -12,7 +12,7 @@ sys.path.append("..")  # required to import from the 'comply' package
 import comply.rules
 
 from comply.version import __version__
-from comply.rules import *
+from comply.rules.rule import Rule, RuleViolation
 
 
 def find_missing_rule_templates(rules: List[Rule], template_paths: List[str]):
@@ -59,14 +59,16 @@ def find_all_rules() -> List[Rule]:
     modules = [mod[1] for mod in inspect.getmembers(comply.rules, inspect.ismodule)]
 
     for rule_type_name in rule_type_names:
-        # brute-force our way through each module until we find the one with this rule
+        # brute-force our way through each module until we find the one it belongs in
+        # then instantiate it and hold on to it for later
         for rule_module in modules:
             try:
                 rule_attr = getattr(rule_module, rule_type_name)
-            except AttributeError as e:
+            except AttributeError:
+                # the rule did not belong in this module
                 pass
             else:
-                # so we can instantiate it and hold on to it for later
+                # we found the right module
                 rule_instances.append(rule_attr())
 
                 break
