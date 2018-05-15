@@ -23,3 +23,5 @@ COMMENT_LINE_PATTERN = r'[^:]//[\s\S]*?(?:\n|$)'
 # match single-line string literals, allowing escaped (\") quotes inside
 # note: this does *not* match multi-line literals
 LITERAL_SINGLE_LINE = r'(?<!\'|\\)\"([^\"\\\n]*(?:\\.[^\"\\\n]*)*)\"(?!\')'
+
+KEYWORDS = r'if|else|for|while|switch'

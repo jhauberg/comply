@@ -3,6 +3,7 @@
 import re
 
 from comply.rules.rule import *
+from comply.rules.patterns import KEYWORDS
 
 from comply.printing import Colors
 
@@ -13,11 +14,10 @@ class PadKeywords(Rule):
                       description='Keywords should be padded with space on both sides',
                       suggestion='Add a single whitespace to the {left_or_right} of \'{keyword}\'.')
 
-    keyword_pattern = r'if|else|for|while|switch'
     neighbor_pattern = r'[;{}()]'
 
-    pattern = re.compile(r'({keywords}){neighbors}|{neighbors}({keywords})'.format(
-        keywords=keyword_pattern,
+    pattern = re.compile(r'(?:\b)({keywords}){neighbors}|{neighbors}({keywords})(?:\b)'.format(
+        keywords=KEYWORDS,
         neighbors=neighbor_pattern))
 
     def augment(self, violation: RuleViolation):
