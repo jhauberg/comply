@@ -57,6 +57,7 @@ class SplitByName(Rule):
             line = lines[func_line_index]
 
             if not line.startswith(func_name):
+                # if we get a value error here, then the text likely wasn't stripped correctly
                 func_name_index = line.index(func_name)
 
                 offender = self.violate(at=(func_line_number, func_column),
