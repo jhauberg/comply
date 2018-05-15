@@ -2,8 +2,8 @@
 
 import re
 
-from comply.rules import Rule, RuleViolation, CheckFile
-from comply.rules.functions.pattern import FUNC_BODY_PATTERN
+from comply.rules.rule import *
+from comply.rules.patterns import FUNC_BODY_PATTERN
 
 from comply.util.scope import depth
 

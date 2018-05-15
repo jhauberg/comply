@@ -2,7 +2,7 @@
 
 import os
 
-from comply.rules import RuleViolation
+from comply.rules.rule import RuleViolation
 
 from comply.reporting.base import Reporter
 

@@ -9,16 +9,3 @@ from comply.rules.functions.no_redundant_name import NoRedundantName
 from comply.rules.functions.no_redundant_size import NoRedundantSize
 from comply.rules.functions.no_unnamed_ints import NoUnnamedInts
 from comply.rules.functions.no_ambiguous_functions import NoAmbiguousFunctions, ExplicitlyVoidFunctions
-
-__all__ = [
-    "NoRedundantConst",
-    "TooManyParams",
-    "SplitByName",
-    "FunctionTooLong",
-    "TooManyFunctions",
-    "NoRedundantName",
-    "NoRedundantSize",
-    "NoUnnamedInts",
-    "NoAmbiguousFunctions",
-    "ExplicitlyVoidFunctions"
-]

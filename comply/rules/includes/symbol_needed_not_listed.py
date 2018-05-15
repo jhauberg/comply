@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from comply.rules import Rule
+from comply.rules.rule import *
 
 
 class SymbolNeededNotListed(Rule):

@@ -14,20 +14,3 @@ from comply.rules.misc.no_space_name import NoSpaceName
 from comply.rules.misc.pad_keywords import PadKeywords
 from comply.rules.misc.pad_pointer_declarations import PadPointerDeclarations
 from comply.rules.misc.logical_continuation import LogicalContinuation
-
-__all__ = [
-    "LineTooLong",
-    "FileTooLong",
-    "NoTabs",
-    "NoInvisibles",
-    "TooManyBlanks",
-    "PreferStandardInt",
-    "NoTodo",
-    "IdentifierTooLong",
-    "ScopeTooDeep",
-    "ConstOnRight",
-    "NoSpaceName",
-    "PadKeywords",
-    "PadPointerDeclarations",
-    "LogicalContinuation"
-]

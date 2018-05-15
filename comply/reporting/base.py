@@ -8,7 +8,7 @@ from collections import OrderedDict
 
 import comply.printing as printing
 
-from comply.rules import RuleViolation
+from comply.rules.rule import RuleViolation
 from comply.printing import printdiag, printout
 from comply.util.truncation import truncated
 
@@ -107,7 +107,7 @@ class Reporter:
 
         return emitted
 
-    def report(self, violations: list, path: str):
+    def report(self, violations: List[RuleViolation], path: str):
         """ Print a report of collected violations for a given file. """
 
         results = ['{0}: {1}'.format(path, violation) for violation in violations]

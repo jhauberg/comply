@@ -2,7 +2,7 @@
 
 import re
 
-from comply.rules import Rule, RuleViolation, CheckFile
+from comply.rules.rule import *
 
 from comply.printing import Colors
 

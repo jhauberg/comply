@@ -2,8 +2,7 @@
 
 import re
 
-from comply.rules.comments.pattern import COMMENT_BLOCK_PATTERN, COMMENT_LINE_PATTERN
-from comply.rules.functions.pattern import FUNC_BODY_PATTERN
+from comply.rules.patterns import FUNC_BODY_PATTERN, COMMENT_BLOCK_PATTERN, COMMENT_LINE_PATTERN
 
 from comply.util.scope import depth
 

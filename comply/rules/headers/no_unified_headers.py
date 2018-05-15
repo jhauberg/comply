@@ -2,10 +2,9 @@
 
 import re
 
-from comply.rules import Rule, RuleViolation, CheckFile
+from comply.rules.rule import *
 
-from comply.rules.includes.pattern import INCLUDE_PATTERN
-from comply.rules.functions.pattern import FUNC_PROT_PATTERN, FUNC_BODY_PATTERN
+from comply.rules.patterns import INCLUDE_PATTERN, FUNC_PROT_PATTERN, FUNC_BODY_PATTERN
 
 
 class NoUnifiedHeaders(Rule):

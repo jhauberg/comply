@@ -2,8 +2,8 @@
 
 import re
 
-from comply.rules import Rule, RuleViolation, CheckFile
-from comply.rules.functions.pattern import FUNC_BOTH_PATTERN
+from comply.rules.rule import *
+from comply.rules.patterns import FUNC_BOTH_PATTERN
 
 from comply.printing import Colors
 

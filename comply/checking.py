@@ -5,7 +5,8 @@ import os
 from typing import List
 
 from comply.reporting import Reporter
-from comply.rules import Rule, RuleViolation, CheckFile, CheckResult
+from comply.rules.rule import Rule, RuleViolation
+from comply.rules.report import CheckFile, CheckResult
 
 from comply.util.stripping import strip_any_comments, strip_literals
 

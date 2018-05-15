@@ -2,7 +2,7 @@
 
 from typing import List, Tuple
 
-from comply.rules.check import CheckFile
+from comply.rules.report import CheckFile
 
 
 class RuleViolation:

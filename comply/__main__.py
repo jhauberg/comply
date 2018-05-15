@@ -33,7 +33,8 @@ from pkg_resources import parse_version
 
 from comply import (
     VERSION_PATTERN,
-    EXIT_CODE_SUCCESS, EXIT_CODE_SUCCESS_WITH_SEVERE_VIOLATIONS, exit_if_not_compatible
+    EXIT_CODE_SUCCESS, EXIT_CODE_SUCCESS_WITH_SEVERE_VIOLATIONS,
+    exit_if_not_compatible
 )
 
 from comply.reporting import Reporter, OneLineReporter, HumanReporter
@@ -43,6 +44,8 @@ from comply.version import __version__
 
 import comply.printing
 
+from comply.rules.report import CheckResult
+from comply.rules.rule import RuleViolation
 from comply.rules import *
 
 
@@ -126,7 +129,6 @@ def make_rules(names: list, exceptions: list, severities: list) -> list:
         headers.NoUnifiedHeaders(),
         includes.ListNeededSymbols(),
         includes.SymbolListedNotNeeded(),
-        #  includes.SymbolNeededNotListed(),
         includes.NoDuplicateIncludes(),
         includes.NoSourceIncludes(),
         functions.NoRedundantConst(),
