@@ -2,9 +2,17 @@
 
 import re
 
-from comply.rules.patterns import FUNC_BODY_PATTERN, COMMENT_BLOCK_PATTERN, COMMENT_LINE_PATTERN
+from comply.rules.patterns import (
+    FUNC_BODY_PATTERN,
+    LITERAL_SINGLE_LINE,
+    COMMENT_BLOCK_PATTERN, COMMENT_LINE_PATTERN
+)
 
 from comply.util.scope import depth
+
+
+def is_seemingly_identical(stripped: str, original: str) -> bool:
+    return len(stripped) == len(original) and stripped.count('\n') == original.count('\n')
 
 
 def strip_comments(text: str, patterns: list) -> str:
@@ -30,7 +38,7 @@ def strip_comments(text: str, patterns: list) -> str:
 
             comment_match = re.search(pattern, stripped)
 
-    assert len(stripped) == len(text)
+    assert is_seemingly_identical(stripped, original=text)
 
     return stripped
 
@@ -100,13 +108,17 @@ def strip_function_bodies(text: str) -> str:
 
         body_match = re.search(FUNC_BODY_PATTERN, stripped)
 
-    assert len(stripped) == len(text)
+    assert is_seemingly_identical(stripped, original=text)
 
     return stripped
 
 
 def strip_literals(text: str) -> str:
-    """ Remove any string literals from a text.
+    return strip_single_line_literals(text)
+
+
+def strip_single_line_literals(text: str) -> str:
+    """ Remove any single-line string literals from a text.
 
         Stripped characters are replaced with whitespace; literal quote-markers are left behind.
 
@@ -120,8 +132,7 @@ def strip_literals(text: str) -> str:
 
     stripped = text
 
-    # match string literals, allowing escaped (\") quotes inside
-    pattern = re.compile(r'(?<!\')\"([^\"\\]*(?:\\.[^\"\\]*)*)\"(?!\')')
+    pattern = re.compile(LITERAL_SINGLE_LINE)
 
     for match in pattern.finditer(stripped):
         literal = match.group(1)
@@ -136,7 +147,7 @@ def strip_literals(text: str) -> str:
         # (i.e. we're just replacing with whitespace)
         stripped = stripped[:from_index] + replacement + stripped[to_index:]
 
-    assert len(stripped) == len(text)
+    assert is_seemingly_identical(stripped, original=text)
 
     return stripped
 

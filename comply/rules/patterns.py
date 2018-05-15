@@ -18,4 +18,8 @@ FUNC_BODY_PATTERN = r'{([^{}]+)}'
 INCLUDE_PATTERN = r'#include\s+[<"].+?[>"]'
 
 COMMENT_BLOCK_PATTERN = r'/\*(?:.|[\n])*?\*/'
-COMMENT_LINE_PATTERN = r'//[\s\S]*?(?:\n|$)'
+COMMENT_LINE_PATTERN = r'[^:]//[\s\S]*?(?:\n|$)'
+
+# match single-line string literals, allowing escaped (\") quotes inside
+# note: this does *not* match multi-line literals
+LITERAL_SINGLE_LINE = r'(?<!\'|\\)\"([^\"\\\n]*(?:\\.[^\"\\\n]*)*)\"(?!\')'

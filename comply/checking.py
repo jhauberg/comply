@@ -117,10 +117,15 @@ def check(path: str, rules: List[Rule], reporter: Reporter=None) -> (CheckResult
 def prepare(text: str, filename: str, extension: str, path: str) -> CheckFile:
     """ Prepare a text for checking. """
 
+    stripped_text = text
+
     # remove comments and string literals to reduce chance of false-positives
     # for stuff that isn't actually code
-    stripped_text = strip_any_comments(text)
+    # start by stripping single-line literals; this will help stripping comments, as
+    # comment-starting characters could easily be found inside literals
     stripped_text = strip_literals(stripped_text)
+    # finally strip both block and line-comments
+    stripped_text = strip_any_comments(stripped_text)
 
     # debug code for comparing differences before/after stripping
     write_stripped_file = False
