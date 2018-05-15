@@ -16,13 +16,13 @@ By way of static code analysis (see [Pattern matching](#pattern-matching)), the 
 
 Following these rules will help improve the general state of your project, making it easier for both yourself as well as newcomers to contribute and maintain in the future.
 
+You can read more about the thoughts behind each rule on the [project page](http://jhauberg.github.io/comply).
+
 **Disclaimer**
 
-Note that the proposed style guidelines are fully based on my personal convictions of what is "the correct style". I've applied these guidelines to many smaller/medium-sized projects, but nothing of significant size.
+The proposed style guidelines are fully based on my personal convictions of what is "the correct style"; they are not battle-tested on production quality codebases.
 
-You might not like (or even agree with) some of the rules, but each has thought and reasoning behind it.
-
-You can read more about the thoughts behind each rule on the [project page](http://jhauberg.github.io/comply).
+Additionally, this is a new project; as such, it is under constant development and breaking changes may happen frequently.
 
 ## Installation
 
@@ -224,7 +224,7 @@ This is both good and bad.
 
 **Bad**
 
-Theoretically, it performs *worse* than the alternatives (e.g. `clang-tidy`) in many cases. It is less capable of parsing the language correctly in many edge-cases (of which C has a lot) and may even have a higher tendency toward false-positives which a compiler/AST-backed linter would generally not.
+Theoretically, it performs *worse* than the alternatives (e.g. `clang-tidy`) in many cases. It is less capable of parsing the language correctly in many edge-cases (of which C has a lot) and may even have a higher tendency toward false-positives which a compiler/AST-backed linter would generally not. Specifically the lack of any macro pre-processing is a big cause of false-positives.
 
 You could argue that it takes on more responsibility than it needs to (an option could be to integrate [pycparser](https://github.com/eliben/pycparser) to reduce issues with some of the more complicated rules- though that has its own set of problems).
 
