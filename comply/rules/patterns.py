@@ -15,7 +15,11 @@ FUNC_BOTH_PATTERN = FUNC_BASE_PATTERN + r'(?=\s*[{;])'
 # note: this pattern will match the inner-most bodies
 FUNC_BODY_PATTERN = r'{([^{}]+)}'
 
-INCLUDE_PATTERN = r'#include\s+[<"].+?[>"]'
+INCLUDE_PATTERN = (r'#include\s+'  # starting with #include and at least one or more whitespace
+                   r'[<"]'         # up to a starting angle bracket or quote
+                   r'.+?'          # anything between
+                   r'[>"]')        # until ending with angle bracket or quote
+
 
 COMMENT_BLOCK_PATTERN = r'/\*(?:.|[\n])*?\*/'
 COMMENT_LINE_PATTERN = r'[^:]//[\s\S]*?(?:\n|$)'
