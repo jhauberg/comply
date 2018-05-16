@@ -64,9 +64,9 @@ class Reporter:
         if not self.is_verbose:
             return
 
-        if Reporter.should_indicate_progress(count, total):
-            # indicate progress in intervals
-            printdiag('.', end='')
+        number_of_ticks = Reporter.determine_progress_ticks(count, total)
+
+        printdiag('.' * number_of_ticks, end='')
 
     def report_before_results(self, violations: List[RuleViolation]):
         """ Print a diagnostic before reporting results.
@@ -134,13 +134,26 @@ class Reporter:
         return 1
 
     @staticmethod
-    def should_indicate_progress(count, total, number_of_dots=3) -> bool:
-        """ Determine whether progress should be indicated. """
+    def determine_progress_ticks(count, total, number_of_ticks=3) -> int:
+        """ Determine the amount of progress indicator dots to print. """
 
-        x = math.floor(total / number_of_dots)
-        y = count % x
+        if total < number_of_ticks:
+            # there's less rules than number of ticks,
+            # so we will have to indicate increased progress for some ticks
+            interval = number_of_ticks / total
 
-        if y == 0:
-            return True
+            if count == total:
+                # make last progress biased toward more ticks if necessary
+                interval = math.ceil(interval)
 
-        return False
+            return int(interval)
+
+        # determine the amount of rules to pass before indicating a tick in progress
+        interval = math.floor(total / number_of_ticks)
+        # determine the remaining rules until indicating a tick
+        interval_remainder = count % interval
+
+        if interval_remainder == 0:
+            return 1
+
+        return 0
