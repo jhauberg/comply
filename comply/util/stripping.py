@@ -62,7 +62,7 @@ def strip_block_comments(text: str) -> str:
 
 
 def strip_function_bodies(text: str) -> str:
-    """ Remove any function bodies from a text.
+    """ Strip and collapse function bodies from a text.
 
         Entire body is replaced by whitespace, only leaving linebreaks in place.
 

@@ -19,15 +19,9 @@ class TooManyFunctions(Rule):
     def collect(self, file: CheckFile):
         offenders = []
 
-        text = file.stripped
+        text = file.collapsed
 
-        from comply.util.stripping import strip_function_bodies
-
-        # weed out potential false-positives by stripping the bodies of function implementations
-        # outer most functions will remain as a collapsed body
-        text_without_bodies = strip_function_bodies(text)
-
-        matches = self.pattern.findall(text_without_bodies)
+        matches = self.pattern.findall(text)
 
         max_matches = TooManyFunctions.MAX
         number_of_matches = len(matches)

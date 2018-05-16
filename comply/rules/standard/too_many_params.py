@@ -46,15 +46,9 @@ class TooManyParams(Rule):
 
         max_params = TooManyParams.MAX
 
-        text = file.stripped
+        text = file.collapsed
 
-        from comply.util.stripping import strip_function_bodies
-
-        # weed out potential false-positives by stripping the bodies of function implementations
-        # outer most functions will remain as a collapsed body
-        text_without_bodies = strip_function_bodies(text)
-
-        for function_match in self.pattern.finditer(text_without_bodies):
+        for function_match in self.pattern.finditer(text):
             function_name = function_match.group('name')
             function_parameters = function_match.group('params')
 
