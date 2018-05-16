@@ -290,6 +290,11 @@ def main():
         printdiag('Checked {0} {1} in {2:.1f} seconds'.format(
             num_rules, rules_or_rule, total_time_taken))
 
+        if comply.PROFILING_IS_ENABLED:
+            for rule in rules:
+                printdiag(' [{0}] took {1:.1f} seconds'.format(
+                    rule.name, rule.total_time_spent_collecting))
+
         severe_format = '({0} severe) '.format(
             report.num_severe_violations) if report.num_severe_violations > 0 else ''
 

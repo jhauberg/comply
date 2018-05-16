@@ -10,6 +10,8 @@ EXIT_CODE_SUCCESS = 0
 EXIT_CODE_FAILURE = 1
 EXIT_CODE_SUCCESS_WITH_SEVERE_VIOLATIONS = 2
 
+PROFILING_IS_ENABLED = True
+
 
 def is_compatible() -> bool:
     """ Determine whether the Python version is supported. """
