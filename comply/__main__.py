@@ -303,6 +303,7 @@ def main():
                 printdiag(' [{0}] took {1:.1f} seconds'.format(
                     rule.name, rule.total_time_spent_collecting))
 
+        # note the whitespace; important for the full format later on
         severe_format = '({0} severe) ' if report.num_severe_violations > 0 else ''
         severe_format = severe_format.format(report.num_severe_violations)
 
@@ -313,7 +314,8 @@ def main():
         files_format = '{1}/{0}' if report.num_files_with_violations > 0 else '{0}'
         files_format = files_format.format(report.num_files, report.num_files_with_violations)
 
-        printdiag('Found {num_violations} {violations} {severe} in {files} files'
+        printdiag('Found {num_violations} {violations} {severe}'
+                  'in {files} files'
                   .format(num_violations=total_violations,
                           violations=violation_or_violations,
                           severe=severe_format,
