@@ -52,6 +52,7 @@ from comply.rules import *
 
 def check_for_update():
     """ Determine whether a newer version is available remotely. """
+
     from urllib.request import urlopen
     from urllib.error import URLError, HTTPError
 
@@ -96,7 +97,7 @@ def make_reporter(reporting_mode: str) -> Reporter:
 
 
 def validate_names(names: list, rules: list):
-    """ Determine whether or not the provided names exist as named rules. """
+    """ Go through and determine whether any of the provided names do not exist as named rules. """
 
     for name in names:
         if not is_name_valid(name, rules):
@@ -112,7 +113,7 @@ def validate_names(names: list, rules: list):
 
 
 def is_name_valid(name: str, rules: list) -> bool:
-    """ Determine whether or not a name corresponds with a named rule. """
+    """ Determine whether a name corresponds to a named rule. """
 
     for rule in rules:
         if rule.name == name:
@@ -340,14 +341,17 @@ if __name__ == '__main__':
         cProfile.run('main()', filename)
 
         p = pstats.Stats(filename)
-        p.stream = open(filename, 'w')
-        p.sort_stats('time').print_stats(20)
-        p.stream.close()
 
-        s = open(filename).read()
+        with open(filename, 'w') as file:
+            p.stream = file
+            p.sort_stats('time').print_stats(20)
 
-        os.remove(filename)
+        with open(filename) as file:
+            s = file.read()
 
-        print('\n' + ('=' * len(s.splitlines()[0])))
-        print('Profiling results - ', end='')
-        print(s)
+            print('\n' + ('=' * len(s.splitlines()[0])))
+            print('Profiling results - ', end='')
+            print(s)
+
+        if os.path.exists(filename):
+            os.remove(filename)
