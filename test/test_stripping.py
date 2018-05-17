@@ -1,6 +1,11 @@
 # coding=utf-8
 
-from comply.util.stripping import *
+from comply.util.stripping import (
+    blanked,
+    strip_single_line_literals,
+    strip_line_comments,
+    strip_block_comments
+)
 
 
 def test_blanked():
@@ -18,11 +23,11 @@ def test_blanked():
 def test_strip_literals():
     text = 'char const * str = "abc";'
 
-    assert strip_literals(text) == 'char const * str = "   ";'
+    assert strip_single_line_literals(text) == 'char const * str = "   ";'
 
     text = 'char a = \'"\'; char b = \'"\''
 
-    assert strip_literals(text) == text
+    assert strip_single_line_literals(text) == text
 
 
 def test_strip_line_comments():

@@ -114,6 +114,13 @@ def strip_function_bodies(text: str) -> str:
 
 
 def strip_literals(text: str) -> str:
+    """ Remove any string literals from a text.
+
+        Note that this currently only supports single-line literals.
+
+        Literals inside comments will also be removed.
+    """
+
     return strip_single_line_literals(text)
 
 

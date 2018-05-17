@@ -1,9 +1,6 @@
 # coding=utf-8
 
 
-from comply.util.stripping import strip_function_bodies
-
-
 class CheckResult:
     """ Represents the result of running a check on one or more files. """
 
@@ -60,6 +57,8 @@ class CheckFile:
         """
 
         if self._stripped_collaped is None:
+            from comply.util.stripping import strip_function_bodies
+            
             self._stripped_collaped = strip_function_bodies(self.stripped)
 
         return self._stripped_collaped
