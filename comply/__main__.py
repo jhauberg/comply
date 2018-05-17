@@ -126,8 +126,10 @@ def make_rules(modules: list) -> list:
 
     classes = []
 
-    def is_rule_implementation(var):
-        return var != Rule and type(var) == type and issubclass(var, Rule)
+    def is_rule_implementation(cls):
+        """ Determine whether a class is a Rule implementation. """
+
+        return cls != Rule and type(cls) == type and issubclass(cls, Rule)
 
     for module in modules:
         for item in dir(module):
@@ -315,7 +317,8 @@ def main():
                           violations=violation_or_violations,
                           severe=severe_format))
 
-    check_for_update()
+    if not PROFILING_IS_ENABLED:
+        check_for_update()
 
     if report.num_severe_violations > 0:
         # everything went fine; severe violations were encountered

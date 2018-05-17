@@ -58,7 +58,7 @@ class CheckFile:
 
         if self._stripped_collaped is None:
             from comply.util.stripping import strip_function_bodies
-            
+
             self._stripped_collaped = strip_function_bodies(self.stripped)
 
         return self._stripped_collaped
