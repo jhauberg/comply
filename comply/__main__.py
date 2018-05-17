@@ -34,6 +34,7 @@ from pkg_resources import parse_version
 from comply import (
     VERSION_PATTERN,
     EXIT_CODE_SUCCESS, EXIT_CODE_SUCCESS_WITH_SEVERE_VIOLATIONS,
+    PROFILING_IS_ENABLED,
     exit_if_not_compatible
 )
 
@@ -235,6 +236,10 @@ def main():
 
     exit_if_not_compatible()
 
+    if PROFILING_IS_ENABLED:
+        printdiag('Profiling is enabled; profiling should be disabled unless in development',
+                  as_error=True)
+
     if not supports_unicode():
         if not is_windows_environment():
             # do not warn about this on Windows, as it probably won't work anyway
@@ -321,4 +326,25 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    if not PROFILING_IS_ENABLED:
+        main()
+    else:
+        import cProfile
+        import pstats
+
+        filename = 'comply-profiling'
+
+        cProfile.run('main()', filename)
+
+        p = pstats.Stats(filename)
+        p.stream = open(filename, 'w')
+        p.sort_stats('time').print_stats(20)
+        p.stream.close()
+
+        s = open(filename).read()
+
+        os.remove(filename)
+
+        print('\n' + ('=' * len(s.splitlines()[0])))
+        print('Profiling results - ', end='')
+        print(s)
