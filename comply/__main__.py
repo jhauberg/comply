@@ -247,7 +247,7 @@ def main():
         if not is_windows_environment():
             # do not warn about this on Windows, as it probably won't work anyway
             printdiag('Unsupported shell encoding \'{0}\'. '
-                      'Set environment variable PYTHONIOENCODING as UTF-8:\n'
+                      'Set environment variable `PYTHONIOENCODING` as UTF-8:\n'
                       '\texport PYTHONIOENCODING=UTF-8'
                       .format(diagnostics.encoding),
                       as_error=True)
@@ -276,8 +276,9 @@ def main():
         reporter.limit = int(arguments['--limit'])
 
     if not comply.printing.results.isatty() and reporter.suppress_similar:
+        # when piping output elsewhere, let it be known that some results might be suppressed
         printdiag('Suppressing similar violations; results may be omitted '
-                  '(set --strict to show everything)')
+                  '(set `--strict` to show everything)')
 
     inputs = arguments['<input>']
 
@@ -293,10 +294,10 @@ def main():
 
         num_rules = len(rules)
 
-        rules_or_rule = 'rule' if num_rules == 1 else 'rules'
+        rules_grammar = 'rule' if num_rules == 1 else 'rules'
 
         printdiag('Checked {0} {1} in {2:.1f} seconds'.format(
-            num_rules, rules_or_rule, total_time_taken))
+            num_rules, rules_grammar, total_time_taken))
 
         if comply.PROFILING_IS_ENABLED:
             for rule in rules:
@@ -309,17 +310,22 @@ def main():
 
         total_violations = report.num_violations + report.num_severe_violations
 
-        violation_or_violations = 'violation' if total_violations == 1 else 'violations'
+        violations_grammar = 'violation' if total_violations == 1 else 'violations'
 
         files_format = '{1}/{0}' if report.num_files_with_violations > 0 else '{0}'
         files_format = files_format.format(report.num_files, report.num_files_with_violations)
 
+        # again, note the whitespace- it's intended
+        use_strict_format = ' (set `--strict` to dig deeper)' if not is_strict else ''
+
         printdiag('Found {num_violations} {violations} {severe}'
                   'in {files} files'
+                  '{use_strict}'
                   .format(num_violations=total_violations,
-                          violations=violation_or_violations,
+                          violations=violations_grammar,
                           severe=severe_format,
-                          files=files_format))
+                          files=files_format,
+                          use_strict=use_strict_format))
 
     if not PROFILING_IS_ENABLED:
         check_for_update()
