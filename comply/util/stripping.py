@@ -139,9 +139,7 @@ def strip_single_line_literals(text: str) -> str:
 
     stripped = text
 
-    pattern = re.compile(LITERAL_SINGLE_LINE)
-
-    for match in pattern.finditer(stripped):
+    for match in re.finditer(LITERAL_SINGLE_LINE, stripped):
         literal = match.group(1)
 
         replacement = ' ' * len(literal)
@@ -165,12 +163,9 @@ def blanked(text: str, keepends: bool=True) -> str:
         Newlines are kept as-is.
     """
 
-    blanked_text = ''
-
-    for c in text:
-        if keepends and c in ['\r', '\n']:
-            blanked_text += c
-        else:
-            blanked_text += ' '
+    if keepends:
+        blanked_text = re.sub(r'[^\s\r\n]', ' ', text)
+    else:
+        blanked_text = ' ' * len(text)
 
     return blanked_text
