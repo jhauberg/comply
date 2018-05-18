@@ -31,8 +31,6 @@ class PadPointerDeclarations(Rule):
 
         text = file.stripped
 
-        lines = file.original.splitlines()
-
         for star_match in self.pattern.finditer(text):
             offending_index = star_match.start()
 
@@ -54,10 +52,9 @@ class PadPointerDeclarations(Rule):
                         break
 
             if not is_probably_dereference:
-                offending_line_number, offending_column = RuleViolation.at(offending_index,
-                                                                           text)
+                offending_line_number, offending_column = file.line_number_at(offending_index)
 
-                line = lines[offending_line_number - 1]
+                line = file.lines[offending_line_number - 1]
 
                 length = star_match.end() - star_match.start()
 

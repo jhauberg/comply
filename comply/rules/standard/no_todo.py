@@ -33,14 +33,12 @@ class NoTodo(Rule):
 
         text = file.original
 
-        lines = text.splitlines()
-
         for match in self.pattern.finditer(text):
-            line_number, column = RuleViolation.at(match.start(), text)
+            line_number, column = file.line_number_at(match.start())
 
             column_end = column - 1 + (match.end() - match.start())
 
-            line = lines[line_number - 1]
+            line = file.lines[line_number - 1]
 
             message_start = column_end
             message = line[message_start:]

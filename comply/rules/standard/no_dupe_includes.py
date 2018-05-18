@@ -36,8 +36,7 @@ class NoDuplicateIncludes(Rule):
             else:
                 offending_index = inclusion.start()
 
-                line_number, column = RuleViolation.at(offending_index, text,
-                                                       at_beginning=True)
+                line_number, column = file.line_number_at(offending_index, at_beginning=True)
 
                 offending_line = (line_number, include_stmt)
 

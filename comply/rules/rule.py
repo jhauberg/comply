@@ -47,59 +47,6 @@ class RuleViolation:
 
         return line_numbers.index(self.where[0])
 
-    @staticmethod
-    def at_top() -> (int, int):
-        """ Return the line number and column at the top of a text. """
-
-        return 1, 0
-
-    @staticmethod
-    def at(index: int, text: str, at_beginning: bool=False) -> (int, int):
-        """ Return the line number and column at which a character index occur in a text.
-
-            Column is set to 0 if at_beginning is True.
-        """
-
-        line = text.count('\n', 0, index) + 1
-
-        if at_beginning:
-            column = 0
-        else:
-            column = index - text.rfind('\n', 0, index)
-
-        return line, column
-
-    @staticmethod
-    def lines_in_match(match, text: str) -> List[Tuple[int, str]]:
-        """ Return the lines and line numbers of which the match spans. """
-
-        character_range = (match.start(), match.end())
-
-        return RuleViolation.lines_in(character_range, text)
-
-    @staticmethod
-    def lines_in(character_indices: (int, int), text: str) -> List[Tuple[int, str]]:
-        """ Return the lines and line numbers within starting and ending character indices. """
-
-        all_lines = text.splitlines()
-
-        starting, ending = character_indices
-
-        starting_line_number, _ = RuleViolation.at(starting, text)
-        ending_line_number, _ = RuleViolation.at(ending, text)
-
-        lines_in_range = []
-
-        if ending_line_number > starting_line_number:
-            for line_number in range(starting_line_number, ending_line_number + 1):
-                lines_in_range.append((line_number,
-                                       all_lines[line_number - 1]))
-        else:
-            lines_in_range.append((starting_line_number,
-                                   all_lines[starting_line_number - 1]))
-
-        return lines_in_range
-
 
 class Rule:
     """ Represents a single rule. """

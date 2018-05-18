@@ -55,11 +55,9 @@ class NoInvisibles(Rule):
 
             assert first_invis_index != -1
 
-            linenumber, column = RuleViolation.at(first_invis_index, text)
+            linenumber, column = file.line_number_at(first_invis_index)
 
-            lines = text.splitlines()
-
-            offending_line = (linenumber, lines[linenumber - 1])
+            offending_line = (linenumber, file.lines[linenumber - 1])
 
             invisibles_in_line = 0
 

@@ -42,11 +42,9 @@ class NoTabs(Rule):
         if tabs_found > 0:
             first_tab_index = text.find(NoTabs.TAB)
 
-            linenumber, column = RuleViolation.at(first_tab_index, text)
+            linenumber, column = file.line_number_at(first_tab_index)
 
-            lines = text.splitlines()
-
-            offending_line = (linenumber, lines[linenumber - 1])
+            offending_line = (linenumber, file.lines[linenumber - 1])
 
             tabs_in_line = offending_line[1].count(NoTabs.TAB)
 

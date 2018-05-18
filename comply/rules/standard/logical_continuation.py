@@ -47,10 +47,12 @@ class LogicalContinuation(Rule):
 
             offending_operation = logical_match.group(1)
 
-            offending_line_number, offending_column = RuleViolation.at(offending_index, text)
-            offending_range = (offending_column - 1, offending_column - 1 + len(offending_operation))
+            offending_line_number, offending_column = file.line_number_at(offending_index)
 
-            offending_lines = RuleViolation.lines_in_match(logical_match, file.original)
+            offending_range = (offending_column - 1,
+                               offending_column - 1 + len(offending_operation))
+
+            offending_lines = file.lines_in_match(logical_match)
 
             offender = self.violate(at=(offending_line_number, offending_column),
                                     lines=offending_lines,

@@ -41,7 +41,7 @@ class LineTooLong(Rule):
             if characters_except_newline > max_characters:
                 offending_index = index + max_characters
 
-                linenumber, column = RuleViolation.at(offending_index, text)
+                linenumber, column = file.line_number_at(offending_index)
 
                 assert column > max_characters
 

@@ -47,7 +47,7 @@ class GuardHeader(Rule):
         match = pattern.match(text)
 
         if match is None:
-            offender = self.violate(at=RuleViolation.at_top(),
+            offender = self.violate(at=file.line_number_at_top(),
                                     meta={'guard': guard_name})
 
             offenders.append(offender)

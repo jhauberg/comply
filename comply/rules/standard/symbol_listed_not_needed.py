@@ -61,7 +61,7 @@ class SymbolListedNotNeeded(Rule):
                     if not has_symbol_usage(sought_symbol, text_after_usage):
                         offending_index = text.index(symbol, inclusion.start(1), inclusion.end())
 
-                        linenumber, column = RuleViolation.at(offending_index, text)
+                        linenumber, column = file.line_number_at(offending_index)
 
                         line = inclusion.group(0)
 

@@ -37,9 +37,7 @@ class NoRedundantName(Rule):
     def collect(self, file: CheckFile):
         offenders = []
 
-        text = file.collapsed
-
-        for function_match in self.pattern.finditer(text):
+        for function_match in self.pattern.finditer(file.collapsed):
             function_parameters = function_match.group('params')
 
             # naively split by comma; won't yield correct results in all cases,
@@ -65,14 +63,12 @@ class NoRedundantName(Rule):
                         offending_index = (function_match.start('params') +
                                            param_start)
 
-                        offending_line_number, offending_column = RuleViolation.at(offending_index,
-                                                                                   text)
+                        offending_line_number, offending_column = file.line_number_at(offending_index)
 
                         character_range = (function_match.start(),
                                            function_match.end())
 
-                        offending_lines = RuleViolation.lines_in(character_range,
-                                                                 file.original)
+                        offending_lines = file.lines_in(character_range)
 
                         offending_range = (offending_column - 1,
                                            offending_column - 1 + len(func_param_name))

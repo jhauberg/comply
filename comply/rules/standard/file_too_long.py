@@ -34,17 +34,15 @@ class FileTooLong(Rule):
         length = text.count('\n')
 
         if length > max_length:
-            lines = text.splitlines()  # without newlines
-
             offending_line_index = max_length
 
-            assert len(lines) > offending_line_index + 1
+            assert len(file.lines) > offending_line_index + 1
 
-            offending_lines = [(offending_line_index, lines[offending_line_index - 1]),
-                               (offending_line_index + 1, lines[offending_line_index]),
-                               (offending_line_index + 2, lines[offending_line_index + 1])]
+            offending_lines = [(offending_line_index, file.lines[offending_line_index - 1]),
+                               (offending_line_index + 1, file.lines[offending_line_index]),
+                               (offending_line_index + 2, file.lines[offending_line_index + 1])]
 
-            offender = self.violate(at=RuleViolation.at_top(),
+            offender = self.violate(at=file.line_number_at_top(),
                                     lines=offending_lines,
                                     meta={'length': length,
                                           'max': max_length})

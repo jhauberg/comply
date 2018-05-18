@@ -91,14 +91,13 @@ class FunctionTooLong(Rule):
                         func_inner_depth = depth(func_body_start_index + offset, text)
 
                         if func_inner_depth == 0:
-                            line_number, column = RuleViolation.at(func_body_start_index, text)
+                            line_number, column = file.line_number_at(func_body_start_index)
 
                             body = file.original[func_body_start_index:func_body_start_index + offset]
 
                             # we found end of body; now determine if it violates rule
                             check_func_body(body, function_match.group('name'), line_number,
-                                            RuleViolation.at(function_match.start(), text,
-                                                             at_beginning=True))
+                                            file.line_number_at(function_match.start(), at_beginning=True))
 
                             break
 

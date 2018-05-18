@@ -26,7 +26,7 @@ class TooManyBlanks(Rule):
 
         max_lines = TooManyBlanks.MAX
 
-        lines = file.original.splitlines()  # without newlines
+        lines = file.lines  # without newlines
 
         consecutive_blanks = 0
 

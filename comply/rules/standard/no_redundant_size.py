@@ -78,14 +78,12 @@ class NoRedundantSize(Rule):
                     continue
 
                 offending_index = function_match.start('params') + size_match.start(1)
-                offending_line_number, offending_column = RuleViolation.at(offending_index,
-                                                                           text)
+                offending_line_number, offending_column = file.line_number_at(offending_index)
 
                 character_range = (function_match.start(),
                                    function_match.end())
 
-                offending_lines = RuleViolation.lines_in(character_range,
-                                                         file.original)
+                offending_lines = file.lines_in(character_range)
 
                 offending_range = (offending_column - 1,
                                    offending_column - 1 + len(size))

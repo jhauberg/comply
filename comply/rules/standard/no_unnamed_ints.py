@@ -48,17 +48,15 @@ class NoUnnamedInts(Rule):
                 offending_index = (function_parameters_starting_index +
                                    unnamed_match.start(1))
 
-                offending_line_number, offending_column = RuleViolation.at(offending_index,
-                                                                           text)
+                offending_line_number, offending_column = file.line_number_at(offending_index)
 
                 character_range = (function_match.start(),
                                    function_match.end())
 
-                offending_lines = RuleViolation.lines_in(character_range,
-                                                         file.original)
+                offending_lines = file.lines_in(character_range)
 
-                _, insertion_column = RuleViolation.at(
-                    function_parameters_starting_index + unnamed_match.end(1), text)
+                _, insertion_column = file.line_number_at(
+                    function_parameters_starting_index + unnamed_match.end(1))
 
                 offender = self.violate(at=(offending_line_number, offending_column),
                                         lines=offending_lines,

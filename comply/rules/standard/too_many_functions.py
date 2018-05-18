@@ -27,7 +27,7 @@ class TooManyFunctions(Rule):
         number_of_matches = len(matches)
 
         if number_of_matches > max_matches:
-            offender = self.violate(at=RuleViolation.at_top(),
+            offender = self.violate(at=file.line_number_at_top(),
                                     meta={'count': number_of_matches,
                                           'max': max_matches})
 

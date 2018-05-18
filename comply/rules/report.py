@@ -1,5 +1,7 @@
 # coding=utf-8
 
+from typing import List, Tuple
+
 
 class CheckResult:
     """ Represents the result of running a check on one or more files. """
@@ -45,6 +47,66 @@ class CheckFile:
         self.extension = extension
 
         self._stripped_collaped = None
+        self._original_lines = None
+
+    def line_number_at(self, index: int, at_beginning: bool=False) -> (int, int):
+        """ Return the line number and column at which a character index occur in a text.
+
+            Column is set to 0 if at_beginning is True.
+        """
+
+        line = self.original.count('\n', 0, index) + 1
+
+        if at_beginning:
+            return line, 0
+
+        column = index - self.original.rfind('\n', 0, index)
+
+        return line, column
+
+    def line_number_at_top(self) -> (int, int):
+        """ Return the line number and column at the top of a text. """
+
+        return self.line_number_at(0, at_beginning=True)
+
+    def lines_in(self, character_indices: (int, int)) -> List[Tuple[int, str]]:
+        """ Return the lines and line numbers within starting and ending character indices. """
+
+        starting, ending = character_indices
+
+        starting_line_number, _ = self.line_number_at(starting)
+        ending_line_number, _ = self.line_number_at(ending)
+
+        all_lines = self.lines
+
+        lines_in_range = []
+
+        if ending_line_number > starting_line_number:
+            for line_number in range(starting_line_number, ending_line_number + 1):
+                lines_in_range.append((line_number,
+                                       all_lines[line_number - 1]))
+        else:
+            lines_in_range.append((starting_line_number,
+                                   all_lines[starting_line_number - 1]))
+
+        return lines_in_range
+
+    def lines_in_match(self, match) -> List[Tuple[int, str]]:
+        """ Return the lines and line numbers of which the match spans. """
+
+        character_range = (match.start(),
+                           match.end())
+
+        return self.lines_in(character_range)
+
+    @property
+    def lines(self):
+        """ Return a list of lines from the original text. """
+
+        if self._original_lines is None:
+            self._original_lines = self.original.splitlines()
+
+        return self._original_lines
 
     @property
     def collapsed(self):

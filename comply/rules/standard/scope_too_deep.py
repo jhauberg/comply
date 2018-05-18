@@ -23,8 +23,6 @@ class ScopeTooDeep(Rule):
 
         text = file.stripped
 
-        lines = file.original.splitlines()
-
         max_depth = ScopeTooDeep.MAX
 
         for scope_match in self.pattern.finditer(text):
@@ -32,10 +30,10 @@ class ScopeTooDeep(Rule):
             scope_depth = depth(scope_index, text)
 
             if scope_depth > max_depth:
-                line_number, column = RuleViolation.at(scope_index, text)
+                line_number, column = file.line_number_at(scope_index, text)
 
                 offender = self.violate(at=(line_number, column),
-                                        lines=[(line_number, lines[line_number - 1])],
+                                        lines=[(line_number, file.lines[line_number - 1])],
                                         meta={'depth': scope_depth,
                                               'max': max_depth})
 

@@ -39,16 +39,13 @@ class SplitByName(Rule):
 
         text = file.collapsed
 
-        lines = file.original.splitlines()
-
         for function_match in self.pattern.finditer(text):
             func_name = function_match.group('name')
 
-            func_line_number, func_column = RuleViolation.at(function_match.start('name'),
-                                                             text)
+            func_line_number, func_column = file.line_number_at(function_match.start('name'))
             func_line_index = func_line_number - 1
 
-            line = lines[func_line_index]
+            line = file.lines[func_line_index]
 
             if not line.startswith(func_name):
                 # if we get a value error here, then the text likely wasn't stripped correctly

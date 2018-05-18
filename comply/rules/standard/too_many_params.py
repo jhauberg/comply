@@ -57,14 +57,12 @@ class TooManyParams(Rule):
 
             if number_of_params > max_params:
                 offending_index = function_match.start('name')
-                offending_line_number, offending_column = RuleViolation.at(offending_index,
-                                                                           text)
+                offending_line_number, offending_column = file.line_number_at(offending_index)
 
                 character_range = (function_match.start(),
                                    function_match.end())
 
-                offending_lines = RuleViolation.lines_in(character_range,
-                                                         file.original)
+                offending_lines = file.lines_in(character_range)
 
                 offender = self.violate(at=(offending_line_number, offending_column),
                                         lines=offending_lines,
