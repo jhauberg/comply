@@ -316,7 +316,9 @@ def main():
         files_format = files_format.format(report.num_files, report.num_files_with_violations)
 
         # again, note the whitespace- it's intended
-        use_strict_format = ' (set `--strict` to dig deeper)' if not is_strict else ''
+        use_strict_format = (' (set `--strict` to dig deeper)'
+                             if not is_strict and total_violations == 0
+                             else '')
 
         printdiag('Found {num_violations} {violations} {severe}'
                   'in {files} files'
