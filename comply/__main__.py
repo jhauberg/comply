@@ -82,18 +82,19 @@ def check_for_update():
         pass
 
 
-def make_reporter(reporting_mode: str) -> Reporter:
-    """ Return a reporter appropriate for the mode. """
+def expand_params(names: list) -> list:
+    """ Return an expanded list of parameters from a list of comma-separated parameters.
 
-    if reporting_mode == 'human':
-        return HumanReporter()
-    elif reporting_mode == 'oneline':
-        return OneLineReporter()
+        E.g. given a list of ['a', 'b,c,d'], returns ['a', 'b', 'c', 'd']
+    """
 
-    printdiag('Reporting mode \'{0}\' not available.'.format(reporting_mode),
-              as_error=True)
+    expanded_names = []
 
-    return Reporter()
+    for name in names:
+        expanded_names.extend(
+            [i.strip() for i in name.split(',')])
+
+    return expanded_names
 
 
 def validate_names(names: list, rules: list):
@@ -120,28 +121,6 @@ def is_name_valid(name: str, rules: list) -> bool:
             return True
 
     return False
-
-
-def make_rules(modules: list) -> list:
-    """ Return a list of instances of all Rule-subclasses found in the provided modules. """
-
-    classes = []
-
-    def is_rule_implementation(cls):
-        """ Determine whether a class is a Rule implementation. """
-
-        return cls != Rule and type(cls) == type and issubclass(cls, Rule)
-
-    for module in modules:
-        for item in dir(module):
-            attr = getattr(module, item)
-
-            if is_rule_implementation(attr):
-                classes.append(attr)
-
-    instances = [c() for c in classes]
-
-    return instances
 
 
 def filter_rules(names: list, exceptions: list, severities: list) -> list:
@@ -183,6 +162,42 @@ def filter_rules(names: list, exceptions: list, severities: list) -> list:
                                     rule.collection_hint))
 
 
+def make_reporter(reporting_mode: str) -> Reporter:
+    """ Return a reporter appropriate for the mode. """
+
+    if reporting_mode == 'human':
+        return HumanReporter()
+    elif reporting_mode == 'oneline':
+        return OneLineReporter()
+
+    printdiag('Reporting mode \'{0}\' not available.'.format(reporting_mode),
+              as_error=True)
+
+    return Reporter()
+
+
+def make_rules(modules: list) -> list:
+    """ Return a list of instances of all Rule-subclasses found in the provided modules. """
+
+    classes = []
+
+    def is_rule_implementation(cls):
+        """ Determine whether a class is a Rule implementation. """
+
+        return cls != Rule and type(cls) == type and issubclass(cls, Rule)
+
+    for module in modules:
+        for item in dir(module):
+            attr = getattr(module, item)
+
+            if is_rule_implementation(attr):
+                classes.append(attr)
+
+    instances = [c() for c in classes]
+
+    return instances
+
+
 def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
     """ Run checks and print a report. """
 
@@ -219,21 +234,6 @@ def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
     return result
 
 
-def expand_names(names: list) -> list:
-    """ Return an expanded list of names from a list of (potentially) comma-separated names.
-
-        E.g. given a list of ['a', 'b,c,d'], returns ['a', 'b', 'c', 'd']
-    """
-
-    expanded_names = []
-
-    for name in names:
-        expanded_names.extend(
-            [i.strip() for i in name.split(',')])
-
-    return expanded_names
-
-
 def main():
     """ Entry point for invoking the comply module. """
 
@@ -257,8 +257,8 @@ def main():
     is_strict = arguments['--strict']
     only_severe = arguments['--only-severe']
 
-    checks = expand_names(arguments['--check'])
-    exceptions = expand_names(arguments['--except'])
+    checks = expand_params(arguments['--check'])
+    exceptions = expand_params(arguments['--except'])
 
     severities = ([RuleViolation.DENY] if only_severe else
                   ([RuleViolation.DENY, RuleViolation.WARN] if not is_strict else
