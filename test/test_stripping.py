@@ -19,6 +19,8 @@ def test_blanked():
     assert blanked(text) == ('    \n'
                              '    ')
 
+    assert blanked(text, keepends=False) == '         '
+
 
 def test_strip_literals():
     text = 'char const * str = "abc";'
