@@ -157,6 +157,42 @@ def strip_single_line_literals(text: str) -> str:
     return stripped
 
 
+def strip_parens(text: str) -> str:
+    """ Remove any parentheses blocks. """
+
+    stripped = text
+
+    pattern = re.compile(r'\(.*?\)', re.DOTALL)  # paren blocks can span more than one line
+
+    match = pattern.search(stripped)
+
+    while match is not None:
+        starting = match.start()
+        ending = starting
+
+        depth_count = 0
+
+        for c in text[starting:]:
+            if c == '(':
+                depth_count += 1
+            elif c == ')':
+                depth_count -= 1
+
+            ending += 1
+
+            if depth_count == 0:
+                break
+
+        block = text[starting:ending]
+        replacement = blanked(block)
+
+        stripped = stripped[:starting] + replacement + stripped[ending:]
+
+        match = pattern.search(stripped)
+
+    return stripped
+
+
 def blanked(text: str, keepends: bool=True) -> str:
     """ Return text with every character replaced by whitespace.
 

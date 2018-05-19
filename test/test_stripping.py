@@ -2,6 +2,7 @@
 
 from comply.util.stripping import (
     blanked,
+    strip_parens,
     strip_single_line_literals,
     strip_line_comments,
     strip_block_comments
@@ -20,6 +21,26 @@ def test_blanked():
                              '    ')
 
     assert blanked(text, keepends=False) == '         '
+
+
+def test_strip_parens():
+    text = 'if (true) {'
+
+    assert strip_parens(text) == 'if        {'
+
+    text = ('if (true)\n'
+            '{')
+
+    assert strip_parens(text) == ('if       \n'
+                                  '{')
+
+    text = ('if (true &&\n'
+            '    true)\n'
+            '{')
+
+    assert strip_parens(text) == ('if         \n'
+                                  '         \n'
+                                  '{')
 
 
 def test_strip_literals():
