@@ -23,8 +23,10 @@ def strip_comments(text: str, patterns: list) -> str:
 
     stripped = text
 
-    for pattern in patterns:
-        comment_match = re.search(pattern, stripped)
+    for pattern, flags in patterns:
+        flags = 0 if flags is None else flags
+
+        comment_match = re.search(pattern, stripped, flags)
 
         while comment_match is not None:
             comment = comment_match.group(0)
@@ -36,7 +38,7 @@ def strip_comments(text: str, patterns: list) -> str:
 
             stripped = stripped[:from_index] + replacement + stripped[to_index:]
 
-            comment_match = re.search(pattern, stripped)
+            comment_match = re.search(pattern, stripped, flags)
 
     assert is_seemingly_identical(stripped, original=text)
 
@@ -46,19 +48,20 @@ def strip_comments(text: str, patterns: list) -> str:
 def strip_any_comments(text: str) -> str:
     """ Remove both line- and block-style comments from a text. """
 
-    return strip_comments(text, [COMMENT_BLOCK_PATTERN, COMMENT_LINE_PATTERN])
+    return strip_comments(text, [(COMMENT_BLOCK_PATTERN, None),
+                                 (COMMENT_LINE_PATTERN, re.MULTILINE)])
 
 
 def strip_line_comments(text: str) -> str:
     """ Remove any line-style comments from a text. """
 
-    return strip_comments(text, [COMMENT_LINE_PATTERN])
+    return strip_comments(text, [(COMMENT_LINE_PATTERN, re.MULTILINE)])
 
 
 def strip_block_comments(text: str) -> str:
     """ Remove any block-style comments from a text. """
 
-    return strip_comments(text, [COMMENT_BLOCK_PATTERN])
+    return strip_comments(text, [(COMMENT_BLOCK_PATTERN, None)])
 
 
 def strip_function_bodies(text: str) -> str:
