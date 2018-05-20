@@ -22,7 +22,11 @@ INCLUDE_PATTERN = (r'#include\s+'  # starting with #include and at least one or 
 
 
 COMMENT_BLOCK_PATTERN = r'/\*(?:.|[\n])*?\*/'
-COMMENT_LINE_PATTERN = r'[^:]//[\s\S]*?(?:\n|$)'
+# note that this pattern requires re.MULTILINE
+COMMENT_LINE_PATTERN = (r'(?:[^:]|^)'  # avoid matching URLs in code, but anything else goes
+                        r'//'          # starting point of a single-line comment
+                        r'.*?'         # anything following
+                        r'(?:\n|$)')   # until reaching end of string or a newline
 
 # match single-line string literals, allowing escaped (\") quotes inside
 # note: this does *not* match multi-line literals
