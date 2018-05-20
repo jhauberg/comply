@@ -18,9 +18,9 @@ FUNC_BOTH_PATTERN = FUNC_BASE_PATTERN + r'(?=\s*[{;])'
 # note: this pattern will match the inner-most bodies
 FUNC_BODY_PATTERN = r'{([^{}]+)}'
 
-INCLUDE_PATTERN = (r'#include\s+'  # starting with #include and at least one or more whitespace
+INCLUDE_PATTERN = (r'#include\s*'  # starting with #include and zero or more whitespace
                    r'[<"]'         # up to a starting angle bracket or quote
-                   r'.+?'          # anything between
+                   r'.+?'          # anything between, but at least one character
                    r'[>"]')        # until ending with angle bracket or quote
 
 
