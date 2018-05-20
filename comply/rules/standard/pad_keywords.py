@@ -16,7 +16,7 @@ class PadKeywords(Rule):
 
     neighbor_pattern = r'[;{}()]'
 
-    pattern = re.compile(r'(?:\b)({keywords}){neighbors}|{neighbors}({keywords})(?:\b)'.format(
+    pattern = re.compile(r'\b({keywords}){neighbors}|{neighbors}({keywords})\b'.format(
         keywords=KEYWORDS,
         neighbors=neighbor_pattern))
 
