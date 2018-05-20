@@ -12,7 +12,12 @@ from comply.util.scope import depth
 
 
 def is_seemingly_identical(stripped: str, original: str) -> bool:
-    return len(stripped) == len(original) and stripped.count('\n') == original.count('\n')
+    """ Determine whether a stripped text has the same line count and
+        number of characters as the original text.
+    """
+
+    return (len(stripped) == len(original)
+            and stripped.count('\n') == original.count('\n'))
 
 
 def strip_comments(text: str, patterns: list) -> str:
@@ -165,6 +170,9 @@ def strip_parens(text: str) -> str:
 
     stripped = text
 
+    # note that we search for paren blocks but only use the matches to find a starting position
+    # since parens can be nested inside other parens, we have to manually count opening and
+    # closing parens to find the entire block that we want to strip
     pattern = re.compile(r'\(.*?\)', re.DOTALL)  # paren blocks can span more than one line
 
     match = pattern.search(stripped)

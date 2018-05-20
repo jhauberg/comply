@@ -1,5 +1,8 @@
 # coding=utf-8
 
+"""
+Commonly used patterns for matching C-like syntax.
+"""
 
 # base pattern for function prototypes and signatures
 FUNC_BASE_PATTERN = r'(?<!return)(?:(?<=[\w*])\s+|\*)(?P<name>\w+)\s*\((?P<params>[^&%^?#@!/<>=+\-{};]*)\)'
