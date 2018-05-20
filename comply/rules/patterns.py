@@ -34,6 +34,11 @@ COMMENT_LINE_PATTERN = (r'(?:[^:]|^)'  # avoid matching URLs in code, but anythi
 # match single-line string literals, allowing escaped (\") quotes inside
 # note: this does *not* match multi-line literals
 LITERAL_SINGLE_LINE = r'(?<!\'|\\)\"([^\"\\\n]*(?:\\.[^\"\\\n]*)*)\"(?!\')'
+LITERAL_SINGLE_CHAR = (r'(?<!\'|\\)'  # not preceded by single quote or escape char
+                       r'\''          # starting with single quote
+                       r'(.{0,2})'    # any single character (up to 2, to allow escape chars)
+                       r'\''          # ending with single quote
+                       r'(?!\')')     # but not followed by single quote
 
 KEYWORDS = (r'else if|'     # note that this should be matched before the singular if/else
             r'(?<!#)if|'    # exclude pre-processor #if directives

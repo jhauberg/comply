@@ -4,7 +4,7 @@ import re
 
 from comply.rules.patterns import (
     FUNC_BODY_PATTERN,
-    LITERAL_SINGLE_LINE,
+    LITERAL_SINGLE_LINE, LITERAL_SINGLE_CHAR,
     COMMENT_BLOCK_PATTERN, COMMENT_LINE_PATTERN
 )
 
@@ -121,15 +121,44 @@ def strip_function_bodies(text: str) -> str:
     return stripped
 
 
-def strip_literals(text: str) -> str:
-    """ Remove any string literals from a text.
-
-        Note that this currently only supports single-line literals.
+def strip_literals(text: str, patterns: list) -> str:
+    """ Remove any literals matching provided patterns from a text.
 
         Literals inside comments will also be removed.
     """
 
-    return strip_single_line_literals(text)
+    stripped = text
+
+    for pattern in patterns:
+        for match in re.finditer(pattern, stripped):
+            literal = match.group(1)
+
+            replacement = ' ' * len(literal)
+
+            from_index = match.start(1)
+            to_index = match.end(1)
+
+            # note that we're doing an iterative search *while* we're modifying the text we're
+            # matching on; this works out because the number of characters always remain the same
+            # (i.e. we're just replacing with whitespace)
+            stripped = stripped[:from_index] + replacement + stripped[to_index:]
+
+    assert is_seemingly_identical(stripped, original=text)
+
+    return stripped
+
+
+def strip_any_literals(text: str) -> str:
+    """ Remove both single line and character literals from a text. """
+
+    return strip_literals(text, [LITERAL_SINGLE_LINE,
+                                 LITERAL_SINGLE_CHAR])
+
+
+def strip_single_character_literals(text: str) -> str:
+    """ Remove any single character literals from a text. """
+
+    return strip_literals(text, [LITERAL_SINGLE_CHAR])
 
 
 def strip_single_line_literals(text: str) -> str:
@@ -142,27 +171,10 @@ def strip_single_line_literals(text: str) -> str:
           "A bunch of text", if found, becomes:
           "               "
 
-        Note that character literals are not stripped.
+        Note that single character literals are not stripped.
     """
 
-    stripped = text
-
-    for match in re.finditer(LITERAL_SINGLE_LINE, stripped):
-        literal = match.group(1)
-
-        replacement = ' ' * len(literal)
-
-        from_index = match.start(1)
-        to_index = match.end(1)
-
-        # note that we're doing an iterative search *while* we're modifying the text we're
-        # matching on; this works out because the number of characters always remain the same
-        # (i.e. we're just replacing with whitespace)
-        stripped = stripped[:from_index] + replacement + stripped[to_index:]
-
-    assert is_seemingly_identical(stripped, original=text)
-
-    return stripped
+    return strip_literals(text, [LITERAL_SINGLE_LINE])
 
 
 def strip_parens(text: str) -> str:

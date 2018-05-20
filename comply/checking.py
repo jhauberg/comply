@@ -9,7 +9,7 @@ from comply.reporting import Reporter
 from comply.rules.rule import Rule, RuleViolation
 from comply.rules.report import CheckFile, CheckResult
 
-from comply.util.stripping import strip_any_comments, strip_literals
+from comply.util.stripping import strip_any_comments, strip_any_literals
 
 DEFAULT_ENCODING = 'utf8'
 
@@ -124,7 +124,7 @@ def prepare(text: str, filename: str, extension: str, path: str) -> CheckFile:
     # for stuff that isn't actually code
     # start by stripping single-line literals; this will help stripping comments, as
     # comment-starting characters could easily be found inside literals
-    stripped_text = strip_literals(stripped_text)
+    stripped_text = strip_any_literals(stripped_text)
     # finally strip both block and line-comments
     stripped_text = strip_any_comments(stripped_text)
 
