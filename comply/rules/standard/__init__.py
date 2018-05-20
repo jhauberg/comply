@@ -31,3 +31,4 @@ from comply.rules.standard.no_space_name import NoSpaceName
 from comply.rules.standard.pad_keywords import PadKeywords
 from comply.rules.standard.pad_pointer_declarations import PadPointerDeclarations
 from comply.rules.standard.logical_continuation import LogicalContinuation
+from comply.rules.standard.brace_statement_bodies import BraceStatementBodies
