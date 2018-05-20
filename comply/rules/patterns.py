@@ -35,4 +35,9 @@ COMMENT_LINE_PATTERN = (r'(?:[^:]|^)'  # avoid matching URLs in code, but anythi
 # note: this does *not* match multi-line literals
 LITERAL_SINGLE_LINE = r'(?<!\'|\\)\"([^\"\\\n]*(?:\\.[^\"\\\n]*)*)\"(?!\')'
 
-KEYWORDS = r'else if|if|else|for|while|switch'
+KEYWORDS = (r'else if|'     # note that this should be matched before the singular if/else
+            r'(?<!#)if|'    # exclude pre-processor #if directives
+            r'(?<!#)else|'  # exclude pre-processor #else directives
+            r'for|'         #
+            r'while|'       #
+            r'switch')      #
