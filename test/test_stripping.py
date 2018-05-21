@@ -4,6 +4,7 @@ from comply.util.stripping import (
     blanked,
     strip_parens,
     strip_single_line_literals,
+    strip_single_character_literals,
     strip_line_comments,
     strip_block_comments
 )
@@ -43,7 +44,7 @@ def test_strip_parens():
                                   '{')
 
 
-def test_strip_literals():
+def test_strip_literal_strings():
     text = 'char const * str = "abc";'
 
     assert strip_single_line_literals(text) == 'char const * str = "   ";'
@@ -54,8 +55,9 @@ def test_strip_literals():
 
 
 def test_strip_literal_chars():
-    #text = r'test "this" and 't' but not "\' f'" or 'asd' nor  but yes to '\'''
-    pass
+    text = 'char c = \'a\', d = \'\'\';'
+
+    assert strip_single_character_literals(text) == 'char c = \' \', d = \' \';'
 
 
 def test_strip_line_comments():
