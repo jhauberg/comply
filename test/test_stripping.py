@@ -53,6 +53,11 @@ def test_strip_literals():
     assert strip_single_line_literals(text) == text
 
 
+def test_strip_literal_chars():
+    #text = r'test "this" and 't' but not "\' f'" or 'asd' nor  but yes to '\'''
+    pass
+
+
 def test_strip_line_comments():
     text = 'char a; // strip me'
 

@@ -21,7 +21,7 @@ class ListNeededSymbols(Rule):
         linenumber, line = violation.lines[0]
 
         violation.lines[0] = (linenumber,
-                              line + Colors.good + ' // symbol_t, symbol_func_*' + Colors.clear)
+                              line + Colors.GOOD + ' // symbol_t, symbol_func_*' + Colors.RESET)
 
     def collect(self, file: CheckFile):
         offenders = []

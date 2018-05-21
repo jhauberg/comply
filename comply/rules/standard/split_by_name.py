@@ -24,11 +24,11 @@ class SplitByName(Rule):
         func_return = function_line[from_index:to_index]
 
         augmented_line = (function_line[:from_index] +
-                          Colors.bad + func_return + Colors.clear +
+                          Colors.BAD + func_return + Colors.RESET +
                           function_line[to_index:])
 
         offending_lines = [
-            (function_linenumber - 1, Colors.good + func_return + Colors.clear),
+            (function_linenumber - 1, Colors.GOOD + func_return + Colors.RESET),
             (function_linenumber, augmented_line)
         ]
 

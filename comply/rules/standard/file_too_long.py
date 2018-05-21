@@ -22,7 +22,7 @@ class FileTooLong(Rule):
         for i, (linenumber, line) in enumerate(violation.lines):
             if i > 0:
                 # mark breaker and everything below it
-                violation.lines[i] = (linenumber, Colors.bad + line + Colors.clear)
+                violation.lines[i] = (linenumber, Colors.BAD + line + Colors.RESET)
 
     def collect(self, file: CheckFile):
         offenders = []

@@ -42,11 +42,11 @@ class HumanReporter(Reporter):
         rule = violation.which
         rule.augment(violation)
 
-        location = Colors.dark + '{0}:'.format(path) + Colors.clear
+        location = Colors.DARK + '{0}:'.format(path) + Colors.RESET
 
-        severity_color = (Colors.deny if rule.severity > RuleViolation.WARN else
-                          (Colors.warn if rule.severity > RuleViolation.ALLOW else
-                           Colors.allow))
+        severity_color = (Colors.DENY if rule.severity > RuleViolation.WARN else
+                          (Colors.WARN if rule.severity > RuleViolation.ALLOW else
+                           Colors.ALLOW))
 
         if reason is None or len(reason) == 0:
             reason = ('Severe violation' if rule.severity > RuleViolation.WARN else
@@ -55,7 +55,7 @@ class HumanReporter(Reporter):
 
         why = '{tint}{0} {vague}[{1}]'.format(reason, rule.name,
                                               tint=severity_color,
-                                              vague=Colors.vague) + Colors.clear
+                                              vague=Colors.VAGUE) + Colors.RESET
 
         solution = rule.solution(violation)
 
@@ -77,8 +77,8 @@ class HumanReporter(Reporter):
 
                     line = l.expandtabs(4)
 
-                    context += Colors.emphasis + str(n) + Colors.clear
-                    context += Colors.clear + '\t{0}'.format(line)
+                    context += Colors.EMPHASIS + str(n) + Colors.RESET
+                    context += Colors.RESET + '\t{0}'.format(line)
 
                     if j != len(expanded_lines) - 1:
                         context += '\n'
@@ -90,9 +90,9 @@ class HumanReporter(Reporter):
 
         if solution is not None and len(solution) > 0:
             output += '\n{strong}{suggestion}'.format(
-                suggestion=solution, strong=Colors.strong)
+                suggestion=solution, strong=Colors.STRONG)
 
-        return '\n' + output + Colors.clear
+        return '\n' + output + Colors.RESET
 
     @staticmethod
     def expand_line(line_number: int, line: str):

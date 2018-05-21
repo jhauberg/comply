@@ -32,7 +32,7 @@ class NoUnnamedInts(Rule):
 
         violation.lines[line_index] = (function_line_number,
                                        function_line[:insertion_index] +
-                                       Colors.good + ' name' + Colors.clear +
+                                       Colors.GOOD + ' name' + Colors.RESET +
                                        function_line[insertion_index:])
 
     def collect(self, file: CheckFile):

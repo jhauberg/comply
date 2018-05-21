@@ -27,11 +27,11 @@ class ConstOnRight(Rule):
         augmented_line = line
 
         augmented_line = (augmented_line[:insertion_index] +
-                          Colors.good + ' const' + Colors.clear +
+                          Colors.GOOD + ' const' + Colors.RESET +
                           augmented_line[insertion_index:])
 
         augmented_line = (augmented_line[:from_index] +
-                          Colors.bad + augmented_line[from_index:to_index] + Colors.clear +
+                          Colors.BAD + augmented_line[from_index:to_index] + Colors.RESET +
                           augmented_line[to_index:])
 
         violation.lines[0] = (line_number, augmented_line)

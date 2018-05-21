@@ -24,7 +24,7 @@ class NoRedundantConst(Rule):
         from_index, to_index = violation.meta['range']
 
         augmented_line = (function_line[:from_index] +
-                          Colors.bad + function_line[from_index:to_index] + Colors.clear +
+                          Colors.BAD + function_line[from_index:to_index] + Colors.RESET +
                           function_line[to_index:])
 
         violation.lines[line_index] = (function_linenumber, augmented_line)

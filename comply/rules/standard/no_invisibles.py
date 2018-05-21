@@ -19,7 +19,7 @@ class NoInvisibles(Rule):
         linenumber, line = violation.lines[0]
 
         for invisible in NoInvisibles.INVISIBLES:
-            line = line.replace(invisible, Colors.bad + '~' + Colors.clear)
+            line = line.replace(invisible, Colors.BAD + '~' + Colors.RESET)
 
         augmented_line = (linenumber, line)
 
@@ -28,7 +28,7 @@ class NoInvisibles(Rule):
 
         if count > count_in_line:
             violation.lines = [
-                (0, Colors.emphasis + 'listing first occurrence:' + Colors.clear),
+                (0, Colors.EMPHASIS + 'listing first occurrence:' + Colors.RESET),
                 augmented_line
             ]
         else:

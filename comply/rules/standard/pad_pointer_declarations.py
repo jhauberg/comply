@@ -21,7 +21,7 @@ class PadPointerDeclarations(Rule):
         from_index, to_index = violation.meta['range']
 
         augmented_line = (line[:from_index] +
-                          Colors.bad + line[from_index:to_index] + Colors.clear +
+                          Colors.BAD + line[from_index:to_index] + Colors.RESET +
                           line[to_index:])
 
         violation.lines[0] = (line_number, augmented_line)

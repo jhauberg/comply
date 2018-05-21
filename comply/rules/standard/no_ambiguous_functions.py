@@ -26,7 +26,7 @@ class NoAmbiguousFunctions(Rule):
 
         violation.lines[line_index] = (function_line_number,
                                        function_line[:insertion_index] +
-                                       Colors.good + 'void' + Colors.clear +
+                                       Colors.GOOD + 'void' + Colors.RESET +
                                        function_line[insertion_index:])
 
     def collect(self, file: CheckFile):

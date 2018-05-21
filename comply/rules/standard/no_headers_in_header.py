@@ -20,7 +20,7 @@ class NoHeadersInHeader(Rule):
         # assume only one offending line
         linenumber, line = violation.lines[0]
 
-        violation.lines[0] = (linenumber, Colors.bad + line + Colors.clear)
+        violation.lines[0] = (linenumber, Colors.BAD + line + Colors.RESET)
 
     def collect(self, file: CheckFile):
         offenders = []

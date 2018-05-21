@@ -24,7 +24,7 @@ class SymbolListedNotNeeded(Rule):
         linenumber, line = violation.lines[0]
 
         augmented_line = (line[:from_index] +
-                          Colors.bad + line[from_index:to_index] + Colors.clear +
+                          Colors.BAD + line[from_index:to_index] + Colors.RESET +
                           line[to_index:])
 
         violation.lines[0] = (linenumber, augmented_line)

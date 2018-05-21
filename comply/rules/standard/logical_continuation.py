@@ -22,7 +22,7 @@ class LogicalContinuation(Rule):
         from_index, to_index = violation.meta['range']
 
         augmented_line = (line[:from_index] +
-                          Colors.bad + line[from_index:to_index] + Colors.clear +
+                          Colors.BAD + line[from_index:to_index] + Colors.RESET +
                           line[to_index:])
 
         violation.lines[line_index] = (line_number, augmented_line)
@@ -33,7 +33,7 @@ class LogicalContinuation(Rule):
             line_index = line_index - 1
             line_number, line = violation.lines[line_index]
 
-            augmented_line = line + ' ' + Colors.good + operation + Colors.clear
+            augmented_line = line + ' ' + Colors.GOOD + operation + Colors.RESET
 
             violation.lines[line_index] = (line_number, augmented_line)
 

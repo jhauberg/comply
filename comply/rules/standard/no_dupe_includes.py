@@ -19,7 +19,7 @@ class NoDuplicateIncludes(Rule):
     def augment(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
 
-        violation.lines[0] = (line_number, Colors.bad + line + Colors.clear)
+        violation.lines[0] = (line_number, Colors.BAD + line + Colors.RESET)
 
     def collect(self, file: CheckFile):
         offenders = []

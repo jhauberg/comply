@@ -26,7 +26,7 @@ class IdentifierTooLong(Rule):
         insertion_index = from_index + (violation.meta['max'] if 'max' in violation.meta else 0)
 
         augmented_line = (line[:insertion_index] +
-                          Colors.bad + '|' + line[insertion_index:to_index] + Colors.clear +
+                          Colors.BAD + '|' + line[insertion_index:to_index] + Colors.RESET +
                           line[to_index:])
 
         violation.lines[0] = (line_number, augmented_line)

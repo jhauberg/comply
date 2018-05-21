@@ -19,14 +19,14 @@ class NoTabs(Rule):
 
         replacement_char = '⇥' if supports_unicode() else '~'
 
-        augmented_line = (linenumber, line.replace(NoTabs.TAB, Colors.bad + replacement_char + Colors.clear))
+        augmented_line = (linenumber, line.replace(NoTabs.TAB, Colors.BAD + replacement_char + Colors.RESET))
 
         count = violation.meta['count'] if 'count' in violation.meta else 0
         count_in_line = violation.meta['count_in_line'] if 'count_in_line' in violation.meta else 0
 
         if count > count_in_line:
             violation.lines = [
-                (None, Colors.emphasis + '(listing first occurrence)' + Colors.clear),
+                (None, Colors.EMPHASIS + '(listing first occurrence)' + Colors.RESET),
                 augmented_line
             ]
         else:

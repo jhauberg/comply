@@ -20,8 +20,8 @@ class LineTooLong(Rule):
         # assume only one offending line
         linenumber, line = violation.lines[0]
 
-        breaker_line = (line[:insertion_index] + Colors.bad + '|' +
-                        line[insertion_index:] + Colors.clear)
+        breaker_line = (line[:insertion_index] + Colors.BAD + '|' +
+                        line[insertion_index:] + Colors.RESET)
 
         violation.lines[0] = (linenumber, breaker_line)
 

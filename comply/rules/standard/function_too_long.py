@@ -32,11 +32,11 @@ class FunctionTooLong(Rule):
         for i, (linenumber, line) in enumerate(violation.lines):
             if i > 0:
                 # mark breaker and everything below it
-                violation.lines[i] = (linenumber, Colors.bad + line + Colors.clear)
+                violation.lines[i] = (linenumber, Colors.BAD + line + Colors.RESET)
 
-        info_line = (Colors.emphasis +
+        info_line = (Colors.EMPHASIS +
                      '(in {0}(..) starting at line {1})'.format(name, line_number) +
-                     Colors.clear)
+                     Colors.RESET)
 
         violation.lines.insert(0, (None, info_line))
 

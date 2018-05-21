@@ -23,9 +23,9 @@ class BraceStatementBodies(Rule):
         leading_space = ' ' * (column - 1)
 
         violation.lines = [
-            (line_number, line + Colors.good + ' {' + Colors.clear),
+            (line_number, line + Colors.GOOD + ' {' + Colors.RESET),
             (line_number + 1, leading_space + '...'),
-            (line_number + 2, leading_space + Colors.good + '}' + Colors.clear)
+            (line_number + 2, leading_space + Colors.GOOD + '}' + Colors.RESET)
         ]
 
     def collect(self, file: CheckFile):
