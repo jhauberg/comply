@@ -15,12 +15,12 @@ class NoTodo(Rule):
                       description='TODO: {todo}',
                       suggestion='Consider promoting this issue to a full report in your issue tracker.')
 
-    pattern = re.compile(r'TODO:|todo:')
+    pattern = re.compile(r'(TODO:|todo:)(.*)')
 
     def augment(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
 
-        from_index, to_index = violation.meta['range'] if 'range' in violation.meta else (0, 0)
+        from_index, to_index = violation.meta['range']
 
         augmented_line = (line[:from_index] +
                           Colors.BAD + line[from_index:to_index] + Colors.RESET +
@@ -31,20 +31,17 @@ class NoTodo(Rule):
     def collect(self, file: CheckFile):
         offenders = []
 
-        text = file.original
-
-        for match in self.pattern.finditer(text):
+        for match in self.pattern.finditer(file.original):
             line_number, column = file.line_number_at(match.start())
-
-            column_end = column - 1 + (match.end() - match.start())
 
             line = file.lines[line_number - 1]
 
-            message_start = column_end
-            message = line[message_start:]
+            message = match.group(2)
             message = truncated(message.strip(),
                                 length=60,
                                 options=Ellipsize.options(at=Ellipsize.end))
+
+            column_end = column + len(match.group())
 
             offender = self.violate(at=(line_number, column),
                                     lines=[(line_number, line)],
