@@ -3,7 +3,6 @@
 import re
 
 from comply.rules.rule import *
-from comply.rules.patterns import KEYWORDS
 
 from comply.printing import Colors
 
@@ -14,8 +13,8 @@ class PadBraces(Rule):
                       description='Braced bodies should be padded with space on both sides',
                       suggestion='Add a single whitespace to the {left_or_right} of \'{brace}\'.')
 
-    pattern = re.compile(r'[^\s]({)|'     # starting braces must always have whitespace to the left
-                         r'(})[^\s;),]')  # ending braces have more options
+    pattern = re.compile(r'(?:[^\s]({)|({)[^\s])|'     # starting braces without whitespace to the left or right
+                         r'(?:[^\s](})|(})[^\s;),])')  # ending braces without whitespace to the left, or whitespace/certain chars to the right
 
     def augment(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
