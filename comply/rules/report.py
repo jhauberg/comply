@@ -50,19 +50,12 @@ class CheckFile:
         self._original_lines = None
 
     def line_number_at(self, index: int, at_beginning: bool=False) -> (int, int):
-        """ Return the line number and column at which a character index occur in a text.
+        """ Return the line number and column at which a character index occur in the original text.
 
             Column is set to 0 if at_beginning is True.
         """
 
-        line = self.original.count('\n', 0, index) + 1
-
-        if at_beginning:
-            return line, 0
-
-        column = index - self.original.rfind('\n', 0, index)
-
-        return line, column
+        return CheckFile.line_number_in_text(index, self.original, at_beginning)
 
     def line_number_at_top(self) -> (int, int):
         """ Return the line number and column at the top of a text. """
@@ -124,3 +117,19 @@ class CheckFile:
             self._stripped_collaped = strip_function_bodies(self.stripped)
 
         return self._stripped_collaped
+
+    @staticmethod
+    def line_number_in_text(index: int, text: str, at_beginning: bool=False) -> (int, int):
+        """ Return the line number and column at which a character index occur in a text.
+
+            Column is set to 0 if at_beginning is True.
+        """
+
+        line = text.count('\n', 0, index) + 1
+
+        if at_beginning:
+            return line, 0
+
+        column = index - text.rfind('\n', 0, index)
+
+        return line, column
