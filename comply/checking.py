@@ -118,7 +118,10 @@ def check(path: str, rules: List[Rule], reporter: Reporter=None) -> (CheckResult
 def prepare(text: str, filename: str, extension: str, path: str) -> CheckFile:
     """ Prepare a text for checking. """
 
-    stripped_text = text
+    # remove form-feed characters to make sure line numbers are as expected
+    original_text = text.replace('\u000c', '')
+
+    stripped_text = original_text
 
     # remove comments and string literals to reduce chance of false-positives
     # for stuff that isn't actually code
@@ -137,7 +140,7 @@ def prepare(text: str, filename: str, extension: str, path: str) -> CheckFile:
         with open(stripped_file_path, 'w') as stripped_file:
             stripped_file.write(stripped_text)
 
-    return CheckFile(text, stripped_text, filename, extension)
+    return CheckFile(original_text, stripped_text, filename, extension)
 
 
 def read(path: str) -> (str, str):
