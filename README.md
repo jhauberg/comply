@@ -4,17 +4,17 @@
 
 <br/>
 
-A linter tool to help programmers enforce a consistent coding style for sources written in C99.
+A linter tool to help (pedantic) programmers enforce a consistent coding style for sources written in C99.
 
-By way of static code analysis (see [Pattern matching](#pattern-matching)), the goal is to make style issues apparent while providing helpful hints and suggestions on how to fix them.
+Its purpose is to make style issues clear and apparent, while providing helpful hints and suggestions on how to fix them.
 
 **Strict style compliance**
 
-`comply` defines and applies some (highly) opinionated and strict rules and conventions on best practices for writing code that is both readable and maintainable.
+`comply` defines some (highly) opinionated and strict rules and conventions on best practices for writing code that is both readable and maintainable.
 
 ![](assets/example_terminal.png "An example of reported violations using the Human reporting mode in a terminal")
 
-Following these rules will help improve the general state of your project, making it easier for both yourself as well as newcomers to contribute and maintain in the future.
+Following these rules will help improve the general state of your project, making it easier for anyone. yourself or others, to both maintain and contribute.
 
 You can read more about the thoughts behind each rule on the [project page](http://jhauberg.github.io/comply).
 
@@ -26,7 +26,7 @@ Additionally, this is a new project; as such, it is under constant development a
 
 ## Installation
 
-Install straight from the source:
+You can install `comply` straight from the source:
 
 ```console
 $ python setup.py install
@@ -86,7 +86,7 @@ You can then go through all listed files and manually delete each one.
 
 ## Usage
 
-> *You should enable all warnings and errors that your compiler provides and run `comply` only as a supplement once your project cleanly compiles.*
+> *You should enable all warnings and errors that your compiler provides and run `comply` as a post-process once your project cleanly compiles.*
 
 When installed, you can run `comply` on the command line and provide it with single files or entire directories:
 
