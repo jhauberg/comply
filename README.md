@@ -14,7 +14,7 @@ Its purpose is to make style issues clear and apparent, while providing helpful 
 
 ![](assets/example_terminal.png "An example of reported violations using the Human reporting mode in a terminal")
 
-Following these rules will help improve the general state of your project, making it easier for anyone. yourself or others, to both maintain and contribute.
+Following these rules will help improve the general state of your project, making it easier for anyone, yourself or others, to both maintain and contribute.
 
 You can read more about the thoughts behind each rule on the [project page](http://jhauberg.github.io/comply).
 
