@@ -199,7 +199,7 @@ Make your C follow the rules
 
 Usage:
   comply <input>... [--reporter=<name>] [--check=<rule>]... [--except=<rule>]...
-                    [--limit=<amount>] [--verbose] [--strict]
+                    [--limit=<amount>] [--strict] [--only-severe] [--verbose]
   comply -h | --help
   comply --version
 
@@ -208,7 +208,8 @@ Options:
   -c --check=<rule>       Only run checks for a specific rule
   -e --except=<rule>      Don't run checks for a specific rule
   -i --limit=<amount>     Limit the amount of reported violations
-  -s --strict             Show all violations (similar violations not suppressed)
+  -s --strict             Report all violations (and don't suppress similar ones)
+  -S --only-severe        Report only severe violations
   -v --verbose            Show diagnostic messages
   -h --help               Show program help
   --version               Show program version
