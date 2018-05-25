@@ -66,8 +66,10 @@ def check_triggers(text: str, rule):
     if total_violations != expected_number_of_violations:
         violation_locations = [violation.where for violation in violations_in_order]
 
-        raise AssertionError('Found unexpected number of violations ({0} != {1}): \n{2}'.format(
-            total_violations, expected_number_of_violations, violation_locations))
+        raise AssertionError(('Found unexpected number of violations ({0} != {1}):\n'
+                              'Found {2}\n'
+                              'Expected {3}').format(
+            total_violations, expected_number_of_violations, violation_locations, trigger_locations))
 
     for i, violation in enumerate(violations_in_order):
         trigger_location = trigger_locations[i]
