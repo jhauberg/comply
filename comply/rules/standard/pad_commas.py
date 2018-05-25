@@ -10,7 +10,7 @@ from comply.printing import Colors
 class PadCommas(Rule):
     def __init__(self):
         Rule.__init__(self, name='pad-commas',
-                      description='Comma separators should be padded with space to the right',
+                      description='Comma separators should be followed by a single space',
                       suggestion='Add a single whitespace to the right of \',\'.')
 
     pattern = re.compile(r',[^\s]')  # any comma followed by non-whitespace
