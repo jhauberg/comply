@@ -1,26 +1,19 @@
 # coding=utf-8
 
 from comply.rules.standard import PadCommas
-from comply.checking import check_text
+
+from test.rules.expect import match_triggers
 
 
-RULE = PadCommas()
+def test_pad_commas():
+    texts = [
+        # triggers
+        'func(int a↓,int b)',
+        '#define MACRO(a↓,b↓,c)',
+        # non-triggers
+        'func(int a, int b)',
+        ('void func(int a,\n'
+         '          int b')
+    ]
 
-
-def test_pad_commas_triggers():
-    text = 'void func(int a,int b)'
-
-    result = check_text(text, [RULE])
-
-    assert len(result.violations) == 1
-
-    assert result.violations[0].where == (1, 16)
-
-
-def test_pad_commas_non_triggers():
-    text = ('void func(int a,'
-            '          int b')
-
-    result = check_text(text, [RULE])
-
-    assert len(result.violations) == 0
+    match_triggers(texts, PadCommas)

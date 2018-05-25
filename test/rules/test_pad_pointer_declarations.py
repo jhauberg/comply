@@ -1,18 +1,16 @@
 # coding=utf-8
 
 from comply.rules.standard import PadPointerDeclarations
-from comply.checking import check_text
 
-
-RULE = PadPointerDeclarations()
+from test.rules.expect import match_triggers
 
 
 def test_pad_pointer_decls_triggers():
-    texts = ['char const *a = "asd";']
+    texts = [
+        # triggers
+        'char const ↓*a = "abc"',
+        # non-triggers
+        'char const * a = "abc"'
+    ]
 
-    for text in texts:
-        result = check_text(text, [RULE])
-
-        assert len(result.violations) == 1
-
-        assert result.violations[0].where == (1, 12)
+    match_triggers(texts, PadPointerDeclarations)
