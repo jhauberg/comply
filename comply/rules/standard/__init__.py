@@ -34,4 +34,4 @@ from comply.rules.standard.logical_continuation import LogicalContinuation
 from comply.rules.standard.brace_statement_bodies import BraceStatementBodies
 from comply.rules.standard.pad_braces import PadBraces
 from comply.rules.standard.pad_commas import PadCommas
-
+from comply.rules.standard.no_padded_parens import NoPaddedParens
