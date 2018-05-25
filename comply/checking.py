@@ -4,11 +4,12 @@ import os
 
 from typing import List
 
+from comply import PROFILING_IS_ENABLED
 from comply.reporting import Reporter
 from comply.rules.rule import Rule, RuleViolation
 from comply.rules.report import CheckFile, CheckResult
 
-from comply.util.stripping import strip_any_comments, strip_literals
+from comply.util.stripping import strip_any_comments, strip_any_literals
 
 DEFAULT_ENCODING = 'utf8'
 
@@ -103,7 +104,7 @@ def check(path: str, rules: List[Rule], reporter: Reporter=None) -> (CheckResult
 
     file = prepare(text, filename, extension, path)
 
-    violations = collect(file, rules)
+    violations = collect(file, rules, reporter.report_progress)
 
     result = result_from_violations(violations)
 
@@ -117,13 +118,16 @@ def check(path: str, rules: List[Rule], reporter: Reporter=None) -> (CheckResult
 def prepare(text: str, filename: str, extension: str, path: str) -> CheckFile:
     """ Prepare a text for checking. """
 
-    stripped_text = text
+    # remove form-feed characters to make sure line numbers are as expected
+    original_text = text.replace('\u000c', '')
+
+    stripped_text = original_text
 
     # remove comments and string literals to reduce chance of false-positives
     # for stuff that isn't actually code
     # start by stripping single-line literals; this will help stripping comments, as
     # comment-starting characters could easily be found inside literals
-    stripped_text = strip_literals(stripped_text)
+    stripped_text = strip_any_literals(stripped_text)
     # finally strip both block and line-comments
     stripped_text = strip_any_comments(stripped_text)
 
@@ -136,7 +140,7 @@ def prepare(text: str, filename: str, extension: str, path: str) -> CheckFile:
         with open(stripped_file_path, 'w') as stripped_file:
             stripped_file.write(stripped_text)
 
-    return CheckFile(text, stripped_text, filename, extension)
+    return CheckFile(original_text, stripped_text, filename, extension)
 
 
 def read(path: str) -> (str, str):
@@ -162,14 +166,23 @@ def read(path: str) -> (str, str):
     return None, None
 
 
-def collect(file: CheckFile, rules: List[Rule]) -> List[RuleViolation]:
+def collect(file: CheckFile, rules: List[Rule], progress_callback=None) -> List[RuleViolation]:
     """ Return a list of all collected violations in a text. """
 
     violations = []
 
-    for rule in rules:
+    for i, rule in enumerate(rules):
+        if PROFILING_IS_ENABLED:
+            rule.profile_begin()
+
         offenders = rule.collect(file)
 
+        if PROFILING_IS_ENABLED:
+            rule.profile_end()
+
         violations.extend(offenders)
+
+        if progress_callback is not None:
+            progress_callback(i + 1, len(rules))
 
     return violations

@@ -1,5 +1,9 @@
 # coding=utf-8
 
+"""
+Provides functions and classes for printing diagnostics and colored output.
+"""
+
 import sys
 import os
 
@@ -40,6 +44,8 @@ def printout(text: str):
 
 
 def is_windows_environment() -> bool:
+    """ Determine whether running on a Windows platform. """
+
     return os.name == 'nt'
 
 
@@ -60,30 +66,29 @@ def supports_unicode() -> bool:
 
 
 class Colors:
+    """ Provides escape codes for commonly used colors. """
+
     # https://stackoverflow.com/questions/287871/print-in-terminal-with-colors/21786287#21786287
     # https://askubuntu.com/questions/528928/how-to-do-underline-bold-italic-strikethrough-color-background-and-size-i
 
-    strong = '\x1b[1m'
-    emphasis = '\x1b[3m'
-    underlined = '\x1b[4m'
-    vague = '\x1b[0;37m'
-    dark = '\x1b[0;90m'
-    bad = '\x1b[0;91m'
-    good = '\x1b[0;92m'
-    warn = '\x1b[0;33m'
-    allow = '\x1b[0;34m'
-    deny = '\x1b[0;31m'
-    clear = '\x1b[0m'
+    STRONG = '\x1b[1m'
+    EMPHASIS = '\x1b[3m'
+    UNDERLINED = '\x1b[4m'
+    VAGUE = '\x1b[0;37m'
+    DARK = '\x1b[0;90m'
+    BAD = '\x1b[0;91m'
+    GOOD = '\x1b[0;92m'
+    WARN = '\x1b[0;33m'
+    ALLOW = '\x1b[0;34m'
+    DENY = '\x1b[0;31m'
+    RESET = '\x1b[0m'
 
     @staticmethod
     def is_supported(buffer) -> bool:
         """ Determine whether an output buffer supports colored text. """
 
-        if sys.platform == 'win32' or 'ANSICON' in os.environ:
-            return False
-
-        # note: this is for testing purposes, as PyCharm console is not properly flagged
-        # when checking through isatty()/hasattr()
+        # note: this is a dev and PyCharm-specific thing to support colors in the PyCharm console
+        # (because isatty()/hasattr() will tell us no in this case)
         is_pycharm = 'PYCHARM' in os.environ
 
         is_a_tty = is_pycharm or (buffer.isatty() and hasattr(buffer, 'isatty'))
@@ -96,11 +101,35 @@ class Colors:
 
 if not Colors.is_supported(results):
     # note that we're assuming that diagnostics/stderr output is never colored
-    Colors.strong = ''
-    Colors.emphasis = ''
-    Colors.underlined = ''
-    Colors.vague = ''
-    Colors.clear = ''
-    Colors.bad = ''
-    Colors.good = ''
-    Colors.warn = ''
+    Colors.STRONG = ''
+    Colors.EMPHASIS = ''
+    Colors.UNDERLINED = ''
+    Colors.VAGUE = ''
+    Colors.DARK = ''
+    Colors.RESET = ''
+    Colors.BAD = ''
+    Colors.GOOD = ''
+    Colors.WARN = ''
+    Colors.ALLOW = ''
+    Colors.DENY = ''
+
+if is_windows_environment():
+    # enable color escape processing on Windows
+    # see https://stackoverflow.com/a/36760881/144433
+    import ctypes
+
+    kernel32 = ctypes.windll.kernel32
+
+    STD_OUTPUT_HANDLE = -11
+
+    handle = kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
+
+    ENABLE_PROCESSED_OUTPUT = 0x0001
+    ENABLE_WRAP_AT_EOL_OUTPUT = 0x0002
+    ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004
+
+    mode = (ENABLE_PROCESSED_OUTPUT |
+            ENABLE_WRAP_AT_EOL_OUTPUT |
+            ENABLE_VIRTUAL_TERMINAL_PROCESSING)
+
+    kernel32.SetConsoleMode(handle, mode)

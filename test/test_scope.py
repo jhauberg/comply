@@ -4,7 +4,7 @@ from comply.util.scope import depth
 
 
 def test_scope_depth():
-    text = 'scope [0] { [1] { [2] } [3] } { [4]'
+    text = '{ } scope [0] { { } [1] { [2] } [3] } { [4]'
 
     assert depth(text.index('[0]'), text) == 0
     assert depth(text.index('[1]'), text) == 1

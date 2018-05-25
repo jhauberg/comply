@@ -17,16 +17,16 @@ class TooManyBlanks(Rule):
         for i, (linenumber, line) in enumerate(violation.lines):
             if i != len(violation.lines) - 1:
                 # only mark the excess blanks
-                color = Colors.bad if i > 0 else Colors.clear
+                color = Colors.BAD if i > 0 else Colors.RESET
 
-                violation.lines[i] = (linenumber, color + '~~~~~~~~' + Colors.clear)
+                violation.lines[i] = (linenumber, color + '~~~~~~~~' + Colors.RESET)
 
     def collect(self, file: CheckFile):
         offenders = []
 
         max_lines = TooManyBlanks.MAX
 
-        lines = file.original.splitlines()  # without newlines
+        lines = file.lines  # without newlines
 
         consecutive_blanks = 0
 

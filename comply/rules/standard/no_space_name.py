@@ -13,7 +13,7 @@ class NoSpaceName(Rule):
         if ' ' in file.filename:
             suggested_filename = file.filename.replace(' ', '_') + file.extension
 
-            offender = self.violate(RuleViolation.at_top(),
+            offender = self.violate(file.line_number_at_top(),
                                     meta={'filename': suggested_filename})
 
             return [offender]

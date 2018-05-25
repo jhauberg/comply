@@ -16,7 +16,7 @@ class PadKeywords(Rule):
 
     neighbor_pattern = r'[;{}()]'
 
-    pattern = re.compile(r'(?:\b)({keywords}){neighbors}|{neighbors}({keywords})(?:\b)'.format(
+    pattern = re.compile(r'\b({keywords}){neighbors}|{neighbors}({keywords})\b'.format(
         keywords=KEYWORDS,
         neighbors=neighbor_pattern))
 
@@ -26,7 +26,7 @@ class PadKeywords(Rule):
         from_index, to_index = violation.meta['range']
 
         augmented_line = (line[:from_index] +
-                          Colors.bad + line[from_index:to_index] + Colors.clear +
+                          Colors.BAD + line[from_index:to_index] + Colors.RESET +
                           line[to_index:])
 
         violation.lines[0] = (line_number, augmented_line)
@@ -36,20 +36,17 @@ class PadKeywords(Rule):
 
         text = file.stripped
 
-        lines = file.original.splitlines()
-
         for keyword_match in self.pattern.finditer(text):
             keyword_group_index = keyword_match.lastindex
 
             # note that we grab the starting index of the actual keyword
             offending_index = keyword_match.start(keyword_group_index)
-            offending_line_number, offending_column = RuleViolation.at(offending_index,
-                                                                       text)
+            offending_line_number, offending_column = file.line_number_at(offending_index)
 
             length = keyword_match.end() - keyword_match.start()
 
             # note that to mark the range, we go from the starting index of the full match
-            _, offending_range_column = RuleViolation.at(keyword_match.start(), text)
+            _, offending_range_column = file.line_number_at(keyword_match.start())
 
             offending_range = (offending_range_column - 1,
                                offending_range_column - 1 + length)
@@ -60,7 +57,7 @@ class PadKeywords(Rule):
 
             keyword = keyword_match.group(keyword_group_index)
 
-            line = lines[offending_line_number - 1]
+            line = file.lines[offending_line_number - 1]
 
             offender = self.violate(at=(offending_line_number, offending_column),
                                     lines=[(offending_line_number, line)],

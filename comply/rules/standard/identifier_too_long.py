@@ -26,7 +26,7 @@ class IdentifierTooLong(Rule):
         insertion_index = from_index + (violation.meta['max'] if 'max' in violation.meta else 0)
 
         augmented_line = (line[:insertion_index] +
-                          Colors.bad + '|' + line[insertion_index:to_index] + Colors.clear +
+                          Colors.BAD + '|' + line[insertion_index:to_index] + Colors.RESET +
                           line[to_index:])
 
         violation.lines[0] = (line_number, augmented_line)
@@ -35,8 +35,6 @@ class IdentifierTooLong(Rule):
         offenders = []
 
         text = file.stripped
-
-        lines = file.original.splitlines()
 
         def check_identifier(identifier: str, occurrence: (int, int)):
             max_identifier_length = IdentifierTooLong.MAX
@@ -47,7 +45,7 @@ class IdentifierTooLong(Rule):
                 line_number, column = occurrence
                 line_index = line_number - 1
 
-                line = lines[line_index]
+                line = file.lines[line_index]
 
                 identifier_start_index = column - 1
                 identifier_end_index = identifier_start_index + identifier_length
@@ -62,7 +60,7 @@ class IdentifierTooLong(Rule):
                 offenders.append(offender)
 
         for identifier_match in re.finditer(r'\b\w+\b', text):
-            location = RuleViolation.at(identifier_match.start(), text)
+            location = file.line_number_at(identifier_match.start())
 
             check_identifier(identifier_match.group(), location)
 

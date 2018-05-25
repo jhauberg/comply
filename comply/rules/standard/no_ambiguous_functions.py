@@ -26,42 +26,39 @@ class NoAmbiguousFunctions(Rule):
 
         violation.lines[line_index] = (function_line_number,
                                        function_line[:insertion_index] +
-                                       Colors.good + 'void' + Colors.clear +
+                                       Colors.GOOD + 'void' + Colors.RESET +
                                        function_line[insertion_index:])
 
     def collect(self, file: CheckFile):
         offenders = []
 
-        text = file.stripped
+        text = file.collapsed
 
-        from comply.util.stripping import strip_function_bodies
-
-        text_without_bodies = strip_function_bodies(text)
-
-        for function_match in self.pattern.finditer(text_without_bodies):
+        for function_match in self.pattern.finditer(text):
             function_parameters = function_match.group('params')
+
+            if len(function_parameters.strip()) > 0:
+                # this function has explicitly specified parameters; move on
+                continue
+
+            offending_index = function_match.start('name')
+
+            offending_line_number, offending_column = file.line_number_at(offending_index)
+
+            character_range = (function_match.start(),
+                               function_match.end())
+
+            offending_lines = file.lines_in(character_range)
+
             function_parameters_starting_index = function_match.start('params')
 
-            if len(function_parameters.strip()) == 0:
-                offending_index = function_match.start('name')
+            _, insertion_column = file.line_number_at(function_parameters_starting_index)
 
-                offending_line_number, offending_column = RuleViolation.at(offending_index,
-                                                                           text)
+            offender = self.violate(at=(offending_line_number, offending_column),
+                                    lines=offending_lines,
+                                    meta={'insertion_index': insertion_column - 1})
 
-                character_range = (function_match.start(),
-                                   function_match.end())
-
-                offending_lines = RuleViolation.lines_in(character_range,
-                                                         file.original)
-
-                _, insertion_column = RuleViolation.at(function_parameters_starting_index,
-                                                       text)
-
-                offender = self.violate(at=(offending_line_number, offending_column),
-                                        lines=offending_lines,
-                                        meta={'insertion_index': insertion_column - 1})
-
-                offenders.append(offender)
+            offenders.append(offender)
 
         return offenders
 

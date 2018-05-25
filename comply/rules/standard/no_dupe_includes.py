@@ -19,7 +19,7 @@ class NoDuplicateIncludes(Rule):
     def augment(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
 
-        violation.lines[0] = (line_number, Colors.bad + line + Colors.clear)
+        violation.lines[0] = (line_number, Colors.BAD + line + Colors.RESET)
 
     def collect(self, file: CheckFile):
         offenders = []
@@ -36,8 +36,7 @@ class NoDuplicateIncludes(Rule):
             else:
                 offending_index = inclusion.start()
 
-                line_number, column = RuleViolation.at(offending_index, text,
-                                                       at_beginning=True)
+                line_number, column = file.line_number_at(offending_index, at_beginning=True)
 
                 offending_line = (line_number, include_stmt)
 

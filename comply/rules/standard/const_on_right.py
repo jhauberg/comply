@@ -27,11 +27,11 @@ class ConstOnRight(Rule):
         augmented_line = line
 
         augmented_line = (augmented_line[:insertion_index] +
-                          Colors.good + ' const' + Colors.clear +
+                          Colors.GOOD + ' const' + Colors.RESET +
                           augmented_line[insertion_index:])
 
         augmented_line = (augmented_line[:from_index] +
-                          Colors.bad + augmented_line[from_index:to_index] + Colors.clear +
+                          Colors.BAD + augmented_line[from_index:to_index] + Colors.RESET +
                           augmented_line[to_index:])
 
         violation.lines[0] = (line_number, augmented_line)
@@ -39,19 +39,15 @@ class ConstOnRight(Rule):
     def collect(self, file: CheckFile):
         offenders = []
 
-        text = file.stripped
+        for match in self.pattern.finditer(file.stripped):
+            line_number, column = file.line_number_at(match.start(1))
 
-        lines = file.original.splitlines()
-
-        for match in self.pattern.finditer(text):
-            line_number, column = RuleViolation.at(match.start(1), text)
-
-            line = lines[line_number - 1]
+            line = file.lines[line_number - 1]
 
             offending_index = column - 1
             offending_range = (offending_index, offending_index + len(match.group(1)))
 
-            _, type_column = RuleViolation.at(match.start(2), text)
+            _, type_column = file.line_number_at(match.start(2))
 
             insertion_index = type_column - 1 + len(match.group(2))
 

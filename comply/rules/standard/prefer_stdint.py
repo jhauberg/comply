@@ -52,7 +52,7 @@ class PreferStandardInt(Rule):
         from_index, to_index = violation.meta['range'] if 'range' in violation.meta else (0, 0)
 
         augmented_line = (line[:from_index] +
-                          Colors.bad + line[from_index:to_index] + Colors.clear +
+                          Colors.BAD + line[from_index:to_index] + Colors.RESET +
                           line[to_index:])
 
         violation.lines[0] = (line_number, augmented_line)
@@ -63,8 +63,6 @@ class PreferStandardInt(Rule):
         text = file.stripped
 
         ranges_collected = []
-
-        lines = file.original.splitlines()
 
         int_types = [int_type for int_type in PreferStandardInt.INT_TYPES]
         # sort by length of type
@@ -90,14 +88,14 @@ class PreferStandardInt(Rule):
                 if type_already_collected:
                     continue
 
-                line_number, column = RuleViolation.at(int_match.start(), text)
+                line_number, column = file.line_number_at(int_match.start())
 
                 int_type_range = (int_match.start(1), int_match.end(1))
 
                 ranges_collected.append(int_type_range)
 
                 offender = self.violate(at=(line_number, column),
-                                        lines=[(line_number, lines[line_number - 1])],
+                                        lines=[(line_number, file.lines[line_number - 1])],
                                         meta={'stdint': prefer_int_type,
                                               'int': int_type,
                                               'range': (column - 1, column - 1 + len(int_type))})

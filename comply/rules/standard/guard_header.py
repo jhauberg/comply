@@ -17,10 +17,10 @@ class GuardHeader(Rule):
         guard = violation.meta['guard'] if 'guard' in violation.meta else '???'
 
         violation.lines = [
-            (0, Colors.good + '#ifndef {0}'.format(guard) + Colors.clear),
-            (1, Colors.good + '#define {0}'.format(guard) + Colors.clear),
+            (0, Colors.GOOD + '#ifndef {0}'.format(guard) + Colors.RESET),
+            (1, Colors.GOOD + '#define {0}'.format(guard) + Colors.RESET),
             (2, '...'),
-            (3, Colors.good + '#endif' + Colors.clear)
+            (3, Colors.GOOD + '#endif' + Colors.RESET)
         ]
 
     def collect(self, file: CheckFile):
@@ -47,7 +47,7 @@ class GuardHeader(Rule):
         match = pattern.match(text)
 
         if match is None:
-            offender = self.violate(at=RuleViolation.at_top(),
+            offender = self.violate(at=file.line_number_at_top(),
                                     meta={'guard': guard_name})
 
             offenders.append(offender)

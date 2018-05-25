@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import os
+import math
 
 from typing import List
 
@@ -24,7 +25,7 @@ class Reporter:
         self.suppress_similar = suppress_similar
         self.is_verbose = is_verbose
         self.limit = limit
-        self.count = 0
+        self.results_count = 0
 
     @staticmethod
     def group_by_reason(violations: List[RuleViolation]):
@@ -51,11 +52,21 @@ class Reporter:
             encoding = ' ({enc})'.format(
                 enc=encoding.upper()) if encoding is not None else ''
 
-            diag = 'Checking \'{path}\'{enc}... '.format(
+            diag = 'Checking \'{path}\'{enc}'.format(
                 path=truncated(normalized_path),
                 enc=encoding)
 
             printdiag(diag, end='')
+
+    def report_progress(self, count, total):
+        """ Print a progress indication. """
+
+        if not self.is_verbose:
+            return
+
+        number_of_ticks = Reporter.determine_progress_ticks(count, total)
+
+        printdiag('.' * number_of_ticks, end='')
 
     def report_before_results(self, violations: List[RuleViolation]):
         """ Print a diagnostic before reporting results.
@@ -64,15 +75,17 @@ class Reporter:
             the number of results to print (some may be suppressed).
         """
 
-        if self.is_verbose:
-            count = len(violations)
+        if not self.is_verbose:
+            return
 
-            violation_or_violations = 'violation' if count == 1 else 'violations'
+        count = len(violations)
 
-            diag = 'Found {0} {1}'.format(
-                count, violation_or_violations)
+        violation_or_violations = 'violation' if count == 1 else 'violations'
 
-            printdiag(diag)
+        diag = ' Found {0} {1}'.format(
+            count, violation_or_violations)
+
+        printdiag(diag)
 
     def report_results(self, results: List[str], prefix_if_suppressed: str= '') -> int:
         """ Print each result (a formatted violation), suppressing similar results if needed. """
@@ -80,14 +93,14 @@ class Reporter:
         emitted = 0
 
         for result in results:
-            if self.limit is not None and self.count >= self.limit:
+            if self.limit is not None and self.results_count >= self.limit:
                 break
 
             printout(result)
 
             emitted += 1
 
-            self.count += 1
+            self.results_count += 1
 
             # assuming each result is a violation "almost" identical to the rest
             if self.suppress_similar and emitted >= self.suppress_after:
@@ -119,3 +132,28 @@ class Reporter:
         """ Return the number of similar violations emitted before being suppressed. """
 
         return 1
+
+    @staticmethod
+    def determine_progress_ticks(count, total, number_of_ticks=3) -> int:
+        """ Determine the amount of progress indicator dots to print. """
+
+        if total < number_of_ticks:
+            # there's less rules than number of ticks,
+            # so we will have to indicate increased progress for some ticks
+            interval = number_of_ticks / total
+
+            if count == total:
+                # make last progress biased toward more ticks if necessary
+                interval = math.ceil(interval)
+
+            return int(interval)
+
+        # determine the amount of rules to pass before indicating a tick in progress
+        interval = math.floor(total / number_of_ticks)
+        # determine the remaining rules until indicating a tick
+        interval_remainder = count % interval
+
+        if interval_remainder == 0:
+            return 1
+
+        return 0

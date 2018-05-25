@@ -34,6 +34,7 @@ from pkg_resources import parse_version
 from comply import (
     VERSION_PATTERN,
     EXIT_CODE_SUCCESS, EXIT_CODE_SUCCESS_WITH_SEVERE_VIOLATIONS,
+    PROFILING_IS_ENABLED,
     exit_if_not_compatible
 )
 
@@ -51,6 +52,7 @@ from comply.rules import *
 
 def check_for_update():
     """ Determine whether a newer version is available remotely. """
+
     from urllib.request import urlopen
     from urllib.error import URLError, HTTPError
 
@@ -80,22 +82,23 @@ def check_for_update():
         pass
 
 
-def make_reporter(reporting_mode: str) -> Reporter:
-    """ Return a reporter appropriate for the mode. """
+def expand_params(names: list) -> list:
+    """ Return an expanded list of parameters from a list of comma-separated parameters.
 
-    if reporting_mode == 'human':
-        return HumanReporter()
-    elif reporting_mode == 'oneline':
-        return OneLineReporter()
+        E.g. given a list of ['a', 'b,c,d'], returns ['a', 'b', 'c', 'd']
+    """
 
-    printdiag('Reporting mode \'{0}\' not available.'.format(reporting_mode),
-              as_error=True)
+    expanded_names = []
 
-    return Reporter()
+    for name in names:
+        expanded_names.extend(
+            [i.strip() for i in name.split(',')])
+
+    return expanded_names
 
 
 def validate_names(names: list, rules: list):
-    """ Determine whether or not the provided names exist as named rules. """
+    """ Go through and determine whether any of the provided names do not exist as named rules. """
 
     for name in names:
         if not is_name_valid(name, rules):
@@ -111,33 +114,13 @@ def validate_names(names: list, rules: list):
 
 
 def is_name_valid(name: str, rules: list) -> bool:
-    """ Determine whether or not a name corresponds with a named rule. """
+    """ Determine whether a name corresponds to a named rule. """
 
     for rule in rules:
         if rule.name == name:
             return True
 
     return False
-
-
-def make_rules(modules: list) -> list:
-    """ Return a list of instances of all Rule-subclasses found in the provided modules. """
-
-    classes = []
-
-    def is_rule_implementation(var):
-        return var != Rule and type(var) == type and issubclass(var, Rule)
-
-    for module in modules:
-        for item in dir(module):
-            attr = getattr(module, item)
-
-            if is_rule_implementation(attr):
-                classes.append(attr)
-
-    instances = [c() for c in classes]
-
-    return instances
 
 
 def filter_rules(names: list, exceptions: list, severities: list) -> list:
@@ -179,6 +162,42 @@ def filter_rules(names: list, exceptions: list, severities: list) -> list:
                                     rule.collection_hint))
 
 
+def make_reporter(reporting_mode: str) -> Reporter:
+    """ Return a reporter appropriate for the mode. """
+
+    if reporting_mode == 'human':
+        return HumanReporter()
+    elif reporting_mode == 'oneline':
+        return OneLineReporter()
+
+    printdiag('Reporting mode \'{0}\' not available.'.format(reporting_mode),
+              as_error=True)
+
+    return Reporter()
+
+
+def make_rules(modules: list) -> list:
+    """ Return a list of instances of all Rule-subclasses found in the provided modules. """
+
+    classes = []
+
+    def is_rule_implementation(cls):
+        """ Determine whether a class is a Rule implementation. """
+
+        return cls != Rule and type(cls) == type and issubclass(cls, Rule)
+
+    for module in modules:
+        for item in dir(module):
+            attr = getattr(module, item)
+
+            if is_rule_implementation(attr):
+                classes.append(attr)
+
+    instances = [c() for c in classes]
+
+    return instances
+
+
 def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
     """ Run checks and print a report. """
 
@@ -215,31 +234,20 @@ def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
     return result
 
 
-def expand_names(names: list) -> list:
-    """ Return an expanded list of names from a list of (potentially) comma-separated names.
-
-        E.g. given a list of ['a', 'b,c,d'], returns ['a', 'b', 'c', 'd']
-    """
-
-    expanded_names = []
-
-    for name in names:
-        expanded_names.extend(
-            [i.strip() for i in name.split(',')])
-
-    return expanded_names
-
-
 def main():
     """ Entry point for invoking the comply module. """
 
     exit_if_not_compatible()
 
+    if PROFILING_IS_ENABLED:
+        printdiag('Profiling is enabled; profiling should be disabled unless in development',
+                  as_error=True)
+
     if not supports_unicode():
         if not is_windows_environment():
             # do not warn about this on Windows, as it probably won't work anyway
             printdiag('Unsupported shell encoding \'{0}\'. '
-                      'Set environment variable PYTHONIOENCODING as UTF-8:\n'
+                      'Set environment variable `PYTHONIOENCODING` as UTF-8:\n'
                       '\texport PYTHONIOENCODING=UTF-8'
                       .format(diagnostics.encoding),
                       as_error=True)
@@ -249,8 +257,8 @@ def main():
     is_strict = arguments['--strict']
     only_severe = arguments['--only-severe']
 
-    checks = expand_names(arguments['--check'])
-    exceptions = expand_names(arguments['--except'])
+    checks = expand_params(arguments['--check'])
+    exceptions = expand_params(arguments['--except'])
 
     severities = ([RuleViolation.DENY] if only_severe else
                   ([RuleViolation.DENY, RuleViolation.WARN] if not is_strict else
@@ -268,8 +276,9 @@ def main():
         reporter.limit = int(arguments['--limit'])
 
     if not comply.printing.results.isatty() and reporter.suppress_similar:
+        # when piping output elsewhere, let it be known that some results might be suppressed
         printdiag('Suppressing similar violations; results may be omitted '
-                  '(set --strict to show everything)')
+                  '(set `--strict` to show everything)')
 
     inputs = arguments['<input>']
 
@@ -285,27 +294,43 @@ def main():
 
         num_rules = len(rules)
 
-        rules_or_rule = 'rule' if num_rules == 1 else 'rules'
+        rules_grammar = 'rule' if num_rules == 1 else 'rules'
 
         printdiag('Checked {0} {1} in {2:.1f} seconds'.format(
-            num_rules, rules_or_rule, total_time_taken))
+            num_rules, rules_grammar, total_time_taken))
 
-        severe_format = '({0} severe) '.format(
-            report.num_severe_violations) if report.num_severe_violations > 0 else ''
+        if comply.PROFILING_IS_ENABLED:
+            for rule in rules:
+                printdiag(' [{0}] took {1:.1f} seconds'.format(
+                    rule.name, rule.total_time_spent_collecting))
+
+        # note the whitespace; important for the full format later on
+        severe_format = '({0} severe) ' if report.num_severe_violations > 0 else ''
+        severe_format = severe_format.format(report.num_severe_violations)
 
         total_violations = report.num_violations + report.num_severe_violations
 
-        violation_or_violations = 'violation' if total_violations == 1 else 'violations'
+        violations_grammar = 'violation' if total_violations == 1 else 'violations'
+
+        files_format = '{1}/{0}' if report.num_files_with_violations > 0 else '{0}'
+        files_format = files_format.format(report.num_files, report.num_files_with_violations)
+
+        # again, note the whitespace- it's intended
+        use_strict_format = (' (set `--strict` to dig deeper)'
+                             if not is_strict and total_violations == 0
+                             else '')
 
         printdiag('Found {num_violations} {violations} {severe}'
-                  'in {num_files_violated}/{num_files} files'
-                  .format(num_files_violated=report.num_files_with_violations,
-                          num_files=report.num_files,
-                          num_violations=total_violations,
-                          violations=violation_or_violations,
-                          severe=severe_format))
+                  'in {files} files'
+                  '{use_strict}'
+                  .format(num_violations=total_violations,
+                          violations=violations_grammar,
+                          severe=severe_format,
+                          files=files_format,
+                          use_strict=use_strict_format))
 
-    check_for_update()
+    if not PROFILING_IS_ENABLED:
+        check_for_update()
 
     if report.num_severe_violations > 0:
         # everything went fine; severe violations were encountered
@@ -316,4 +341,28 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    if not PROFILING_IS_ENABLED:
+        main()
+    else:
+        import cProfile
+        import pstats
+
+        filename = 'comply-profiling'
+
+        cProfile.run('main()', filename)
+
+        p = pstats.Stats(filename)
+
+        with open(filename, 'w') as file:
+            p.stream = file
+            p.sort_stats('time').print_stats(20)
+
+        with open(filename) as file:
+            s = file.read()
+
+            print('\n' + ('=' * len(s.splitlines()[0])))
+            print('Profiling results - ', end='')
+            print(s)
+
+        if os.path.exists(filename):
+            os.remove(filename)

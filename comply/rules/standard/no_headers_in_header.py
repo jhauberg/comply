@@ -20,7 +20,7 @@ class NoHeadersInHeader(Rule):
         # assume only one offending line
         linenumber, line = violation.lines[0]
 
-        violation.lines[0] = (linenumber, Colors.bad + line + Colors.clear)
+        violation.lines[0] = (linenumber, Colors.BAD + line + Colors.RESET)
 
     def collect(self, file: CheckFile):
         offenders = []
@@ -28,9 +28,7 @@ class NoHeadersInHeader(Rule):
         if '.h' not in file.extension:
             return offenders
 
-        text = file.original
-
-        for inclusion in self.pattern.finditer(text):
+        for inclusion in self.pattern.finditer(file.original):
             include_statement = inclusion.group(0)
 
             if ('<stdint.h>' in include_statement or '<inttypes.h>' in include_statement or
@@ -39,7 +37,7 @@ class NoHeadersInHeader(Rule):
 
             offending_index = inclusion.start()
 
-            line, column = RuleViolation.at(offending_index, text, at_beginning=True)
+            line, column = file.line_number_at(offending_index, at_beginning=True)
 
             offending_line = (line, include_statement)
 

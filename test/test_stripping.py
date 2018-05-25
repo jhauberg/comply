@@ -1,6 +1,13 @@
 # coding=utf-8
 
-from comply.util.stripping import *
+from comply.util.stripping import (
+    blanked,
+    strip_parens,
+    strip_single_line_literals,
+    strip_single_character_literals,
+    strip_line_comments,
+    strip_block_comments
+)
 
 
 def test_blanked():
@@ -14,15 +21,43 @@ def test_blanked():
     assert blanked(text) == ('    \n'
                              '    ')
 
+    assert blanked(text, keepends=False) == '         '
 
-def test_strip_literals():
+
+def test_strip_parens():
+    text = 'if (true) {'
+
+    assert strip_parens(text) == 'if        {'
+
+    text = ('if (true)\n'
+            '{')
+
+    assert strip_parens(text) == ('if       \n'
+                                  '{')
+
+    text = ('if (true &&\n'
+            '    true)\n'
+            '{')
+
+    assert strip_parens(text) == ('if         \n'
+                                  '         \n'
+                                  '{')
+
+
+def test_strip_literal_strings():
     text = 'char const * str = "abc";'
 
-    assert strip_literals(text) == 'char const * str = "   ";'
+    assert strip_single_line_literals(text) == 'char const * str = "   ";'
 
     text = 'char a = \'"\'; char b = \'"\''
 
-    assert strip_literals(text) == text
+    assert strip_single_line_literals(text) == text
+
+
+def test_strip_literal_chars():
+    text = 'char c = \'a\', d = \'\'\';'
+
+    assert strip_single_character_literals(text) == 'char c = \' \', d = \' \';'
 
 
 def test_strip_line_comments():

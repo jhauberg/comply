@@ -21,7 +21,7 @@ class ListNeededSymbols(Rule):
         linenumber, line = violation.lines[0]
 
         violation.lines[0] = (linenumber,
-                              line + Colors.good + ' // symbol_t, symbol_func_*' + Colors.clear)
+                              line + Colors.GOOD + ' // symbol_t, symbol_func_*' + Colors.RESET)
 
     def collect(self, file: CheckFile):
         offenders = []
@@ -34,7 +34,7 @@ class ListNeededSymbols(Rule):
             if not is_symbol_list(suffix):
                 offending_index = inclusion.start()
 
-                linenumber, column = RuleViolation.at(offending_index, text, at_beginning=True)
+                linenumber, column = file.line_number_at(offending_index, at_beginning=True)
 
                 offending_line = (linenumber, inclusion.group(0))
 

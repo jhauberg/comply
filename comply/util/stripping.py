@@ -4,7 +4,7 @@ import re
 
 from comply.rules.patterns import (
     FUNC_BODY_PATTERN,
-    LITERAL_SINGLE_LINE,
+    LITERAL_SINGLE_LINE, LITERAL_SINGLE_CHAR,
     COMMENT_BLOCK_PATTERN, COMMENT_LINE_PATTERN
 )
 
@@ -12,7 +12,12 @@ from comply.util.scope import depth
 
 
 def is_seemingly_identical(stripped: str, original: str) -> bool:
-    return len(stripped) == len(original) and stripped.count('\n') == original.count('\n')
+    """ Determine whether a stripped text has the same line count and
+        number of characters as the original text.
+    """
+
+    return (len(stripped) == len(original)
+            and stripped.count('\n') == original.count('\n'))
 
 
 def strip_comments(text: str, patterns: list) -> str:
@@ -23,8 +28,10 @@ def strip_comments(text: str, patterns: list) -> str:
 
     stripped = text
 
-    for pattern in patterns:
-        comment_match = re.search(pattern, stripped)
+    for pattern, flags in patterns:
+        flags = 0 if flags is None else flags
+
+        comment_match = re.search(pattern, stripped, flags)
 
         while comment_match is not None:
             comment = comment_match.group(0)
@@ -36,7 +43,7 @@ def strip_comments(text: str, patterns: list) -> str:
 
             stripped = stripped[:from_index] + replacement + stripped[to_index:]
 
-            comment_match = re.search(pattern, stripped)
+            comment_match = re.search(pattern, stripped, flags)
 
     assert is_seemingly_identical(stripped, original=text)
 
@@ -46,23 +53,24 @@ def strip_comments(text: str, patterns: list) -> str:
 def strip_any_comments(text: str) -> str:
     """ Remove both line- and block-style comments from a text. """
 
-    return strip_comments(text, [COMMENT_BLOCK_PATTERN, COMMENT_LINE_PATTERN])
+    return strip_comments(text, [(COMMENT_BLOCK_PATTERN, None),
+                                 (COMMENT_LINE_PATTERN, re.MULTILINE)])
 
 
 def strip_line_comments(text: str) -> str:
     """ Remove any line-style comments from a text. """
 
-    return strip_comments(text, [COMMENT_LINE_PATTERN])
+    return strip_comments(text, [(COMMENT_LINE_PATTERN, re.MULTILINE)])
 
 
 def strip_block_comments(text: str) -> str:
     """ Remove any block-style comments from a text. """
 
-    return strip_comments(text, [COMMENT_BLOCK_PATTERN])
+    return strip_comments(text, [(COMMENT_BLOCK_PATTERN, None)])
 
 
 def strip_function_bodies(text: str) -> str:
-    """ Remove any function bodies from a text.
+    """ Strip and collapse function bodies from a text.
 
         Entire body is replaced by whitespace, only leaving linebreaks in place.
 
@@ -113,8 +121,44 @@ def strip_function_bodies(text: str) -> str:
     return stripped
 
 
-def strip_literals(text: str) -> str:
-    return strip_single_line_literals(text)
+def strip_literals(text: str, patterns: list) -> str:
+    """ Remove any literals matching provided patterns from a text.
+
+        Literals inside comments will also be removed.
+    """
+
+    stripped = text
+
+    for pattern in patterns:
+        for match in re.finditer(pattern, stripped):
+            literal = match.group(1)
+
+            replacement = ' ' * len(literal)
+
+            from_index = match.start(1)
+            to_index = match.end(1)
+
+            # note that we're doing an iterative search *while* we're modifying the text we're
+            # matching on; this works out because the number of characters always remain the same
+            # (i.e. we're just replacing with whitespace)
+            stripped = stripped[:from_index] + replacement + stripped[to_index:]
+
+    assert is_seemingly_identical(stripped, original=text)
+
+    return stripped
+
+
+def strip_any_literals(text: str) -> str:
+    """ Remove both single line and character literals from a text. """
+
+    return strip_literals(text, [LITERAL_SINGLE_LINE,
+                                 LITERAL_SINGLE_CHAR])
+
+
+def strip_single_character_literals(text: str) -> str:
+    """ Remove any single character literals from a text. """
+
+    return strip_literals(text, [LITERAL_SINGLE_CHAR])
 
 
 def strip_single_line_literals(text: str) -> str:
@@ -127,27 +171,47 @@ def strip_single_line_literals(text: str) -> str:
           "A bunch of text", if found, becomes:
           "               "
 
-        Note that character literals are not stripped.
+        Note that single character literals are not stripped.
     """
+
+    return strip_literals(text, [LITERAL_SINGLE_LINE])
+
+
+def strip_parens(text: str) -> str:
+    """ Remove any parentheses blocks. """
 
     stripped = text
 
-    pattern = re.compile(LITERAL_SINGLE_LINE)
+    # note that we search for paren blocks but only use the matches to find a starting position
+    # since parens can be nested inside other parens, we have to manually count opening and
+    # closing parens to find the entire block that we want to strip
+    pattern = re.compile(r'\(.*?\)', re.DOTALL)  # paren blocks can span more than one line
 
-    for match in pattern.finditer(stripped):
-        literal = match.group(1)
+    match = pattern.search(stripped)
 
-        replacement = ' ' * len(literal)
+    while match is not None:
+        starting = match.start()
+        ending = starting
 
-        from_index = match.start(1)
-        to_index = match.end(1)
+        depth_count = 0
 
-        # note that we're doing an iterative search *while* we're modifying the text we're
-        # matching on; this works out because the number of characters always remain the same
-        # (i.e. we're just replacing with whitespace)
-        stripped = stripped[:from_index] + replacement + stripped[to_index:]
+        for c in text[starting:]:
+            if c == '(':
+                depth_count += 1
+            elif c == ')':
+                depth_count -= 1
 
-    assert is_seemingly_identical(stripped, original=text)
+            ending += 1
+
+            if depth_count == 0:
+                break
+
+        block = text[starting:ending]
+        replacement = blanked(block)
+
+        stripped = stripped[:starting] + replacement + stripped[ending:]
+
+        match = pattern.search(stripped)
 
     return stripped
 
@@ -158,12 +222,9 @@ def blanked(text: str, keepends: bool=True) -> str:
         Newlines are kept as-is.
     """
 
-    blanked_text = ''
-
-    for c in text:
-        if keepends and c in ['\r', '\n']:
-            blanked_text += c
-        else:
-            blanked_text += ' '
+    if keepends:
+        blanked_text = re.sub(r'[^\s\r\n]', ' ', text)
+    else:
+        blanked_text = ' ' * len(text)
 
     return blanked_text

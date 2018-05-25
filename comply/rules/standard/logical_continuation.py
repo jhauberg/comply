@@ -22,7 +22,7 @@ class LogicalContinuation(Rule):
         from_index, to_index = violation.meta['range']
 
         augmented_line = (line[:from_index] +
-                          Colors.bad + line[from_index:to_index] + Colors.clear +
+                          Colors.BAD + line[from_index:to_index] + Colors.RESET +
                           line[to_index:])
 
         violation.lines[line_index] = (line_number, augmented_line)
@@ -33,7 +33,7 @@ class LogicalContinuation(Rule):
             line_index = line_index - 1
             line_number, line = violation.lines[line_index]
 
-            augmented_line = line + ' ' + Colors.good + operation + Colors.clear
+            augmented_line = line + ' ' + Colors.GOOD + operation + Colors.RESET
 
             violation.lines[line_index] = (line_number, augmented_line)
 
@@ -47,10 +47,12 @@ class LogicalContinuation(Rule):
 
             offending_operation = logical_match.group(1)
 
-            offending_line_number, offending_column = RuleViolation.at(offending_index, text)
-            offending_range = (offending_column - 1, offending_column - 1 + len(offending_operation))
+            offending_line_number, offending_column = file.line_number_at(offending_index)
 
-            offending_lines = RuleViolation.lines_in_match(logical_match, file.original)
+            offending_range = (offending_column - 1,
+                               offending_column - 1 + len(offending_operation))
+
+            offending_lines = file.lines_in_match(logical_match)
 
             offender = self.violate(at=(offending_line_number, offending_column),
                                     lines=offending_lines,
