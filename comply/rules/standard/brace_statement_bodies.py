@@ -18,9 +18,10 @@ class BraceStatementBodies(Rule):
 
     def augment(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
-        column = violation.where[1]
 
-        leading_space = ' ' * (column - 1)
+        i = len(line) - len(line.lstrip())
+
+        leading_space = line[:i]
 
         violation.lines = [
             (line_number, line + Colors.GOOD + ' {' + Colors.RESET),
