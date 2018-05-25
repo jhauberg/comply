@@ -92,6 +92,19 @@ class CheckFile:
 
         return self.lines_in(character_range)
 
+    def line_at(self, line_number: int) -> str:
+        """ Return the line at a line number, or None if line number is out of bounds.
+
+            Note that a line number is *not* a zero-based index. The first line number is always 1.
+        """
+
+        line_index = line_number - 1
+
+        if line_index < 0 or line_index > len(self.lines):
+            return None
+
+        return self.lines[line_number - 1]
+
     @property
     def lines(self):
         """ Return a list of lines from the original text. """
