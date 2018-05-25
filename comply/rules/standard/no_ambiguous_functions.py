@@ -36,25 +36,29 @@ class NoAmbiguousFunctions(Rule):
 
         for function_match in self.pattern.finditer(text):
             function_parameters = function_match.group('params')
+
+            if len(function_parameters.strip()) > 0:
+                # this function has explicitly specified parameters; move on
+                continue
+
+            offending_index = function_match.start('name')
+
+            offending_line_number, offending_column = file.line_number_at(offending_index)
+
+            character_range = (function_match.start(),
+                               function_match.end())
+
+            offending_lines = file.lines_in(character_range)
+
             function_parameters_starting_index = function_match.start('params')
 
-            if len(function_parameters.strip()) == 0:
-                offending_index = function_match.start('name')
+            _, insertion_column = file.line_number_at(function_parameters_starting_index)
 
-                offending_line_number, offending_column = file.line_number_at(offending_index)
+            offender = self.violate(at=(offending_line_number, offending_column),
+                                    lines=offending_lines,
+                                    meta={'insertion_index': insertion_column - 1})
 
-                character_range = (function_match.start(),
-                                   function_match.end())
-
-                offending_lines = file.lines_in(character_range)
-
-                _, insertion_column = file.line_number_at(function_parameters_starting_index)
-
-                offender = self.violate(at=(offending_line_number, offending_column),
-                                        lines=offending_lines,
-                                        meta={'insertion_index': insertion_column - 1})
-
-                offenders.append(offender)
+            offenders.append(offender)
 
         return offenders
 
