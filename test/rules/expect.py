@@ -45,15 +45,15 @@ def check_triggers(text: str, rule):
         # subtract count to determine the correct index when triggers are stripped
         trigger_indices.append(trigger.start() - len(trigger_indices))
 
+    # make a clean snippet without trigger chars
+    snippet = text.replace(TRIGGER_CHAR, '')
+
     # determine locations of all expected violations
-    trigger_locations = [CheckFile.line_number_in_text(trigger_index, text)
+    trigger_locations = [CheckFile.line_number_in_text(trigger_index, snippet)
                          for trigger_index in trigger_indices]
 
     # determine number of expected violations
     expected_number_of_violations = len(trigger_locations)
-
-    # make a clean snippet without trigger chars
-    snippet = text.replace(TRIGGER_CHAR, '')
 
     result = check_text(snippet, [rule()])
 
