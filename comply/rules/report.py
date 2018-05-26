@@ -52,10 +52,16 @@ class CheckFile:
     def line_number_at(self, index: int, at_beginning: bool=False) -> (int, int):
         """ Return the line number and column at which a character index occur in the original text.
 
-            Column is set to 0 if at_beginning is True.
+            Column is set to 1 if at_beginning is True.
         """
 
         return CheckFile.line_number_in_text(index, self.original, at_beginning)
+
+    @staticmethod
+    def line_number_at_start_of(line_index: int) -> (int, int):
+        """ Return the line number and column at a given line index. """
+
+        return line_index + 1, 1
 
     def line_number_at_top(self) -> (int, int):
         """ Return the line number and column at the top of a text. """
@@ -135,14 +141,14 @@ class CheckFile:
     def line_number_in_text(index: int, text: str, at_beginning: bool=False) -> (int, int):
         """ Return the line number and column at which a character index occur in a text.
 
-            Column is set to 0 if at_beginning is True.
+            Column is set to 1 if at_beginning is True.
         """
 
-        line = text.count('\n', 0, index) + 1
+        line_index = text.count('\n', 0, index)
 
         if at_beginning:
-            return line, 0
+            return CheckFile.line_number_at_start_of(line_index)
 
         column = index - text.rfind('\n', 0, index)
 
-        return line, column
+        return line_index + 1, column
