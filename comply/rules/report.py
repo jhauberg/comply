@@ -1,5 +1,7 @@
 # coding=utf-8
 
+""" Models for dealing with checked files and their results. """
+
 from typing import List, Tuple
 
 
@@ -57,12 +59,6 @@ class CheckFile:
 
         return CheckFile.line_number_in_text(index, self.original, at_beginning)
 
-    @staticmethod
-    def line_number_at_start_of(line_index: int) -> (int, int):
-        """ Return the line number and column at a given line index. """
-
-        return line_index + 1, 1
-
     def line_number_at_top(self) -> (int, int):
         """ Return the line number and column at the top of a text. """
 
@@ -99,17 +95,14 @@ class CheckFile:
         return self.lines_in(character_range)
 
     def line_at(self, line_number: int) -> str:
-        """ Return the line at a line number, or None if line number is out of bounds.
+        """ Return the line at a line number.
 
             Note that a line number is *not* a zero-based index. The first line number is always 1.
         """
 
         line_index = line_number - 1
 
-        if line_index < 0 or line_index > len(self.lines):
-            return None
-
-        return self.lines[line_number - 1]
+        return self.lines[line_index]
 
     @property
     def lines(self):
@@ -119,6 +112,28 @@ class CheckFile:
             self._original_lines = self.original.splitlines()
 
         return self._original_lines
+
+    @staticmethod
+    def line_number_in_text(index: int, text: str, at_beginning: bool=False) -> (int, int):
+        """ Return the line number and column at which a character index occur in a text.
+
+            Column is set to 1 if at_beginning is True.
+        """
+
+        line_index = text.count('\n', 0, index)
+
+        if at_beginning:
+            return CheckFile.line_number_at_start_of(line_index)
+
+        column = index - text.rfind('\n', 0, index)
+
+        return line_index + 1, column
+
+    @staticmethod
+    def line_number_at_start_of(line_index: int) -> (int, int):
+        """ Return the line number and column at a given line index. """
+
+        return line_index + 1, 1
 
     @property
     def collapsed(self):
@@ -136,19 +151,3 @@ class CheckFile:
             self._stripped_collaped = strip_function_bodies(self.stripped)
 
         return self._stripped_collaped
-
-    @staticmethod
-    def line_number_in_text(index: int, text: str, at_beginning: bool=False) -> (int, int):
-        """ Return the line number and column at which a character index occur in a text.
-
-            Column is set to 1 if at_beginning is True.
-        """
-
-        line_index = text.count('\n', 0, index)
-
-        if at_beginning:
-            return CheckFile.line_number_at_start_of(line_index)
-
-        column = index - text.rfind('\n', 0, index)
-
-        return line_index + 1, column
