@@ -4,25 +4,27 @@
 
 <br/>
 
-A linter tool to help (pedantic) programmers enforce a consistent coding style for sources written in C99.
+A linter tool to help (pedantic) programmers enforce a consistent coding style and better practices for sources written in C99.
 
-Its purpose is to make style issues clear and apparent, while providing helpful hints and suggestions on how to fix them.
-
-**Strict style compliance**
-
-`comply` defines some (highly) opinionated and strict rules and conventions on best practices for writing code that is both readable and maintainable.
+Its goal is to work as a proofing mechanism during your development process, making issues and fixes clear and apparent.
 
 ![](assets/example_terminal.png "An example of reported violations using the Human reporting mode in a terminal")
+
+**Strictly compliant**
+
+`comply` defines some (highly) opinionated and strict rules and conventions on best practices for writing code that is both readable and maintainable. It's not just a matter of formatting.
 
 Following these rules will help improve the general state of your project, making it easier for anyone, yourself or others, to both maintain and contribute.
 
 You can read more about the thoughts behind each rule on the [project page](http://jhauberg.github.io/comply).
 
+---
+
 **Disclaimer**
 
-The proposed style guidelines are fully based on my personal convictions of what is "the correct style"; they are not battle-tested on production quality codebases.
+The proposed guidelines are fully based on my personal convictions of what is "the correct style"; they have not been battle-tested on production quality codebases.
 
-Additionally, this is a new project; as such, it is under constant development and breaking changes may happen frequently.
+Additionally, this is a **work in progress**; as such, it is under constant development and breaking changes may happen frequently.
 
 ## Installation
 
@@ -215,27 +217,41 @@ Options:
   --version               Show program version
 ```
 
-## Other linters
+## Spread the word
 
-### Pattern matching
+[![code style: compliant](https://img.shields.io/badge/code%20style-compliant-000000.svg)](https://github.com/jhauberg/comply)
 
-Unlike most popular linters, `comply` exclusively use Regex and pattern-matching to determine violations. 
+Does your project comply? Let it be known!
 
-This is both good and bad.
+You can use this badge in your own project's `README.md`:
 
-**Bad**
+```markdown
+[![code style: compliant](https://img.shields.io/badge/code%20style-compliant-000000.svg)](https://github.com/jhauberg/comply)
+```
 
-Theoretically, it performs *worse* than the alternatives (e.g. `clang-tidy`) in many cases. It is less capable of parsing the language correctly in many edge-cases (of which C has a lot) and may even have a higher tendency toward false-positives which a compiler/AST-backed linter would generally not. Specifically the lack of any macro pre-processing is a big cause of false-positives.
+## FAQ
 
-You could argue that it takes on more responsibility than it needs to (an option could be to integrate [pycparser](https://github.com/eliben/pycparser) to reduce issues with some of the more complicated rules- though that has its own set of problems).
+### Does it do any pre-processing?
 
-**Good**
+`comply` does not offer any pre-processing and does not depend on anything from the compiler toolchains (`clang`, `gcc` etc.).
 
-However, on the upside, it makes `comply` simpler in its usage, as it does not need to compile or pre-process anything before running its checks and thus does not need any configuration (e.g. include paths and such).
+This is intentional and deliberate. It makes `comply` much leaner, easier to use and more portable. Because it does not need to know any include paths, standard library or anything like that, you can just point and shoot.
 
-Just point and shoot.
+However, the bad news is that pre-processor directives, such as `#define`, which are widely and commonly used, won't be resolved properly when `comply` looks at it. This means that macros can cause a lot of trouble and potentially cause false-positives.
 
-Additionally, it also allows `comply` to be much more lean in terms of dependencies and portability, and, potentially even friendlier and easier to get into for people wishing to add or improve functionality.
+If you feel like it, you can always run something like `clang -E` on your source to have it pre-processed before letting `comply` have a look. But that can be a whole deal in itself.
+
+### How does it parse the C-language?
+
+At its core, `comply` does *not* try to parse and tokenize the C-language.
+
+Like with the lack of [pre-processing](#does-it-do-any-pre-processing?), this is deliberate.
+
+Instead, each rule use pattern-matching to find violations. This can be problematic for some edge-cases (of which C has a lot), but generally works out and makes it simple and clear to understand how a rule works.
+
+In a way, this decision ties in with the lack of pre-processing, as, in most cases, it would require pre-processed source in the first place to build a fully-formed AST of a C-file (see [pycparser](https://github.com/eliben/pycparser)).
+
+
 
 ## License
 
