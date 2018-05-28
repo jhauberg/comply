@@ -197,18 +197,24 @@ def collect(file: CheckFile, rules: List[Rule], reporter: Reporter=None) -> List
             reporter.reports += len(offenders)
 
             if reporter.reports > reporter.limit:
-                diff = reporter.reports - reporter.limit
+                num_exceeding_reports = reporter.reports - reporter.limit
                 reporter.reports = reporter.limit
-                offenders = offenders[:-diff]
+
+                offenders = offenders[:-num_exceeding_reports]
 
         violations.extend(offenders)
 
         if reporter is not None:
+            n = len(rules)
+
             if reporter.has_reached_reporting_limit:
-                reporter.report_progress(len(rules), len(rules))
+                # pretend we're running the remaining iterations to get the proper
+                # amount of progress indication ticks
+                for j in range(i, n):
+                    reporter.report_progress(j + 1, n)
 
                 break
 
-            reporter.report_progress(i + 1, len(rules))
+            reporter.report_progress(i + 1, n)
 
     return violations
