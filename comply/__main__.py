@@ -14,15 +14,17 @@ Usage:
 
 Options:
   -r --reporter=<name>    Specify type of reported output [default: human]
-  -C --check=<rule>       Only run checks for specific rules
-  -E --except=<rule>      Don't run checks for specific rules
   -i --limit=<amount>     Limit the amount of reported violations
   -s --strict             Report all violations (and don't suppress similar ones)
-  -e --only-severe        Report only severe violations
   -P --profile            Show profiling/benchmark results
   -v --verbose            Show diagnostic messages
   -h --help               Show program help
   --version               Show program version
+
+Options (non-compliant):
+  -e --only-severe        Report only severe violations
+  -I --check=<rule>       Only run checks for specific rules
+  -E --except=<rule>      Don't run checks for specific rules
 """
 
 import os
