@@ -4,4 +4,4 @@
 This script holds the version identifier for comply.
 """
 
-__version__ = '0.12.1'
+__version__ = '0.13.0'
