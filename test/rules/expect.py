@@ -24,16 +24,16 @@ from comply.rules.report import CheckFile
 TRIGGER_CHAR = '↓'
 
 
-def match_triggers(texts: list, rule):
+def match_triggers(texts: list, rule, assumed_filename: str=None):
     """ Check texts for any violations to a rule and determine whether they match the
         expected results.
     """
 
     for text in texts:
-        check_triggers(text, rule)
+        check_triggers(text, rule, assumed_filename)
 
 
-def check_triggers(text: str, rule):
+def check_triggers(text: str, rule, assumed_filename: str=None):
     """ Check a text for any violations to a rule and assert whether they
         correspond to the expected count and location.
     """
@@ -45,17 +45,20 @@ def check_triggers(text: str, rule):
         # subtract count to determine the correct index when triggers are stripped
         trigger_indices.append(trigger.start() - len(trigger_indices))
 
+    # make a clean snippet without trigger chars
+    snippet = text.replace(TRIGGER_CHAR, '')
+
     # determine locations of all expected violations
-    trigger_locations = [CheckFile.line_number_in_text(trigger_index, text)
+    trigger_locations = [CheckFile.line_number_in_text(trigger_index, snippet)
                          for trigger_index in trigger_indices]
 
     # determine number of expected violations
     expected_number_of_violations = len(trigger_locations)
 
-    # make a clean snippet without trigger chars
-    snippet = text.replace(TRIGGER_CHAR, '')
-
-    result = check_text(snippet, [rule()])
+    if assumed_filename is not None:
+        result = check_text(snippet, [rule()], assumed_filename)
+    else:
+        result = check_text(snippet, [rule()])
 
     # make sure resulting violations are in ascending order to match the trigger indices
     violations_in_order = sorted(result.violations,
@@ -66,8 +69,10 @@ def check_triggers(text: str, rule):
     if total_violations != expected_number_of_violations:
         violation_locations = [violation.where for violation in violations_in_order]
 
-        raise AssertionError('Found unexpected number of violations ({0} != {1}): \n{2}'.format(
-            total_violations, expected_number_of_violations, violation_locations))
+        raise AssertionError(('Found unexpected number of violations ({0} != {1}):\n'
+                              'Found {2}\n'
+                              'Expected {3}').format(
+            total_violations, expected_number_of_violations, violation_locations, trigger_locations))
 
     for i, violation in enumerate(violations_in_order):
         trigger_location = trigger_locations[i]

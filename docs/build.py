@@ -1,5 +1,9 @@
 # coding=utf-8
 
+"""
+This is a build script for generating the docs site for comply.
+"""
+
 import os
 import sys
 import datetime

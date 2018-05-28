@@ -5,7 +5,6 @@ from comply.rules.standard.no_headers_in_header import NoHeadersInHeader
 from comply.rules.standard.no_unified_headers import NoUnifiedHeaders
 from comply.rules.standard.list_needed_symbols import ListNeededSymbols
 from comply.rules.standard.symbol_listed_not_needed import SymbolListedNotNeeded
-from comply.rules.standard.symbol_needed_not_listed import SymbolNeededNotListed
 from comply.rules.standard.no_dupe_includes import NoDuplicateIncludes
 from comply.rules.standard.no_source_includes import NoSourceIncludes
 from comply.rules.standard.no_redundant_const import NoRedundantConst

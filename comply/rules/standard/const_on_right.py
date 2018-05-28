@@ -10,7 +10,7 @@ from comply.printing import Colors
 class ConstOnRight(Rule):
     def __init__(self):
         Rule.__init__(self, name='const-on-right',
-                      description='Prefer const qualifiers on the right',
+                      description='Prefer const qualifiers to the right',
                       suggestion='Place const qualifier to the right of the type declaration.')
 
     # match both struct/enum and standard type declarations

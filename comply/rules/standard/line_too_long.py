@@ -28,47 +28,22 @@ class LineTooLong(Rule):
     def collect(self, file: CheckFile):
         offenders = []
 
-        text = file.original
+        max_characters = LineTooLong.MAX
 
-        index = 0
-
-        for line in text.splitlines(keepends=True):  # keep ends to ensure indexing is correct
+        for i, line in enumerate(file.lines):
             length = len(line)
 
-            max_characters = LineTooLong.MAX
-            characters_except_newline = length - 1
+            if length <= max_characters:
+                continue
 
-            if characters_except_newline > max_characters:
-                offending_index = index + max_characters
+            line_number = i + 1
+            column = max_characters + 1
 
-                linenumber, column = file.line_number_at(offending_index)
+            offender = self.violate(at=(line_number, column),
+                                    lines=[(line_number, line)],
+                                    meta={'length': length,
+                                          'max': max_characters})
 
-                assert column > max_characters
-
-                # remove any trailing newlines to keep neat prints
-                line = without_trailing_newline(line)
-
-                offending_line = (linenumber, line)
-
-                offender = self.violate(at=(linenumber, column),
-                                        lines=[offending_line],
-                                        meta={'length': characters_except_newline,
-                                              'max': max_characters})
-
-                offenders.append(offender)
-
-            index += length
+            offenders.append(offender)
 
         return offenders
-
-
-def without_trailing_newline(text: str) -> str:
-    """ Return new text by removing any trailing newline. """
-
-    if text.endswith('\r\n'):
-        return text[:-2]
-
-    if text.endswith('\n'):
-        return text[:-1]
-
-    return text

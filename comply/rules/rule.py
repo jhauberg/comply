@@ -1,5 +1,9 @@
 # coding=utf-8
 
+"""
+Models for defining rules and violations.
+"""
+
 import datetime
 
 from typing import List, Tuple

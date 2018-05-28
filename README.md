@@ -4,25 +4,13 @@
 
 <br/>
 
-A linter tool to help (pedantic) programmers enforce a consistent coding style for sources written in C99.
+A linter to help (pedantic) programmers enforce a consistent coding style and better practices for C99 sources.
 
-Its purpose is to make style issues clear and apparent, while providing helpful hints and suggestions on how to fix them.
-
-**Strict style compliance**
-
-`comply` defines some (highly) opinionated and strict rules and conventions on best practices for writing code that is both readable and maintainable.
+It's not *just* a matter of formatting.
 
 ![](assets/example_terminal.png "An example of reported violations using the Human reporting mode in a terminal")
 
-Following these rules will help improve the general state of your project, making it easier for anyone, yourself or others, to both maintain and contribute.
-
-You can read more about the thoughts behind each rule on the [project page](http://jhauberg.github.io/comply).
-
-**Disclaimer**
-
-The proposed style guidelines are fully based on my personal convictions of what is "the correct style"; they are not battle-tested on production quality codebases.
-
-Additionally, this is a new project; as such, it is under constant development and breaking changes may happen frequently.
+Jump to: [Usage](#usage), [Options](#options), [Integration](#integrating-with-xcode), [FAQ](#faq)
 
 ## Installation
 
@@ -39,7 +27,7 @@ $ python setup.py install
 
 There's a few things that could go wrong during an install. If things didn't go as expected, check the following:
 
-**You may have more than one Python version installed**
+**You might have more than one Python version installed**
 
 Some systems may have multiple Python versions installed and available. This project requires Python 3.5 or later, so you may need to specify that you want to use a later version:
 
@@ -47,7 +35,7 @@ Some systems may have multiple Python versions installed and available. This pro
 $ python3 setup.py install
 ```
 
-**Your PATH environment variable may be incorrect**
+**Your PATH environment variable might be incorrect**
 
 When you first installed Python, the installer probably added the `PATH` automatically to your `~/.profile` or `~/.bash_profile`. However, in case it didn't, it should look something like this:
 
@@ -84,9 +72,25 @@ You can then go through all listed files and manually delete each one.
 - Python 3.5+
 - [docopt](https://github.com/docopt/docopt)
 
-## Usage
+## Strict compliance
 
-> *You should enable all warnings and errors that your compiler provides and run `comply` as a post-process once your project cleanly compiles.*
+To enforce its guidelines, `comply` defines some (highly) opinionated rules and conventions on best practices for writing code that reads better and is more maintainable. As a whole, these rules represent the requirement for a codebase to be compliant with the `comply` style.
+
+Following these rules will help improve the general state of your project, making it easier for anyone, yourself or others, to both maintain and contribute.
+
+You might not like some of them, but each rule has thought and reasoning behind it.
+
+You can read more about the rules on the [project page](http://jhauberg.github.io/comply).
+
+------
+
+**Disclaimer**
+
+The proposed guidelines are fully based on my personal convictions of what is "the correct style"; they have not been battle-tested on production quality codebases.
+
+Additionally, this is a **work in progress**; as such, it is under constant development and breaking changes may happen frequently.
+
+## Usage
 
 When installed, you can run `comply` on the command line and provide it with single files or entire directories:
 
@@ -99,6 +103,10 @@ If provided with a directory, `comply` will automatically traverse the entire di
 ```console
 $ comply mylib/src/
 ```
+
+Keep in mind that `comply` is not a compiler and will run its checks even if your code contains errors.
+
+Because of this, you should only run `comply` as a post-build process.
 
 <details>
   <summary><strong>Running without installing</strong></summary>
@@ -126,6 +134,29 @@ $ python -m comply path/to/src/
 
 </details>
 
+### Options
+
+```console
+Make your C follow the rules
+
+Usage:
+  comply <input>... [--reporter=<name>] [--check=<rule>]... [--except=<rule>]...
+                    [--limit=<amount>] [--strict] [--only-severe] [--verbose]
+  comply -h | --help
+  comply --version
+
+Options:
+  -r --reporter=<name>    Specify type of reported output [default: human]
+  -c --check=<rule>       Only run checks for a specific rule
+  -e --except=<rule>      Don't run checks for a specific rule
+  -i --limit=<amount>     Limit the amount of reported violations
+  -s --strict             Report all violations (and don't suppress similar ones)
+  -S --only-severe        Report only severe violations
+  -v --verbose            Show diagnostic messages
+  -h --help               Show program help
+  --version               Show program version
+```
+
 ### Integrating with Xcode
 
 `comply` can be integrated as a *Run Script Build Phase* in Xcode to have violations reported directly in the IDE:
@@ -135,7 +166,7 @@ $ python -m comply path/to/src/
 You have two options for making this happen:
 
 <details>
-  <summary><strong>1) Using installed executable (*recommended*)</strong></summary>
+  <summary><strong>1) Using installed executable (recommended)</strong></summary>
 
 <br/>
 
@@ -167,6 +198,8 @@ export PYTHONIOENCODING=UTF-8
 /Library/Frameworks/Python.framework/Versions/3.6/bin/comply "${SRCROOT}" --reporter=oneline
 ```
 
+*The `PYTHONIOENCODING=UTF-8` is needed to allow Unicode characters to be output in Xcode's message log.*
+
 </details>
 
 <details>
@@ -192,50 +225,60 @@ Now, every time you build, `comply` will be run on every file and directory with
 
 You can change or add arguments as you like, but `--reporter=oneline` is required for violations to be displayed as pop-ups.
 
-### Full usage
+## Spread the word
 
-```console
-Make your C follow the rules
+[![code style: compliant](https://img.shields.io/badge/code%20style-compliant-000000.svg)](https://github.com/jhauberg/comply)
 
-Usage:
-  comply <input>... [--reporter=<name>] [--check=<rule>]... [--except=<rule>]...
-                    [--limit=<amount>] [--strict] [--only-severe] [--verbose]
-  comply -h | --help
-  comply --version
+Does your project comply? Let it be known!
 
-Options:
-  -r --reporter=<name>    Specify type of reported output [default: human]
-  -c --check=<rule>       Only run checks for a specific rule
-  -e --except=<rule>      Don't run checks for a specific rule
-  -i --limit=<amount>     Limit the amount of reported violations
-  -s --strict             Report all violations (and don't suppress similar ones)
-  -S --only-severe        Report only severe violations
-  -v --verbose            Show diagnostic messages
-  -h --help               Show program help
-  --version               Show program version
+You can use this badge in your own project's `README.md`:
+
+```markdown
+[![code style: compliant](https://img.shields.io/badge/code%20style-compliant-000000.svg)](https://github.com/jhauberg/comply)
 ```
 
-## Other linters
+## FAQ
 
-### Pattern matching
+### Does `comply` do any pre-processing?
 
-Unlike most popular linters, `comply` exclusively use Regex and pattern-matching to determine violations. 
+No. This is intentional and deliberate.
 
-This is both good and bad.
+Pre-processing is difficult and is a project in its own. It is also a solved problem- but comes at the cost of adding a large dependency (and all the complexity it involves) for one of the *huge* compiler toolchains (`clang`, `gcc` etc.).
 
-**Bad**
+Avoiding dependencies, especially complex ones, makes `comply` much leaner, easier to use and more portable.
 
-Theoretically, it performs *worse* than the alternatives (e.g. `clang-tidy`) in many cases. It is less capable of parsing the language correctly in many edge-cases (of which C has a lot) and may even have a higher tendency toward false-positives which a compiler/AST-backed linter would generally not. Specifically the lack of any macro pre-processing is a big cause of false-positives.
+Because it does not even attempt to do deal with the pre-processing, it does not need to know about any include paths, standard library or anything like that either. You can just point and shoot at any C source file.
 
-You could argue that it takes on more responsibility than it needs to (an option could be to integrate [pycparser](https://github.com/eliben/pycparser) to reduce issues with some of the more complicated rules- though that has its own set of problems).
+However, the bad news is that pre-processor directives, such as `#define`, which are widely and commonly used, won't be resolved properly when `comply` looks at it. This means that macros can cause a lot of trouble and potentially cause false-positives.
 
-**Good**
+If you feel like it, you can always run something like `clang -E` on your source to have it pre-processed before letting `comply` have a look. But that can be a whole deal in itself.
 
-However, on the upside, it makes `comply` simpler in its usage, as it does not need to compile or pre-process anything before running its checks and thus does not need any configuration (e.g. include paths and such).
+### How does `comply` parse the C-language?
 
-Just point and shoot.
+At its core, `comply` does *not* try to parse and tokenize the C-language.
 
-Additionally, it also allows `comply` to be much more lean in terms of dependencies and portability, and, potentially even friendlier and easier to get into for people wishing to add or improve functionality.
+Like with the lack of [pre-processing](#does-it-do-any-pre-processing), this is deliberate.
+
+Instead, each rule use pattern-matching to find violations. This can be problematic for some edge-cases (of which C has a lot), but generally works out and makes it simple and clear to understand how a rule works.
+
+In a way, this decision ties-in with the lack of pre-processing, as, in most cases, it would require pre-processed source in the first place to build a fully-formed AST of a C-file (see [pycparser](https://github.com/eliben/pycparser)).
+
+### Is the `comply` style configurable?
+
+No. This is intentional.
+
+This project is all about defining a single ubiquitous style; it should not differ across compliant codebases.
+
+> An exception to this, is that you can exclude, or include, certain rules using the `--except` or `--check` arguments. These options contradict the philosophy of the project, but are made available for debugging purposes.
+
+### Why use `comply` when we have [`clang-tidy`](http://clang.llvm.org/extra/clang-tidy/)?
+
+Because it provides a stricter set of rules going beyond just formatting.
+
+However, objectively, `clang-tidy` is without question the more mature and seasoned choice for general linting purposes. It is also a much larger beast, and can be daunting at a glance.
+
+At the very least, `comply` is easy to get going with, so why not give it a try?
+
 
 ## License
 

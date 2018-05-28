@@ -1,16 +1,16 @@
 # coding=utf-8
 
 from comply.rules.standard import NoTabs
-from comply.checking import check_text
 
-
-RULE = NoTabs()
+from test.rules.expect import match_triggers
 
 
 def test_no_tabs_triggers():
-    text = 'source with a	tab'
-    result = check_text(text, [RULE])
+    texts = [
+        # triggers
+        'source with a↓	tab'
+        # non-triggers
+        'source without tabs'
+    ]
 
-    assert result.num_severe_violations == 1
-    assert len(result.violations) == 1
-    assert result.violations[0].where == (1, 14)
+    match_triggers(texts, NoTabs)
