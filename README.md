@@ -142,19 +142,24 @@ Make your C follow the rules
 Usage:
   comply <input>... [--reporter=<name>] [--check=<rule>]... [--except=<rule>]...
                     [--limit=<amount>] [--strict] [--only-severe] [--verbose]
+                    [--profile]
+
   comply -h | --help
   comply --version
 
 Options:
   -r --reporter=<name>    Specify type of reported output [default: human]
-  -c --check=<rule>       Only run checks for a specific rule
-  -e --except=<rule>      Don't run checks for a specific rule
   -i --limit=<amount>     Limit the amount of reported violations
   -s --strict             Report all violations (and don't suppress similar ones)
-  -S --only-severe        Report only severe violations
+  -P --profile            Show profiling/benchmark results
   -v --verbose            Show diagnostic messages
   -h --help               Show program help
   --version               Show program version
+
+Options (non-compliant):
+  -e --only-severe        Report only severe violations
+  -I --check=<rule>       Only run checks for specific rules
+  -E --except=<rule>      Don't run checks for specific rules
 ```
 
 ### Integrating with Xcode
@@ -269,7 +274,7 @@ No. This is intentional.
 
 This project is all about defining a single ubiquitous style; it should not differ across compliant codebases.
 
-> An exception to this, is that you can exclude, or include, certain rules using the `--except` or `--check` arguments. These options contradict the philosophy of the project, but are made available for debugging purposes.
+> An exception to this is that you can exclude, or include, only certain rules using the `--except` or `--check` arguments. These options contradict the philosophy of the project, but are made available for debugging purposes.
 
 ### Why use `comply` when we have [`clang-tidy`](http://clang.llvm.org/extra/clang-tidy/)?
 
