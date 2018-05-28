@@ -1,5 +1,9 @@
 # coding=utf-8
 
+"""
+Provides functions for preparing and checking source files.
+"""
+
 import os
 
 from typing import List

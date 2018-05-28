@@ -1,5 +1,9 @@
 # coding=utf-8
 
+"""
+Provides an implementation of a reporting mode for machines or editors.
+"""
+
 import os
 
 from comply.rules.rule import RuleViolation

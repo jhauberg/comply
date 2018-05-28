@@ -1,5 +1,9 @@
 # coding=utf-8
 
+"""
+Provides the base-class for reporting implementations.
+"""
+
 import os
 import math
 

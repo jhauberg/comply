@@ -1,6 +1,8 @@
 # coding=utf-8
 
-""" Models for dealing with checked files and their results. """
+"""
+Models for dealing with checked files and their results.
+"""
 
 from typing import List, Tuple
 
