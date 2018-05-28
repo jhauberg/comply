@@ -76,11 +76,11 @@ You can then go through all listed files and manually delete each one.
 
 To enforce its guidelines, `comply` defines some (highly) opinionated rules and conventions on best practices for writing code that reads better and is more maintainable.
 
-You might not like some of them, but each rule has thought and reasoning behind it.
-
 Following these rules will help improve the general state of your project, making it easier for anyone, yourself or others, to both maintain and contribute.
 
-You can read more about the rules and the thoughts behind them on the [project page](http://jhauberg.github.io/comply).
+You might not like some of them, but each rule has thought and reasoning behind it.
+
+You can read more about the rules on the [project page](http://jhauberg.github.io/comply).
 
 ------
 
@@ -104,7 +104,9 @@ If provided with a directory, `comply` will automatically traverse the entire di
 $ comply mylib/src/
 ```
 
-Keep in mind that `comply` is *not* a compiler and will run its checks even if your code contains errors. Because of this, you should only run `comply` as a post-build process.
+Keep in mind that `comply` is not a compiler and will run its checks even if your code contains errors.
+
+Because of this, you should only run `comply` as a post-build process.
 
 <details>
   <summary><strong>Running without installing</strong></summary>
