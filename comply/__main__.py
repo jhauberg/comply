@@ -275,6 +275,35 @@ def print_rules_checked(rules: list, since_starting):
         num_rules, rules_grammar, total_time_taken))
 
 
+def print_report(report: CheckResult, is_strict: bool):
+    """ Print the number of violations found in a report. """
+
+    # note the whitespace; important for the full format later on
+    severe_format = '({0} severe) ' if report.num_severe_violations > 0 else ''
+    severe_format = severe_format.format(report.num_severe_violations)
+
+    total_violations = report.num_violations + report.num_severe_violations
+
+    violations_grammar = 'violation' if total_violations == 1 else 'violations'
+
+    files_format = '{1}/{0}' if report.num_files_with_violations > 0 else '{0}'
+    files_format = files_format.format(report.num_files, report.num_files_with_violations)
+
+    # again, note the whitespace- it's intended
+    use_strict_format = (' (set `--strict` to dig deeper)'
+                         if not is_strict and total_violations == 0
+                         else '')
+
+    printdiag('Found {num_violations} {violations} {severe}'
+              'in {files} files'
+              '{use_strict}'
+              .format(num_violations=total_violations,
+                      violations=violations_grammar,
+                      severe=severe_format,
+                      files=files_format,
+                      use_strict=use_strict_format))
+
+
 def main():
     """ Entry point for invoking the comply module. """
 
@@ -345,30 +374,7 @@ def main():
         print_profiling_results(rules)
 
     if should_emit_verbose_diagnostics:
-        # note the whitespace; important for the full format later on
-        severe_format = '({0} severe) ' if report.num_severe_violations > 0 else ''
-        severe_format = severe_format.format(report.num_severe_violations)
-
-        total_violations = report.num_violations + report.num_severe_violations
-
-        violations_grammar = 'violation' if total_violations == 1 else 'violations'
-
-        files_format = '{1}/{0}' if report.num_files_with_violations > 0 else '{0}'
-        files_format = files_format.format(report.num_files, report.num_files_with_violations)
-
-        # again, note the whitespace- it's intended
-        use_strict_format = (' (set `--strict` to dig deeper)'
-                             if not is_strict and total_violations == 0
-                             else '')
-
-        printdiag('Found {num_violations} {violations} {severe}'
-                  'in {files} files'
-                  '{use_strict}'
-                  .format(num_violations=total_violations,
-                          violations=violations_grammar,
-                          severe=severe_format,
-                          files=files_format,
-                          use_strict=use_strict_format))
+        print_report(report, is_strict)
 
     if report.num_severe_violations > 0:
         # everything went fine; severe violations were encountered
