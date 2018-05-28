@@ -6,7 +6,7 @@
 
 A linter to help (pedantic) programmers enforce a consistent coding style and better practices for C99 sources.
 
-It's not just a matter of formatting.
+It's not *just* a matter of formatting.
 
 ![](assets/example_terminal.png "An example of reported violations using the Human reporting mode in a terminal")
 
@@ -74,7 +74,7 @@ You can then go through all listed files and manually delete each one.
 
 ## Strict compliance
 
-To enforce its guidelines, `comply` defines some (highly) opinionated rules and conventions on best practices for writing code that reads better and is more maintainable.
+To enforce its guidelines, `comply` defines some (highly) opinionated rules and conventions on best practices for writing code that reads better and is more maintainable. As a whole, these rules represent the requirement for a codebase to be compliant with the `comply` style.
 
 Following these rules will help improve the general state of your project, making it easier for anyone, yourself or others, to both maintain and contribute.
 
@@ -239,11 +239,9 @@ You can use this badge in your own project's `README.md`:
 
 ## FAQ
 
-### Does it do any pre-processing?
+### Does `comply` do any pre-processing?
 
-`comply` does not provide any pre-processing (of pre-processor directives- it does strip comments).
-
-This is intentional and deliberate.
+No. This is intentional and deliberate.
 
 Pre-processing is difficult and is a project in its own. It is also a solved problem- but comes at the cost of adding a large dependency (and all the complexity it involves) for one of the *huge* compiler toolchains (`clang`, `gcc` etc.).
 
@@ -255,7 +253,7 @@ However, the bad news is that pre-processor directives, such as `#define`, which
 
 If you feel like it, you can always run something like `clang -E` on your source to have it pre-processed before letting `comply` have a look. But that can be a whole deal in itself.
 
-### How does it parse the C-language?
+### How does `comply` parse the C-language?
 
 At its core, `comply` does *not* try to parse and tokenize the C-language.
 
@@ -265,6 +263,21 @@ Instead, each rule use pattern-matching to find violations. This can be problema
 
 In a way, this decision ties-in with the lack of pre-processing, as, in most cases, it would require pre-processed source in the first place to build a fully-formed AST of a C-file (see [pycparser](https://github.com/eliben/pycparser)).
 
+### Is the `comply` style configurable?
+
+No. This is intentional.
+
+This project is all about defining a single ubiquitous style; it should not differ across compliant codebases.
+
+> An exception to this, is that you can exclude, or include, certain rules using the `--except` or `--check` arguments. These options contradict the philosophy of the project, but are made available for debugging purposes.
+
+### Why use `comply` when we have [`clang-tidy`](http://clang.llvm.org/extra/clang-tidy/)?
+
+Because it provides a stricter set of rules going beyond just formatting.
+
+However, objectively, `clang-tidy` is without question the more mature and seasoned choice for general linting purposes. It is also a much larger beast, and can be daunting at a glance.
+
+At the very least, `comply` is easy to get going with, so why not give it a try?
 
 
 ## License
