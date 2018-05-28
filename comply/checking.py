@@ -43,10 +43,14 @@ def result_from_violations(violations: List[RuleViolation]) -> CheckResult:
     return result
 
 
-def check_text(text: str, rules: List[Rule]) -> CheckResult:
+def check_text(text: str, rules: List[Rule], assumed_filename: str=None) -> CheckResult:
     """ Run a check on a piece of text. """
 
-    file = prepare(text, 'N/A', 'N/A', 'N/A')
+    path = assumed_filename
+
+    filename, extension = os.path.splitext(path) if path is not None else (None, None)
+
+    file = prepare(text, filename, extension, path)
 
     violations = collect(file, rules)
 
@@ -115,7 +119,7 @@ def check(path: str, rules: List[Rule], reporter: Reporter=None) -> (CheckResult
     return result, CheckResult.FILE_CHECKED
 
 
-def prepare(text: str, filename: str, extension: str, path: str) -> CheckFile:
+def prepare(text: str, filename: str, extension: str, path: str=None) -> CheckFile:
     """ Prepare a text for checking. """
 
     # remove form-feed characters to make sure line numbers are as expected
@@ -134,7 +138,7 @@ def prepare(text: str, filename: str, extension: str, path: str) -> CheckFile:
     # debug code for comparing differences before/after stripping
     write_stripped_file = False
 
-    if write_stripped_file:
+    if write_stripped_file and path is not None:
         stripped_file_path = path + '.stripped'
 
         with open(stripped_file_path, 'w') as stripped_file:

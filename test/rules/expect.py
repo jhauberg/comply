@@ -24,16 +24,16 @@ from comply.rules.report import CheckFile
 TRIGGER_CHAR = '↓'
 
 
-def match_triggers(texts: list, rule):
+def match_triggers(texts: list, rule, assumed_filename: str=None):
     """ Check texts for any violations to a rule and determine whether they match the
         expected results.
     """
 
     for text in texts:
-        check_triggers(text, rule)
+        check_triggers(text, rule, assumed_filename)
 
 
-def check_triggers(text: str, rule):
+def check_triggers(text: str, rule, assumed_filename: str=None):
     """ Check a text for any violations to a rule and assert whether they
         correspond to the expected count and location.
     """
@@ -55,7 +55,10 @@ def check_triggers(text: str, rule):
     # determine number of expected violations
     expected_number_of_violations = len(trigger_locations)
 
-    result = check_text(snippet, [rule()])
+    if assumed_filename is not None:
+        result = check_text(snippet, [rule()], assumed_filename)
+    else:
+        result = check_text(snippet, [rule()])
 
     # make sure resulting violations are in ascending order to match the trigger indices
     violations_in_order = sorted(result.violations,
