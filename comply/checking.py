@@ -5,10 +5,10 @@ Provides functions for preparing and checking source files.
 """
 
 import os
+import comply
 
 from typing import List
 
-from comply import PROFILING_IS_ENABLED
 from comply.reporting import Reporter
 from comply.rules.rule import Rule, RuleViolation
 from comply.rules.report import CheckFile, CheckResult
@@ -180,12 +180,12 @@ def collect(file: CheckFile, rules: List[Rule], progress_callback=None) -> List[
     violations = []
 
     for i, rule in enumerate(rules):
-        if PROFILING_IS_ENABLED:
+        if comply.PROFILING_IS_ENABLED:
             rule.profile_begin()
 
         offenders = rule.collect(file)
 
-        if PROFILING_IS_ENABLED:
+        if comply.PROFILING_IS_ENABLED:
             rule.profile_end()
 
         violations.extend(offenders)

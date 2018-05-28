@@ -7,16 +7,19 @@ Make your C follow the rules
 Usage:
   comply <input>... [--reporter=<name>] [--check=<rule>]... [--except=<rule>]...
                     [--limit=<amount>] [--strict] [--only-severe] [--verbose]
+                    [--profile]
+
   comply -h | --help
   comply --version
 
 Options:
   -r --reporter=<name>    Specify type of reported output [default: human]
-  -c --check=<rule>       Only run checks for a specific rule
-  -e --except=<rule>      Don't run checks for a specific rule
+  -C --check=<rule>       Only run checks for specific rules
+  -E --except=<rule>      Don't run checks for specific rules
   -i --limit=<amount>     Limit the amount of reported violations
   -s --strict             Report all violations (and don't suppress similar ones)
-  -S --only-severe        Report only severe violations
+  -e --only-severe        Report only severe violations
+  -P --profile            Show profiling/benchmark results
   -v --verbose            Show diagnostic messages
   -h --help               Show program help
   --version               Show program version
@@ -34,7 +37,6 @@ from pkg_resources import parse_version
 from comply import (
     VERSION_PATTERN,
     EXIT_CODE_SUCCESS, EXIT_CODE_SUCCESS_WITH_SEVERE_VIOLATIONS,
-    PROFILING_IS_ENABLED,
     exit_if_not_compatible
 )
 
@@ -239,8 +241,9 @@ def main():
 
     exit_if_not_compatible()
 
-    if PROFILING_IS_ENABLED:
-        printdiag('Profiling is enabled; profiling should be disabled unless in development',
+    if comply.PROFILING_IS_ENABLED:
+        printdiag(('Profiling is enabled by default; '
+                   'profiling should only be enabled through --profile or for debugging purposes'),
                   as_error=True)
 
     if not supports_unicode():
@@ -253,6 +256,8 @@ def main():
                       as_error=True)
 
     arguments = docopt(__doc__, version='comply ' + __version__)
+
+    comply.PROFILING_IS_ENABLED = arguments['--profile']
 
     is_strict = arguments['--strict']
     only_severe = arguments['--only-severe']
@@ -300,9 +305,22 @@ def main():
             num_rules, rules_grammar, total_time_taken))
 
         if comply.PROFILING_IS_ENABLED:
+            num_rules_profiled = 0
+
             for rule in rules:
-                printdiag(' [{0}] took {1:.1f} seconds'.format(
-                    rule.name, rule.total_time_spent_collecting))
+                time_taken = rule.total_time_spent_collecting
+
+                if time_taken > 0.1:
+                    printdiag(' [{0}] took {1:.1f} seconds'.format(
+                        rule.name, rule.total_time_spent_collecting))
+
+                    num_rules_profiled += 1
+
+            num_rules_not_profiled = len(rules) - num_rules_profiled
+
+            if num_rules_not_profiled > 0:
+                printdiag(' (...{0} rules took close to 0 seconds and were not shown)'.format(
+                    num_rules_not_profiled))
 
         # note the whitespace; important for the full format later on
         severe_format = '({0} severe) ' if report.num_severe_violations > 0 else ''
@@ -329,7 +347,7 @@ def main():
                           files=files_format,
                           use_strict=use_strict_format))
 
-    if not PROFILING_IS_ENABLED:
+    if not comply.PROFILING_IS_ENABLED:
         check_for_update()
 
     if report.num_severe_violations > 0:
@@ -341,9 +359,11 @@ def main():
 
 
 if __name__ == '__main__':
-    if not PROFILING_IS_ENABLED:
-        main()
-    else:
+    # note that --profile does *not* cause PROFILING_IS_ENABLED to be True at this point!
+    # a developer must explicitly set PROFILING_IS_ENABLED to True to enable cProfile runs
+    # this allows users to run the included benchmarking utilities without also
+    # incurring the heavy duty cProfile runner, which is only interesting for developers
+    if comply.PROFILING_IS_ENABLED:
         import cProfile
         import pstats
 
@@ -366,3 +386,5 @@ if __name__ == '__main__':
 
         if os.path.exists(filename):
             os.remove(filename)
+    else:
+        main()

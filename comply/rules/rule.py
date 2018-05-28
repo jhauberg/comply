@@ -5,10 +5,10 @@ Models for defining rules and violations.
 """
 
 import datetime
+import comply
 
 from typing import List, Tuple
 
-from comply import PROFILING_IS_ENABLED
 from comply.rules.report import CheckFile
 
 
@@ -60,7 +60,7 @@ class Rule:
         self.description = description
         self.suggestion = suggestion
 
-        if PROFILING_IS_ENABLED:
+        if comply.PROFILING_IS_ENABLED:
             self.time_started_collecting = None
             self.total_time_spent_collecting = 0
 
@@ -146,14 +146,12 @@ class Rule:
         return RuleViolation.MANY_PER_FILE
 
     def profile_begin(self):
-        if not PROFILING_IS_ENABLED:
-            return
+        """ Mark the beginning of a violation collection. """
 
         self.time_started_collecting = datetime.datetime.now()
 
     def profile_end(self):
-        if not PROFILING_IS_ENABLED:
-            return
+        """ Mark the end of a violation collection and accumulate the time taken. """
 
         time_since_started_collecting = datetime.datetime.now() - self.time_started_collecting
         time_spent_collecting = time_since_started_collecting / datetime.timedelta(seconds=1)
