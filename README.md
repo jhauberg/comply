@@ -27,7 +27,7 @@ $ python setup.py install
 
 There's a few things that could go wrong during an install. If things didn't go as expected, check the following:
 
-**You may have more than one Python version installed**
+**You might have more than one Python version installed**
 
 Some systems may have multiple Python versions installed and available. This project requires Python 3.5 or later, so you may need to specify that you want to use a later version:
 
@@ -35,7 +35,7 @@ Some systems may have multiple Python versions installed and available. This pro
 $ python3 setup.py install
 ```
 
-**Your PATH environment variable may be incorrect**
+**Your PATH environment variable might be incorrect**
 
 When you first installed Python, the installer probably added the `PATH` automatically to your `~/.profile` or `~/.bash_profile`. However, in case it didn't, it should look something like this:
 
@@ -72,13 +72,15 @@ You can then go through all listed files and manually delete each one.
 - Python 3.5+
 - [docopt](https://github.com/docopt/docopt)
 
-## Compliance
+## Strict compliance
 
-`comply` defines some (highly) opinionated rules and conventions on best practices for writing code that is both readable and maintainable.
+To enforce its guidelines, `comply` defines some (highly) opinionated rules and conventions on best practices for writing code that reads better and is more maintainable.
+
+You might not like some of them, but each rule has thought and reasoning behind it.
 
 Following these rules will help improve the general state of your project, making it easier for anyone, yourself or others, to both maintain and contribute.
 
-You can read more about the thoughts behind each rule on the [project page](http://jhauberg.github.io/comply).
+You can read more about the rules and the thoughts behind them on the [project page](http://jhauberg.github.io/comply).
 
 ------
 
@@ -89,8 +91,6 @@ The proposed guidelines are fully based on my personal convictions of what is "t
 Additionally, this is a **work in progress**; as such, it is under constant development and breaking changes may happen frequently.
 
 ## Usage
-
-> *You should enable all warnings and errors that your compiler provides and run `comply` as a post-process once your project cleanly compiles.*
 
 When installed, you can run `comply` on the command line and provide it with single files or entire directories:
 
@@ -103,6 +103,8 @@ If provided with a directory, `comply` will automatically traverse the entire di
 ```console
 $ comply mylib/src/
 ```
+
+Keep in mind that `comply` is *not* a compiler and will run its checks even if your code contains errors. Because of this, you should only run `comply` as a post-build process.
 
 <details>
   <summary><strong>Running without installing</strong></summary>
@@ -162,7 +164,7 @@ Options:
 You have two options for making this happen:
 
 <details>
-  <summary><strong>1) Using installed executable (*recommended*)</strong></summary>
+  <summary><strong>1) Using installed executable (recommended)</strong></summary>
 
 <br/>
 
@@ -193,6 +195,8 @@ export PYTHONIOENCODING=UTF-8
 
 /Library/Frameworks/Python.framework/Versions/3.6/bin/comply "${SRCROOT}" --reporter=oneline
 ```
+
+*The `PYTHONIOENCODING=UTF-8` is needed to allow Unicode characters to be output in Xcode's message log.*
 
 </details>
 
