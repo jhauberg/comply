@@ -145,10 +145,10 @@ def filter_rules(names: list, exceptions: list, severities: list) -> list:
         rules = [rule for rule
                  in rules
                  if rule.name in names]
-    else:
-        rules = [rule for rule
-                 in rules
-                 if rule.severity in severities]
+
+    rules = [rule for rule
+             in rules
+             if rule.severity in severities]
 
     if len(exceptions) > 0:
         validate_names(exceptions, rules)
