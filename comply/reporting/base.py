@@ -29,23 +29,7 @@ class Reporter:
         self.suppress_similar = suppress_similar
         self.is_verbose = is_verbose
         self.limit = limit
-        self.results_count = 0
-
-    @staticmethod
-    def group_by_reason(violations: List[RuleViolation]):
-        """ Return an ordered dict with violations grouped by their reason. """
-
-        grouped = OrderedDict()
-
-        for violation in violations:
-            reason = violation.which.reason(violation)
-
-            if reason not in grouped:
-                grouped[reason] = []
-
-            grouped[reason].append(violation)
-
-        return grouped
+        self.reports = 0
 
     def report_before_checking(self, path: str, encoding: str=None):
         """ Print a diagnostic before initiating a check on a given file. """
@@ -97,17 +81,12 @@ class Reporter:
         emitted = 0
 
         for result in results:
-            if self.limit is not None and self.results_count >= self.limit:
-                break
-
             printout(result)
 
             emitted += 1
 
-            self.results_count += 1
-
             # assuming each result is a violation "almost" identical to the rest
-            if self.suppress_similar and emitted >= self.suppress_after:
+            if self.suppress_similar and emitted >= self.suppresses_after:
                 remaining = len(results) - emitted
 
                 # if results are being piped or redirected, we don't need to emit a diagnostic
@@ -132,10 +111,32 @@ class Reporter:
         self.report_results(results)
 
     @property
-    def suppress_after(self) -> int:
+    def has_reached_reporting_limit(self) -> bool:
+        """ Determine whether the specified limit of reports has been reached. """
+
+        return self.limit is not None and self.reports == self.limit
+
+    @property
+    def suppresses_after(self) -> int:
         """ Return the number of similar violations emitted before being suppressed. """
 
         return 1
+
+    @staticmethod
+    def group_by_reason(violations: List[RuleViolation]):
+        """ Return an ordered dict with violations grouped by their reason. """
+
+        grouped = OrderedDict()
+
+        for violation in violations:
+            reason = violation.which.reason(violation)
+
+            if reason not in grouped:
+                grouped[reason] = []
+
+            grouped[reason].append(violation)
+
+        return grouped
 
     @staticmethod
     def determine_progress_ticks(count, total, number_of_ticks=3) -> int:

@@ -107,12 +107,17 @@ def check(path: str, rules: List[Rule], reporter: Reporter=None) -> (CheckResult
         return result, CheckResult.FILE_NOT_READ
 
     if reporter is not None:
+        if reporter.has_reached_reporting_limit:
+            result.num_files = 1
+
+            return result, CheckResult.FILE_CHECKED
+
         reporter.report_before_checking(
             path, encoding=None if encoding is DEFAULT_ENCODING else encoding)
 
     file = prepare(text, filename, extension, path)
 
-    violations = collect(file, rules, reporter.report_progress)
+    violations = collect(file, rules, reporter)
 
     result = result_from_violations(violations)
 
@@ -174,7 +179,7 @@ def read(path: str) -> (str, str):
     return None, None
 
 
-def collect(file: CheckFile, rules: List[Rule], progress_callback=None) -> List[RuleViolation]:
+def collect(file: CheckFile, rules: List[Rule], reporter: Reporter=None) -> List[RuleViolation]:
     """ Return a list of all collected violations in a text. """
 
     violations = []
@@ -188,9 +193,22 @@ def collect(file: CheckFile, rules: List[Rule], progress_callback=None) -> List[
         if comply.PROFILING_IS_ENABLED:
             rule.profile_end()
 
+        if reporter is not None and reporter.limit is not None:
+            reporter.reports += len(offenders)
+
+            if reporter.reports > reporter.limit:
+                diff = reporter.reports - reporter.limit
+                reporter.reports = reporter.limit
+                offenders = offenders[:-diff]
+
         violations.extend(offenders)
 
-        if progress_callback is not None:
-            progress_callback(i + 1, len(rules))
+        if reporter is not None:
+            if reporter.has_reached_reporting_limit:
+                reporter.report_progress(len(rules), len(rules))
+
+                break
+
+            reporter.report_progress(i + 1, len(rules))
 
     return violations
