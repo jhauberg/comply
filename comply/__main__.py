@@ -236,6 +236,43 @@ def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
     return result
 
 
+def print_profiling_results(rules: list):
+    """ Print benchmarking results/time taken for each rule. """
+
+    num_rules_profiled = 0
+
+    for rule in rules:
+        time_taken = rule.total_time_spent_collecting
+
+        if time_taken >= 0.1:
+            printdiag(' [{0}] took {1:.1f} seconds'.format(
+                rule.name, rule.total_time_spent_collecting))
+
+            num_rules_profiled += 1
+
+    num_rules_not_profiled = len(rules) - num_rules_profiled
+
+    if num_rules_not_profiled > 0:
+        printdiag(' (...{0} rules took nearly no time and were not shown)'.format(
+            num_rules_not_profiled))
+
+
+def print_rules_checked(rules: list, since_starting):
+    """ Print the number of rules checked and time taken. """
+
+    time_since_report = datetime.datetime.now() - since_starting
+    report_in_seconds = time_since_report / datetime.timedelta(seconds=1)
+
+    total_time_taken = report_in_seconds
+
+    num_rules = len(rules)
+
+    rules_grammar = 'rule' if num_rules == 1 else 'rules'
+
+    printdiag('Checked {0} {1} in {2:.1f} seconds'.format(
+        num_rules, rules_grammar, total_time_taken))
+
+
 def main():
     """ Entry point for invoking the comply module. """
 
@@ -257,7 +294,12 @@ def main():
 
     arguments = docopt(__doc__, version='comply ' + __version__)
 
-    comply.PROFILING_IS_ENABLED = arguments['--profile']
+    enable_profiling = arguments['--profile']
+
+    comply.PROFILING_IS_ENABLED = enable_profiling
+
+    if enable_profiling:
+        printdiag('Profiling is enabled; --verbose was set automatically')
 
     is_strict = arguments['--strict']
     only_severe = arguments['--only-severe']
@@ -275,7 +317,7 @@ def main():
 
     reporter = make_reporter(reporting_mode)
     reporter.suppress_similar = not is_strict
-    reporter.is_verbose = arguments['--verbose']
+    reporter.is_verbose = True if enable_profiling else arguments['--verbose']
 
     if arguments['--limit'] is not None:
         reporter.limit = int(arguments['--limit'])
@@ -291,37 +333,15 @@ def main():
 
     report = make_report(inputs, rules, reporter)
 
-    if reporter.is_verbose and report.num_files > 0:
-        time_since_report = datetime.datetime.now() - time_started_report
-        report_in_seconds = time_since_report / datetime.timedelta(seconds=1)
+    should_emit_verbose_diagnostics = reporter.is_verbose and report.num_files > 0
 
-        total_time_taken = report_in_seconds
+    if should_emit_verbose_diagnostics:
+        print_rules_checked(rules, since_starting=time_started_report)
 
-        num_rules = len(rules)
+    if comply.PROFILING_IS_ENABLED:
+        print_profiling_results(rules)
 
-        rules_grammar = 'rule' if num_rules == 1 else 'rules'
-
-        printdiag('Checked {0} {1} in {2:.1f} seconds'.format(
-            num_rules, rules_grammar, total_time_taken))
-
-        if comply.PROFILING_IS_ENABLED:
-            num_rules_profiled = 0
-
-            for rule in rules:
-                time_taken = rule.total_time_spent_collecting
-
-                if time_taken > 0.1:
-                    printdiag(' [{0}] took {1:.1f} seconds'.format(
-                        rule.name, rule.total_time_spent_collecting))
-
-                    num_rules_profiled += 1
-
-            num_rules_not_profiled = len(rules) - num_rules_profiled
-
-            if num_rules_not_profiled > 0:
-                printdiag(' (...{0} rules took close to 0 seconds and were not shown)'.format(
-                    num_rules_not_profiled))
-
+    if should_emit_verbose_diagnostics:
         # note the whitespace; important for the full format later on
         severe_format = '({0} severe) ' if report.num_severe_violations > 0 else ''
         severe_format = severe_format.format(report.num_severe_violations)
@@ -346,9 +366,6 @@ def main():
                           severe=severe_format,
                           files=files_format,
                           use_strict=use_strict_format))
-
-    if not comply.PROFILING_IS_ENABLED:
-        check_for_update()
 
     if report.num_severe_violations > 0:
         # everything went fine; severe violations were encountered
@@ -387,4 +404,7 @@ if __name__ == '__main__':
         if os.path.exists(filename):
             os.remove(filename)
     else:
+        # we don't want to run update checks when we're profiling
+        check_for_update()
+
         main()
