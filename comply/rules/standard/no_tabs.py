@@ -8,7 +8,7 @@ from comply.printing import Colors, supports_unicode
 class NoTabs(Rule):
     def __init__(self):
         Rule.__init__(self, name='no-tabs',
-                      description='Avoid tabs to keep consistent line lengths (found {count} tabs)',
+                      description='Don\'t use tabs to keep line lengths consistent ({count} tabs)',
                       suggestion='Replace each tab with spaces (typically 4).')
 
     TAB = '\t'
@@ -19,7 +19,8 @@ class NoTabs(Rule):
 
         replacement_char = '⇥' if supports_unicode() else '~'
 
-        augmented_line = (linenumber, line.replace(NoTabs.TAB, Colors.BAD + replacement_char + Colors.RESET))
+        augmented_line = (linenumber,
+                          line.replace(NoTabs.TAB, Colors.BAD + replacement_char + Colors.RESET))
 
         count = violation.meta['count'] if 'count' in violation.meta else 0
         count_in_line = violation.meta['count_in_line'] if 'count_in_line' in violation.meta else 0
