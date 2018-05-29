@@ -101,7 +101,7 @@ def expand_params(names: list) -> list:
     return expanded_names
 
 
-def validate_names(names: list, rules: list):
+def print_invalid_names(names: list, rules: list):
     """ Go through and determine whether any of the provided names do not exist as named rules. """
 
     for name in names:
@@ -138,7 +138,7 @@ def filter_rules(names: list, exceptions: list, severities: list) -> list:
     rules = all_rules
 
     if len(names) > 0:
-        validate_names(names, rules)
+        print_invalid_names(names, rules)
 
         # only run checks for certain rules
         # (note that --strict mode is overruled when --check has at least one rule)
@@ -151,7 +151,7 @@ def filter_rules(names: list, exceptions: list, severities: list) -> list:
              if rule.severity in severities]
 
     if len(exceptions) > 0:
-        validate_names(exceptions, rules)
+        print_invalid_names(exceptions, rules)
 
         # don't run checks for certain rules
         rules = [rule for rule
