@@ -370,6 +370,10 @@ def main():
                   ([RuleViolation.DENY, RuleViolation.WARN] if not is_strict else
                    [RuleViolation.DENY, RuleViolation.WARN, RuleViolation.ALLOW]))
 
+    # remove potential duplicates
+    checks = list(set(checks))
+    exceptions = list(set(exceptions))
+
     rules = filter_rules(checks, exceptions, severities)
 
     reporting_mode = arguments['--reporter']
