@@ -97,16 +97,17 @@ def check_text(text: str, rules: List[Rule], assumed_filename: str=None) -> Chec
 
 
 def check(path: str, rules: List[Rule], reporter: Reporter=None) -> (CheckResult, int):
-    """ Run a check on the file found at path, if any.
+    """ Run a check on the file found at path.
 
-        If the path points to a directory, a check is run on each subsequent filepath.
-
-        Return a result and a code to determine whether the path was checked or not.
+        Return a result and a code to determine whether the file was checked or not.
     """
 
     result = CheckResult()
 
-    if path is None or len(path) == 0 or not os.path.exists(path):
+    if (path is None
+            or len(path) == 0
+            or not os.path.exists(path)
+            or not os.path.isfile(path)):
         return result, CheckResult.FILE_NOT_FOUND
 
     filename, extension = os.path.splitext(path)
