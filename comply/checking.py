@@ -5,6 +5,7 @@ Provides functions for preparing and checking source files.
 """
 
 import os
+import glob
 import comply
 
 from typing import List
@@ -22,6 +23,38 @@ def supported_file_types() -> tuple:
     """ Return all supported and recognized source filetypes. """
 
     return '.h', '.c'
+
+
+def find_checkable_files(path: str) -> list:
+    """ Return a list of all checkable files found in a path.
+
+        If path is a directory, traverse through it and any subdirectories to find checkable files.
+
+        If path points to a non-supported file, it is *not* excluded.
+    """
+
+    supported_extensions = ''.join([extension[1:].lower() for extension in supported_file_types()])
+
+    # match file with supported extension in dir and all subdirs
+    pattern = '/**/*.[{extensions}]'.format(extensions=supported_extensions)
+
+    checkable_paths = []
+
+    if os.path.isdir(path):
+        # input is a directory; traverse it and any subdirectories looking for supported files
+        directory_pattern = path + pattern
+
+        supported_filepaths = glob.glob(directory_pattern, recursive=True)
+
+        checkable_paths.extend(supported_filepaths)
+    else:
+        # input is a plain filepath
+        checkable_paths.append(path)
+
+    # remove potential duplicates
+    checkable_paths = list(set(checkable_paths))
+
+    return checkable_paths
 
 
 def result_from_violations(violations: List[RuleViolation]) -> CheckResult:
@@ -76,22 +109,6 @@ def check(path: str, rules: List[Rule], reporter: Reporter=None) -> (CheckResult
     if path is None or len(path) == 0 or not os.path.exists(path):
         return result, CheckResult.FILE_NOT_FOUND
 
-    if os.path.isdir(path):
-        checked_any = False
-
-        for file in os.listdir(path):
-            filepath = os.path.join(path, file)
-
-            file_result, checked = check(filepath, rules, reporter)
-
-            if checked == CheckResult.FILE_CHECKED:
-                checked_any = True
-
-                result += file_result
-
-        return result, (CheckResult.FILE_CHECKED if checked_any else
-                        CheckResult.NO_FILES_FOUND)
-
     filename, extension = os.path.splitext(path)
 
     extension = extension.lower()
@@ -107,10 +124,12 @@ def check(path: str, rules: List[Rule], reporter: Reporter=None) -> (CheckResult
         return result, CheckResult.FILE_NOT_READ
 
     if reporter is not None:
+        reporter.files_encountered += 1
+
         if reporter.has_reached_reporting_limit:
             result.num_files = 1
 
-            return result, CheckResult.FILE_CHECKED
+            return result, CheckResult.FILE_SKIPPED
 
         reporter.report_before_checking(
             path, encoding=None if encoding is DEFAULT_ENCODING else encoding)

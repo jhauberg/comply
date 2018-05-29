@@ -11,6 +11,7 @@ class CheckResult:
     """ Represents the result of running a check on one or more files. """
 
     FILE_CHECKED = 1
+    FILE_SKIPPED = 2
     FILE_NOT_FOUND = -1
     FILE_NOT_SUPPORTED = -2
     FILE_NOT_READ = -3

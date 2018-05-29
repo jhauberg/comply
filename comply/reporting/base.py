@@ -30,23 +30,33 @@ class Reporter:
         self.is_verbose = is_verbose
         self.limit = limit
         self.reports = 0
+        self.files_total = 0
+        self.files_encountered = 0
 
-    def report_before_checking(self, path: str, encoding: str=None):
+    def report_before_checking(self, path: str, encoding: str=None, show_progress: bool=True):
         """ Print a diagnostic before initiating a check on a given file. """
 
         if self.is_verbose:
             normalized_path = os.path.normpath(path)
 
-            encoding = ' ({enc})'.format(
-                enc=encoding.upper()) if encoding is not None else ''
+            encoding = (' ({0})'.format(encoding.upper())
+                        if encoding is not None
+                        else '')
 
-            diag = 'Checking \'{path}\'{enc}'.format(
+            progress = (' [{n:0{width}d}/{total}]'.format(n=self.files_encountered,
+                                                          width=len(str(self.files_total)),
+                                                          total=self.files_total)
+                        if self.files_total > 1 and show_progress
+                        else '')
+
+            diag = 'Checking \'{path}\'{enc}{progress} '.format(
                 path=truncated(normalized_path),
-                enc=encoding)
+                enc=encoding,
+                progress=progress)
 
             printdiag(diag, end='')
 
-    def report_progress(self, count, total):
+    def report_progress(self, count: int, total: int):
         """ Print a progress indication. """
 
         if not self.is_verbose:

@@ -18,6 +18,10 @@ class OneLineReporter(Reporter):
         Useful for lean reports or integration with editors.
     """
 
+    def report_before_checking(self, path: str, encoding: str=None, show_progress: bool=True):
+        # disable showing progress
+        super(OneLineReporter, self).report_before_checking(path, encoding, show_progress=False)
+
     def report(self, violations: list, path: str):
         """ Looks like:
 

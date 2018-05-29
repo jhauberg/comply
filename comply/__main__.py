@@ -44,7 +44,7 @@ from comply import (
 
 from comply.reporting import Reporter, OneLineReporter, HumanReporter
 from comply.printing import printdiag, diagnostics, supports_unicode, is_windows_environment
-from comply.checking import check
+from comply.checking import find_checkable_files, check
 from comply.version import __version__
 
 import comply.printing
@@ -205,35 +205,62 @@ def make_rules(modules: list) -> list:
 def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
     """ Run checks and print a report. """
 
+    def not_checked(path: str, type: str, reason: str):
+        """ Print a diagnostic stating when a file was not checked. """
+
+        if reason is not None:
+            printdiag('{type} \'{path}\' was not checked ({reason}).'.format(
+                type=type, path=path, reason=reason))
+        else:
+            printdiag('{type} \'{path}\' was not checked.'.format(
+                type=type, path=path))
+
+    checkable_inputs = []
+
+    # find all valid files from provided inputs
+    for path in inputs:
+        paths = find_checkable_files(path)
+
+        if len(paths) > 0:
+            # one or more valid files were found
+            checkable_inputs.extend(paths)
+        else:
+            # no valid files were found in this path
+            if os.path.isdir(path):
+                # the path was a directory, but no valid files were found inside
+                not_checked(path, type='Directory', reason='no files found')
+            else:
+                # the path was a single file, but not considered valid so it must not be supported
+                not_checked(path, type='File', reason='file not supported')
+
+    # sort paths for consistent output per identical run
+    checkable_inputs = sorted(checkable_inputs)
+
     result = CheckResult()
 
-    for path in inputs:
+    # set the total number of files we expect to report on
+    reporter.files_total = len(checkable_inputs)
+
+    # finally run the actual checks on each discovered file
+    for path in checkable_inputs:
         file_result, checked = check(path, rules, reporter)
 
         if checked == CheckResult.FILE_CHECKED:
+            # file was checked and results were reported if any
+            result += file_result
+        elif checked == CheckResult.FILE_SKIPPED:
+            # file was fine but not checked (it should still count toward the total)
             result += file_result
         else:
+            # file was not checked, for any number of reasons
             reason = None
-
-            file_or_directory = 'File'
 
             if checked == CheckResult.FILE_NOT_FOUND:
                 reason = 'file not found'
             elif checked == CheckResult.FILE_NOT_READ:
                 reason = 'file not read'
-            elif checked == CheckResult.NO_FILES_FOUND:
-                reason = 'no files found'
 
-                file_or_directory = 'Directory'
-            elif checked == CheckResult.FILE_NOT_SUPPORTED:
-                reason = 'file not supported'
-
-            if reason is not None:
-                printdiag('{type} \'{path}\' was not checked ({reason}).'.format(
-                    type=file_or_directory, path=os.path.abspath(path), reason=reason))
-            else:
-                printdiag('{type} \'{path}\' was not checked.'.format(
-                    type=file_or_directory, path=os.path.abspath(path)))
+            not_checked(path, type='File', reason=reason)
 
     return result
 
