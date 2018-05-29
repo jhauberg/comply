@@ -76,7 +76,7 @@ You can then go through all listed files and manually delete each one.
 
 To enforce its guidelines, `comply` defines some (highly) opinionated rules and conventions on best practices for writing code that both reads better and is more durable, making it easier to maintain and contribute.
 
-These rules span from formatting to design and structure, and must all be satisfied for a project to be of the *Compliant* style.
+These rules span from formatting, to design and structure, and must all be satisfied for a project to be regarded as being of the *Compliant* style.
 
 You might not like some of them, but each rule has thought and reasoning behind it.
 
