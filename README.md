@@ -72,9 +72,11 @@ You can then go through all listed files and manually delete each one.
 - Python 3.5+
 - [docopt](https://github.com/docopt/docopt)
 
-## Strict compliance
+## The *Compliant* Style
 
-To enforce its guidelines, `comply` defines some (highly) opinionated rules and conventions on best practices for writing code that reads better and is more maintainable. As a whole, these rules represent the requirement for a codebase to be compliant with the `comply` style.
+To enforce its guidelines, `comply` defines some (highly) opinionated rules and conventions on best practices for writing code that both reads better and is more maintainable.
+
+These rules must all be satisfied for a codebase to be of the *Compliant* style.
 
 Following these rules will help improve the general state of your project, making it easier for anyone, yourself or others, to both maintain and contribute.
 
@@ -268,13 +270,21 @@ Instead, each rule use pattern-matching to find violations. This can be problema
 
 In a way, this decision ties-in with the lack of pre-processing, as, in most cases, it would require pre-processed source in the first place to build a fully-formed AST of a C-file (see [pycparser](https://github.com/eliben/pycparser)).
 
-### Is the `comply` style configurable?
+### Will `comply` automatically "fix" my code?
+
+No. This is left as a task for the human.
+
+While many rules are only related to the textual representation of code, some rules require more thought, consideration and human judgment to fix- a larger task than just applying a different formatting.
+
+There is a point to be made in the usefulness of automatic formatting, see [Black](https://github.com/ambv/black) or [gofmt](https://golang.org/cmd/gofmt/), but for the time being that is out of scope for this project.
+
+### Is the *Compliant* style configurable?
 
 No. This is intentional.
 
 This project is all about defining a single ubiquitous style; it should not differ across compliant codebases.
 
-> An exception to this is that you can exclude, or include, only certain rules using the `--except` or `--check` arguments. These options contradict the philosophy of the project, but are made available for debugging purposes.
+> An exception to this is that using `comply` you can exclude, or include, only certain rules using the `--except` or `--check` arguments. These options contradict the philosophy of the project, but are made available for debugging purposes.
 
 ### Why use `comply` when we have [`clang-tidy`](http://clang.llvm.org/extra/clang-tidy/)?
 
