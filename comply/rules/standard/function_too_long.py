@@ -97,7 +97,7 @@ class FunctionTooLong(Rule):
 
                             # we found end of body; now determine if it violates rule
                             check_func_body(body, function_match.group('name'), line_number,
-                                            file.line_number_at(function_match.start(), at_beginning=True))
+                                            file.line_number_at(function_match.start(), span_entire_line=True))
 
                             break
 

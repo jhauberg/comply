@@ -32,15 +32,7 @@ class ListNeededSymbols(Rule):
             suffix = inclusion.group(1)
 
             if not is_symbol_list(suffix):
-                offending_index = inclusion.start()
-
-                linenumber, column = file.line_number_at(offending_index, at_beginning=True)
-
-                offending_line = (linenumber, inclusion.group(0))
-
-                offender = self.violate(at=(linenumber, column),
-                                        lines=[offending_line])
-
+                offender = self.violate_at_match(file, at=inclusion)
                 offenders.append(offender)
 
         return offenders

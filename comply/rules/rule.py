@@ -44,7 +44,6 @@ class RuleViolation:
     def __repr__(self):
         return '{0} at {1}'.format(self.which, self.lines)
 
-    # todo: refactor as index_of_starting_line
     def index_of_starting_line(self) -> int:
         """ Return the index of the line where this violation occurs.
 

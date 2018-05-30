@@ -16,12 +16,6 @@ class NoHeadersInHeader(Rule):
 
     pattern = re.compile(INCLUDE_PATTERN)
 
-    def augment(self, violation: RuleViolation):
-        # assume only one offending line
-        linenumber, line = violation.lines[0]
-
-        violation.lines[0] = (linenumber, Colors.BAD + line + Colors.RESET)
-
     def collect(self, file: CheckFile):
         offenders = []
 
@@ -35,16 +29,8 @@ class NoHeadersInHeader(Rule):
                     '<stdbool.h>' in include_statement):
                 continue
 
-            offending_index = inclusion.start()
-
-            line, column = file.line_number_at(offending_index, at_beginning=True)
-
-            offending_line = (line, include_statement)
-
-            offender = self.violate(at=(line, column),
-                                    lines=[offending_line],
-                                    meta={'inclusion': include_statement})
-
+            offender = self.violate_at_match(file, at=inclusion)
+            offender.meta = {'inclusion': include_statement}
             offenders.append(offender)
 
             break

@@ -52,7 +52,7 @@ class TooManyBlanks(Rule):
                 consecutive_blanks += 1
             else:
                 if consecutive_blanks > max_lines:
-                    location = file.line_number_at_start_of(line_index)
+                    location = file.line_number_at_start_of(line_index, span_entire_line=True)
 
                     trigger(at=location,
                             lines=previous_lines(lines, line_index, consecutive_blanks),
@@ -63,7 +63,7 @@ class TooManyBlanks(Rule):
             line_index += 1
 
         if consecutive_blanks > max_lines:
-            location = file.line_number_at_start_of(line_index - 1)
+            location = file.line_number_at_start_of(line_index - 1, span_entire_line=True)
 
             trigger(at=location,  # EOF
                     lines=previous_lines(lines, line_index, consecutive_blanks),
