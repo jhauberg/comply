@@ -43,7 +43,7 @@ from comply import (
 )
 
 from comply.reporting import Reporter, OneLineReporter, HumanReporter
-from comply.printing import printdiag, diagnostics, supports_unicode, is_windows_environment
+from comply.printing import printdiag, diagnostics, supports_unicode, is_windows_environment, Colors
 from comply.checking import find_checkable_files, check
 from comply.version import __version__
 
@@ -76,8 +76,10 @@ def check_for_update():
                 remote_version_identifier = matches.group(1)
 
                 if parse_version(__version__) < parse_version(remote_version_identifier):
-                    printdiag('A newer version is available ({0})'.format(
-                        remote_version_identifier))
+                    printdiag(Colors.GOOD +
+                              'A newer version is available ({0})'.format(
+                                  remote_version_identifier) +
+                              Colors.RESET)
     except HTTPError:
         # fail silently
         pass
