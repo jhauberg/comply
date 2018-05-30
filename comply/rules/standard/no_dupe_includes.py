@@ -17,15 +17,13 @@ class NoDuplicateIncludes(Rule):
     def collect(self, file: CheckFile):
         offenders = []
 
-        text = file.original  # todo: we actually *do* want comments stripped- just not literals
+        include_statements = []
 
-        include_stmts = []
+        for inclusion in self.pattern.finditer(file.stripped):
+            include_statement = file.original[inclusion.start():inclusion.end()]
 
-        for inclusion in self.pattern.finditer(text):
-            include_stmt = inclusion.group()
-
-            if include_stmt not in include_stmts:
-                include_stmts.append(include_stmt)
+            if include_statement not in include_statements:
+                include_statements.append(include_statement)
             else:
                 offender = self.violate_at_match(file, at=inclusion)
                 offenders.append(offender)
