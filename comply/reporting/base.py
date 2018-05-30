@@ -25,9 +25,10 @@ class Reporter:
         provides the base functions for specialized reporting modes.
     """
 
-    def __init__(self, suppress_similar: bool=True, limit: int=None, is_verbose: bool=False):
+    def __init__(self, suppress_similar: bool=True, limit: int=None, is_verbose: bool=False, is_strict: bool=False):
         self.suppress_similar = suppress_similar
         self.is_verbose = is_verbose
+        self.is_strict = is_strict
         self.limit = limit
         self.reports = 0
         self.files_total = 0

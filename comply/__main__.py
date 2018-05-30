@@ -15,14 +15,14 @@ Usage:
 Options:
   -r --reporter=<name>    Specify type of reported output [default: human]
   -i --limit=<amount>     Limit the amount of reported violations
-  -s --strict             Report all violations (and don't suppress similar ones)
+  -s --strict             Increase severity for less severe rules
   -P --profile            Show profiling/benchmark results
   -v --verbose            Show diagnostic messages
   -h --help               Show program help
   --version               Show program version
 
 Options (non-compliant):
-  -e --only-severe        Report only severe violations
+  -e --only-severe        Only run checks for rules of high severity
   -I --check=<rule>       Only run checks for specific rules
   -E --except=<rule>      Don't run checks for specific rules
 """
@@ -139,12 +139,12 @@ def filtered_rules(names: list, exceptions: list, severities: list) -> list:
     if len(names) > 0:
         print_invalid_names(names, rules)
 
-        # only run checks for certain rules
-        # (note that --strict mode is overruled when --check has at least one rule)
+        # filter out any rule not explicitly listed in --check
         rules = [rule for rule
                  in rules
                  if rule.name in names]
 
+    # filter out any rule of unlisted severities
     rules = [rule for rule
              in rules
              if rule.severity in severities]
@@ -152,7 +152,7 @@ def filtered_rules(names: list, exceptions: list, severities: list) -> list:
     if len(exceptions) > 0:
         print_invalid_names(exceptions, rules)
 
-        # don't run checks for certain rules
+        # filter out rules explicitly listed in --except
         rules = [rule for rule
                  in rules
                  if rule.name not in exceptions]
@@ -279,7 +279,7 @@ def print_rules_checked(rules: list, since_starting):
         num_rules, rules_grammar, total_time_taken))
 
 
-def print_report(report: CheckResult, is_strict: bool):
+def print_report(report: CheckResult):
     """ Print the number of violations found in a report. """
 
     # note the whitespace; important for the full format later on
@@ -293,19 +293,12 @@ def print_report(report: CheckResult, is_strict: bool):
     files_format = '{1}/{0}' if report.num_files_with_violations > 0 else '{0}'
     files_format = files_format.format(report.num_files, report.num_files_with_violations)
 
-    # again, note the whitespace- it's intended
-    use_strict_format = (' (set `--strict` to dig deeper)'
-                         if not is_strict and total_violations == 0
-                         else '')
-
     printdiag('Found {num_violations} {violations} {severe}'
               'in {files} files'
-              '{use_strict}'
               .format(num_violations=total_violations,
                       violations=violations_grammar,
                       severe=severe_format,
-                      files=files_format,
-                      use_strict=use_strict_format))
+                      files=files_format))
 
 
 def main():
@@ -344,8 +337,7 @@ def main():
     exceptions = expand_params(arguments['--except'])
 
     severities = ([RuleViolation.DENY] if only_severe else
-                  ([RuleViolation.DENY, RuleViolation.WARN] if not is_strict else
-                   [RuleViolation.DENY, RuleViolation.WARN, RuleViolation.ALLOW]))
+                  [RuleViolation.DENY, RuleViolation.WARN, RuleViolation.ALLOW])
 
     # remove potential duplicates
     checks = list(set(checks))
@@ -357,6 +349,7 @@ def main():
 
     reporter = make_reporter(reporting_mode)
     reporter.suppress_similar = not is_strict
+    reporter.is_strict = is_strict
     reporter.is_verbose = True if enable_profiling else is_verbose
 
     if arguments['--limit'] is not None:
@@ -382,7 +375,7 @@ def main():
         print_profiling_results(rules)
 
     if should_emit_verbose_diagnostics:
-        print_report(report, is_strict)
+        print_report(report)
 
     if report.num_severe_violations > 0:
         # everything went fine; severe violations were encountered

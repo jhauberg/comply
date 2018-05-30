@@ -46,15 +46,17 @@ class OneLineReporter(Reporter):
 
                 rule = violation.which
 
-                severity = ('error' if rule.severity > RuleViolation.WARN else
-                            ('warning' if rule.severity > RuleViolation.ALLOW else
-                             'note'))
+                severity = RuleViolation.report_severity_as(rule.severity, self.is_strict)
+
+                kind = ('error' if severity > RuleViolation.WARN else
+                        ('warning' if severity > RuleViolation.ALLOW else
+                         'note'))
 
                 if reason is None or len(reason) == 0:
                     reason = '({0})'.format(rule.name)
 
                 why = '{0} [{1}]'.format(reason, rule.name)
-                output = '{0} {1}: {2}'.format(location, severity, why)
+                output = '{0} {1}: {2}'.format(location, kind, why)
 
                 results.append(output)
 

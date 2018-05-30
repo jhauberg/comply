@@ -57,7 +57,7 @@ def find_checkable_files(path: str) -> list:
     return checkable_paths
 
 
-def result_from_violations(violations: List[RuleViolation]) -> CheckResult:
+def result_from_violations(violations: List[RuleViolation], is_strict: bool=False) -> CheckResult:
     """ Increment violation/file counts for a result. """
 
     result = CheckResult(violations)
@@ -65,7 +65,10 @@ def result_from_violations(violations: List[RuleViolation]) -> CheckResult:
     num_severe_violations = 0
 
     for violation in violations:
-        if violation.which.severity > RuleViolation.WARN:
+        severity = RuleViolation.report_severity_as(violation.which.severity,
+                                                    is_strict)
+
+        if severity > RuleViolation.WARN:
             num_severe_violations = 1
 
     num_violations = len(violations) - num_severe_violations
@@ -139,7 +142,7 @@ def check(path: str, rules: List[Rule], reporter: Reporter=None) -> (CheckResult
 
     violations = collect(file, rules, reporter)
 
-    result = result_from_violations(violations)
+    result = result_from_violations(violations, is_strict=reporter.is_strict)
 
     if reporter is not None:
         reporter.report_before_results(violations)

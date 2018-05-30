@@ -66,6 +66,13 @@ class RuleViolation:
 
         return violating_line_index
 
+    @staticmethod
+    def report_severity_as(severity: int, is_strict: bool) -> int:
+        # increase severity if --strict is set
+        should_increase_severity = severity < RuleViolation.WARN and is_strict
+
+        return severity + (1 if should_increase_severity else 0)
+
 
 class Rule:
     """ Represents a single rule. """

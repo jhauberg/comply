@@ -29,7 +29,7 @@ class HumanReporter(Reporter):
             results = []
 
             for violation in violations:
-                result = HumanReporter.formatted_result(violation, reason, absolute_path)
+                result = self.formatted_result(violation, reason, absolute_path)
                 results.append(result)
 
             num_reported_results += self.report_results(results, prefix_if_suppressed='\n')
@@ -39,8 +39,7 @@ class HumanReporter(Reporter):
             # note that this only occur when --verbose is set
             printout('')
 
-    @staticmethod
-    def formatted_result(violation: RuleViolation, reason: str, path: str) -> str:
+    def formatted_result(self, violation: RuleViolation, reason: str, path: str) -> str:
         """ Return a formatted result of a rule violation. """
 
         rule = violation.which
@@ -48,13 +47,15 @@ class HumanReporter(Reporter):
 
         location = Colors.DARK + '{0}:'.format(path) + Colors.RESET
 
-        severity_color = (Colors.DENY if rule.severity > RuleViolation.WARN else
-                          (Colors.WARN if rule.severity > RuleViolation.ALLOW else
+        severity = RuleViolation.report_severity_as(rule.severity, self.is_strict)
+
+        severity_color = (Colors.DENY if severity > RuleViolation.WARN else
+                          (Colors.WARN if severity > RuleViolation.ALLOW else
                            Colors.ALLOW))
 
         if reason is None or len(reason) == 0:
-            reason = ('Severe violation' if rule.severity > RuleViolation.WARN else
-                      ('Cautioned violation' if rule.severity > RuleViolation.ALLOW else
+            reason = ('Severe violation' if severity > RuleViolation.WARN else
+                      ('Cautioned violation' if severity > RuleViolation.ALLOW else
                        'Allowed violation'))
 
         why = '{tint}{0} {vague}[{1}]'.format(reason, rule.name,
