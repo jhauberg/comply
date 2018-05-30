@@ -159,3 +159,28 @@ class Rule:
         self.total_time_spent_collecting += time_spent_collecting
 
         self.time_started_collecting = None
+
+    @staticmethod
+    def rules_in(modules: list) -> list:
+        """ Return a list of instances of all Rule-subclasses found in the provided modules.
+
+            Does not recurse through submodules.
+        """
+
+        classes = []
+
+        def is_rule_implementation(cls):
+            """ Determine whether a class is a Rule implementation. """
+
+            return cls != Rule and type(cls) == type and issubclass(cls, Rule)
+
+        for module in modules:
+            for item in dir(module):
+                attr = getattr(module, item)
+
+                if is_rule_implementation(attr):
+                    classes.append(attr)
+
+        instances = [c() for c in classes]
+
+        return instances

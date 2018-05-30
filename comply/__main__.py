@@ -127,15 +127,12 @@ def is_name_valid(name: str, rules: list) -> bool:
     return False
 
 
-def filter_rules(names: list, exceptions: list, severities: list) -> list:
+def filtered_rules(names: list, exceptions: list, severities: list) -> list:
     """ Return a list of rules to run checks on. """
 
-    rulesets = [comply.rules.standard,
-                comply.rules.experimental]
+    rulesets = [comply.rules.standard]
 
-    all_rules = make_rules(rulesets)
-
-    rules = all_rules
+    rules = Rule.rules_in(rulesets)
 
     if len(names) > 0:
         print_invalid_names(names, rules)
@@ -178,28 +175,6 @@ def make_reporter(reporting_mode: str) -> Reporter:
               as_error=True)
 
     return Reporter()
-
-
-def make_rules(modules: list) -> list:
-    """ Return a list of instances of all Rule-subclasses found in the provided modules. """
-
-    classes = []
-
-    def is_rule_implementation(cls):
-        """ Determine whether a class is a Rule implementation. """
-
-        return cls != Rule and type(cls) == type and issubclass(cls, Rule)
-
-    for module in modules:
-        for item in dir(module):
-            attr = getattr(module, item)
-
-            if is_rule_implementation(attr):
-                classes.append(attr)
-
-    instances = [c() for c in classes]
-
-    return instances
 
 
 def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
@@ -374,7 +349,7 @@ def main():
     checks = list(set(checks))
     exceptions = list(set(exceptions))
 
-    rules = filter_rules(checks, exceptions, severities)
+    rules = filtered_rules(checks, exceptions, severities)
 
     reporting_mode = arguments['--reporter']
 
