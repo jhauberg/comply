@@ -65,7 +65,7 @@ def result_from_violations(violations: List[RuleViolation]) -> CheckResult:
     num_severe_violations = 0
 
     for violation in violations:
-        if violation.which.severity == RuleViolation.DENY:
+        if violation.which.severity > RuleViolation.WARN:
             num_severe_violations = 1
 
     num_violations = len(violations) - num_severe_violations
