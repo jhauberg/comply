@@ -19,7 +19,7 @@ class NoRedundantSize(Rule):
     size_pattern = re.compile(r'\[([^\[\]]+?)\]')
 
     def augment(self, violation: RuleViolation):
-        line_index = violation.index_of_violating_line()
+        line_index = violation.index_of_starting_line()
 
         function_linenumber, function_line = violation.lines[line_index]
 
@@ -83,7 +83,7 @@ class NoRedundantSize(Rule):
                 character_range = (function_match.start(),
                                    function_match.end())
 
-                offending_lines = file.lines_in(character_range)
+                offending_lines = file.lines_in_character_range(character_range)
 
                 offending_range = (offending_column - 1,
                                    offending_column - 1 + len(size))

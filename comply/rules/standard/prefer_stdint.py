@@ -4,8 +4,6 @@ import re
 
 from comply.rules.rule import *
 
-from comply.printing import Colors
-
 
 def match_exactly(int_type: str) -> str:
     return r'\bunsigned\s+{type}\b|\bsigned\s+{type}\b|(\b{type}\b)'.format(
@@ -46,17 +44,6 @@ class PreferStandardInt(Rule):
         'long long':          ('int64_t',  match_exactly('long long')),
     }
 
-    def augment(self, violation: RuleViolation):
-        line_number, line = violation.lines[0]
-
-        from_index, to_index = violation.meta['range'] if 'range' in violation.meta else (0, 0)
-
-        augmented_line = (line[:from_index] +
-                          Colors.BAD + line[from_index:to_index] + Colors.RESET +
-                          line[to_index:])
-
-        violation.lines[0] = (line_number, augmented_line)
-
     def collect(self, file: CheckFile):
         offenders = []
 
@@ -88,17 +75,13 @@ class PreferStandardInt(Rule):
                 if type_already_collected:
                     continue
 
-                line_number, column = file.line_number_at(int_match.start())
-
                 int_type_range = (int_match.start(1), int_match.end(1))
 
                 ranges_collected.append(int_type_range)
 
-                offender = self.violate(at=(line_number, column),
-                                        lines=[(line_number, file.lines[line_number - 1])],
-                                        meta={'stdint': prefer_int_type,
-                                              'int': int_type,
-                                              'range': (column - 1, column - 1 + len(int_type))})
+                offender = self.violate_at_match(file, at=int_match)
+                offender.meta = {'stdint': prefer_int_type,
+                                 'int': int_type}
 
                 offenders.append(offender)
 

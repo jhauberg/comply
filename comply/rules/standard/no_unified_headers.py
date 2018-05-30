@@ -43,7 +43,7 @@ class NoUnifiedHeaders(Rule):
             has_bodies = re.search(FUNC_BODY_PATTERN, text) is not None
 
             if not has_function_prototypes and not has_bodies:
-                offender = self.violate(at=file.line_number_at_top())
+                offender = self.violate_at_file(file)
                 offenders.append(offender)
 
         return offenders

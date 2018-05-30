@@ -37,12 +37,12 @@ class OneLineReporter(Reporter):
             results = []
 
             for violation in violations:
-                line, column = violation.where
+                line_number, column = violation.starting
 
                 if column > 0:
-                    location = '{0}:{1}:{2}:'.format(absolute_path, line, column)
+                    location = '{0}:{1}:{2}:'.format(absolute_path, line_number, column)
                 else:
-                    location = '{0}:{1}:'.format(absolute_path, line)
+                    location = '{0}:{1}:'.format(absolute_path, line_number)
 
                 rule = violation.which
 

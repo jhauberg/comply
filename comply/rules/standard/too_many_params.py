@@ -25,7 +25,7 @@ class TooManyParams(Rule):
     pattern = re.compile(FUNC_BOTH_PATTERN)
 
     def augment(self, violation: RuleViolation):
-        line_index = violation.index_of_violating_line()
+        line_index = violation.index_of_starting_line()
 
         function_line_number, function_line = violation.lines[line_index]
 
@@ -62,7 +62,7 @@ class TooManyParams(Rule):
                 character_range = (function_match.start(),
                                    function_match.end())
 
-                offending_lines = file.lines_in(character_range)
+                offending_lines = file.lines_in_character_range(character_range)
 
                 offender = self.violate(at=(offending_line_number, offending_column),
                                         lines=offending_lines,

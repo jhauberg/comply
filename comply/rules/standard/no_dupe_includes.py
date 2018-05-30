@@ -5,8 +5,6 @@ import re
 from comply.rules.rule import *
 from comply.rules.patterns import INCLUDE_PATTERN
 
-from comply.printing import Colors
-
 
 class NoDuplicateIncludes(Rule):
     def __init__(self):
@@ -15,11 +13,6 @@ class NoDuplicateIncludes(Rule):
                       suggestion='Remove duplicate #include directive.')
 
     pattern = re.compile(INCLUDE_PATTERN)
-
-    def augment(self, violation: RuleViolation):
-        line_number, line = violation.lines[0]
-
-        violation.lines[0] = (line_number, Colors.BAD + line + Colors.RESET)
 
     def collect(self, file: CheckFile):
         offenders = []
@@ -34,15 +27,7 @@ class NoDuplicateIncludes(Rule):
             if include_stmt not in include_stmts:
                 include_stmts.append(include_stmt)
             else:
-                offending_index = inclusion.start()
-
-                line_number, column = file.line_number_at(offending_index, at_beginning=True)
-
-                offending_line = (line_number, include_stmt)
-
-                offender = self.violate(at=(line_number, column),
-                                        lines=[offending_line])
-
+                offender = self.violate_at_match(file, at=inclusion)
                 offenders.append(offender)
 
         return offenders

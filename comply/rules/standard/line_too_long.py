@@ -40,9 +40,10 @@ class LineTooLong(Rule):
             column = max_characters + 1
 
             offender = self.violate(at=(line_number, column),
-                                    lines=[(line_number, line)],
-                                    meta={'length': length,
-                                          'max': max_characters})
+                                    lines=[(line_number, line)])
+
+            offender.meta = {'length': length,
+                             'max': max_characters}
 
             offenders.append(offender)
 

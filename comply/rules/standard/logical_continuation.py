@@ -16,7 +16,7 @@ class LogicalContinuation(Rule):
     pattern = re.compile(r'\n\s*(&&|\|\|)')
 
     def augment(self, violation: RuleViolation):
-        line_index = violation.index_of_violating_line()
+        line_index = violation.index_of_starting_line()
         line_number, line = violation.lines[line_index]
 
         from_index, to_index = violation.meta['range']

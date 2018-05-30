@@ -11,6 +11,8 @@ from typing import List, Tuple
 
 from comply.rules.report import CheckFile
 
+from comply.printing import Colors
+
 
 class RuleViolation:
     """ Represents an occurence of a rule violation. """
@@ -32,24 +34,38 @@ class RuleViolation:
     """ A severity indicator for violations that have an objectively severe negative impact. """
     DENY = 2
 
-    def __init__(self, which: 'Rule', where: (int, int), lines: List[Tuple[int, str]], meta: dict=None):
+    def __init__(self, which: 'Rule', starting: (int, int), ending: (int, int), lines: List[Tuple[int, str]], meta: dict=None):
         self.which = which
-        self.where = where
+        self.starting = starting
+        self.ending = ending
         self.lines = lines
         self.meta = meta
 
     def __repr__(self):
         return '{0} at {1}'.format(self.which, self.lines)
 
-    def index_of_violating_line(self) -> int:
+    # todo: refactor as index_of_starting_line
+    def index_of_starting_line(self) -> int:
         """ Return the index of the line where this violation occurs.
 
-            Note that the index *is not* the line number.
+            Note that the index *is not* the same as the line number.
+        """
+
+        violating_line_number = self.starting[0]
+
+        return self.index_of_line_number(violating_line_number)
+
+    def index_of_line_number(self, line_number: int) -> int:
+        """ Return the index of the line that corresponds to a line number.
+
+            Note that the index *is not* the same as the line number.
         """
 
         line_numbers = [line[0] for line in self.lines]
 
-        return line_numbers.index(self.where[0])
+        violating_line_index = line_numbers.index(line_number)
+
+        return violating_line_index
 
 
 class Rule:
@@ -110,17 +126,90 @@ class Rule:
         return suggestion.format(**violation.meta)
 
     def augment(self, violation: RuleViolation):
-        """ Augment a violation to improve hints of its occurrence.
+        """ Augment the offending lines of a violation to improve hints of its occurrence.
 
-            Subclasses may override and provide custom augments.
+            Default implementation applies coloring spanning the range of the occurence.
+
+            Subclasses may override to provide customized augments.
         """
 
-        pass
+        if len(violation.lines) == 0:
+            # nothing to augment; this violation has not captured any lines
+            return
 
-    def violate(self, at: (int, int), lines: List[Tuple[int, str]]=list(), meta: dict=None) -> RuleViolation:
-        """ Return a rule violation originating from a chunk of text. """
+        starting_line_number, starting_column = violation.starting
+        ending_line_number, ending_column = violation.ending
 
-        return RuleViolation(self, at, lines, meta)
+        starting_line_index = violation.index_of_line_number(starting_line_number)
+        ending_line_index = violation.index_of_line_number(ending_line_number)
+
+        starting_char_index = starting_column - 1
+        ending_char_index = ending_column - 1
+
+        # go through each affected line, with the ending line included
+        for line_index in range(starting_line_index, ending_line_index + 1):
+            line_number, line = violation.lines[line_index]
+
+            if line_index == starting_line_index:
+                # markup begins on this line
+                if starting_line_index == ending_line_index:
+                    # markup also ends on this line
+                    line = (line[:starting_char_index] + Colors.BAD +
+                            line[starting_char_index:ending_char_index] + Colors.RESET +
+                            line[ending_char_index:])
+                else:
+                    # markup exceeds this line
+                    line = (line[:starting_char_index] + Colors.BAD +
+                            line[starting_char_index:] + Colors.RESET)
+            elif line_index == ending_line_index:
+                # markup ends on this line
+                line = (Colors.BAD + line[:ending_char_index] +
+                        Colors.RESET + line[ending_char_index:])
+            else:
+                # markup spans entire line
+                line = (Colors.BAD + line +
+                        Colors.RESET)
+
+            violation.lines[line_index] = (line_number, line)
+
+    def violate(self, at: (int, int), to: (int, int)=None, lines: List[Tuple[int, str]]=list(), meta: dict=None) -> RuleViolation:
+        """ Return a rule violation spanning over a range of consecutive line numbers and
+            columns.
+
+            Captured lines do not have to match with the provided ranges.
+        """
+
+        if to is None:
+            to = at
+
+        return RuleViolation(self, at, to, lines, meta)
+
+    def violate_at_file(self, file: CheckFile) -> RuleViolation:
+        """ Return a violation spanning no lines or characters, starting from the beginning of a
+            file.
+        """
+
+        return self.violate(at=file.line_number_at_top())
+
+    def violate_at_match(self, file: CheckFile, at) -> RuleViolation:
+        """ Return a rule violation spanning the full result of a match. """
+
+        return self.violate_at_character_range(file, starting=at.start(), ending=at.end())
+
+    def violate_at_character_range(self, file: CheckFile, starting: int, ending: int=-1) -> RuleViolation:
+        """ Return a rule violation spanning over a range of character indices. """
+
+        if ending < 0:
+            ending = starting
+
+        starting_line_number, starting_column = file.line_number_at(starting)
+        ending_line_number, ending_column = file.line_number_at(ending)
+
+        offending_lines = file.lines_in_character_range((starting, ending))
+
+        return self.violate(at=(starting_line_number, starting_column),
+                            to=(ending_line_number, ending_column),
+                            lines=offending_lines)
 
     def collect(self, file: CheckFile) -> List[RuleViolation]:
         """ Analyze a given text and return a list of any found violations.

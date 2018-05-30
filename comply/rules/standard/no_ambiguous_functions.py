@@ -18,7 +18,7 @@ class NoAmbiguousFunctions(Rule):
 
     def augment(self, violation: RuleViolation):
         # assume only one offending line
-        line_index = violation.index_of_violating_line()
+        line_index = violation.index_of_starting_line()
 
         function_line_number, function_line = violation.lines[line_index]
 
@@ -48,7 +48,7 @@ class NoAmbiguousFunctions(Rule):
             character_range = (function_match.start(),
                                function_match.end())
 
-            offending_lines = file.lines_in(character_range)
+            offending_lines = file.lines_in_character_range(character_range)
 
             function_parameters_starting_index = function_match.start('params')
 
