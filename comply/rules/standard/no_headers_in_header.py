@@ -5,8 +5,6 @@ import re
 from comply.rules.rule import *
 from comply.rules.patterns import INCLUDE_PATTERN
 
-from comply.printing import Colors
-
 
 class NoHeadersInHeader(Rule):
     def __init__(self):
@@ -22,11 +20,21 @@ class NoHeadersInHeader(Rule):
         if '.h' not in file.extension:
             return offenders
 
-        for inclusion in self.pattern.finditer(file.original):
-            include_statement = inclusion.group(0)
+        exceptions = ['<stdbool.h>',
+                      '<stdint.h>',
+                      '<inttypes.h>']
 
-            if ('<stdint.h>' in include_statement or '<inttypes.h>' in include_statement or
-                    '<stdbool.h>' in include_statement):
+        for inclusion in self.pattern.finditer(file.stripped):
+            include_statement = file.original[inclusion.start():inclusion.end()]
+
+            found_exception = False
+
+            for exception in exceptions:
+                if exception in include_statement:
+                    found_exception = True
+                    break
+
+            if found_exception:
                 continue
 
             offender = self.violate_at_match(file, at=inclusion)
