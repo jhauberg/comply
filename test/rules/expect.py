@@ -21,7 +21,10 @@ from comply.checking import check_text
 from comply.rules.report import CheckFile
 
 
-TRIGGER_CHAR = '↓'
+TRIGGER_AT = '↓'
+TRIGGER_LINE = '▶'
+
+pattern = re.compile(r'([{0}{1}])'.format(TRIGGER_LINE, TRIGGER_AT))
 
 
 def match_triggers(texts: list, rule, assumed_filename: str=None):
@@ -39,18 +42,34 @@ def check_triggers(text: str, rule, assumed_filename: str=None):
     """
 
     # find all expected violation triggers
-    trigger_indices = []
+    triggers = []
 
-    for trigger in re.finditer(TRIGGER_CHAR, text):
-        # subtract count to determine the correct index when triggers are stripped
-        trigger_indices.append(trigger.start() - len(trigger_indices))
+    for trigger in pattern.finditer(text):
+        trigger_symbol = trigger.group()
 
-    # make a clean snippet without trigger chars
-    snippet = text.replace(TRIGGER_CHAR, '')
+        # the offset equals number of triggers added so far- assuming we find them in order
+        # (because each trigger before another trigger should be considered as not-there, since
+        # they will all be removed from the final text)
+        trigger_index_offset = len(triggers)
+
+        triggers.append((trigger_symbol,
+                         trigger.start() - trigger_index_offset))
+
+    # make a clean snippet without triggers
+    snippet, num_triggers_removed = pattern.subn('', text)
+
+    assert len(triggers) == num_triggers_removed
 
     # determine locations of all expected violations
-    trigger_locations = [CheckFile.line_number_in_text(trigger_index, snippet)
-                         for trigger_index in trigger_indices]
+    trigger_locations = []
+
+    for trigger_symbol, trigger_index in triggers:
+        should_span_entire_line = trigger_symbol == TRIGGER_LINE
+
+        trigger_line_number, trigger_column = CheckFile.line_number_in_text(
+            trigger_index, snippet, span_entire_line=should_span_entire_line)
+
+        trigger_locations.append((trigger_line_number, trigger_column))
 
     # determine number of expected violations
     expected_number_of_violations = len(trigger_locations)
@@ -62,21 +81,22 @@ def check_triggers(text: str, rule, assumed_filename: str=None):
 
     # make sure resulting violations are in ascending order to match the trigger indices
     violations_in_order = sorted(result.violations,
-                                 key=lambda v: v.where)
+                                 key=lambda v: v.starting)
 
     total_violations = len(violations_in_order)
 
     if total_violations != expected_number_of_violations:
-        violation_locations = [violation.where for violation in violations_in_order]
+        violation_locations = [violation.starting for violation in violations_in_order]
 
         raise AssertionError(('Found unexpected number of violations ({0} != {1}):\n'
                               'Found {2}\n'
                               'Expected {3}').format(
-            total_violations, expected_number_of_violations, violation_locations, trigger_locations))
+            total_violations, expected_number_of_violations,
+            violation_locations, trigger_locations))
 
     for i, violation in enumerate(violations_in_order):
         trigger_location = trigger_locations[i]
 
-        if violation.where != trigger_location:
+        if violation.starting != trigger_location:
             raise AssertionError('Found unexpected violation ({0} != {1})'.format(
-                violation.where, trigger_location))
+                violation.starting, trigger_location))
