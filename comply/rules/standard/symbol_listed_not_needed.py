@@ -35,7 +35,7 @@ class SymbolListedNotNeeded(Rule):
         text = file.original
 
         for inclusion in self.pattern.finditer(text):
-            suffix = inclusion.group(1).strip()
+            suffix = inclusion.group(2).strip()
 
             if is_symbol_list(suffix):
                 # assume comma-separated symbol list

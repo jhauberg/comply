@@ -29,7 +29,7 @@ class ListNeededSymbols(Rule):
         text = file.original
 
         for inclusion in self.pattern.finditer(text):
-            suffix = inclusion.group(1)
+            suffix = inclusion.group(2)
 
             if not is_symbol_list(suffix):
                 offender = self.violate_at_match(file, at=inclusion)
