@@ -11,7 +11,12 @@ def test_too_many_blanks():
         ('source with some blank lines\n'
          '\n'
          '\n'
-         '↓more source'),
+         '▶more source'),
+        ('source with some blank lines\n'
+         '\n'
+         '\n'
+         '▶more source\n'
+         'asdasd'),
         # non-triggers
         ('source with a single blank line\n'
          '\n'
