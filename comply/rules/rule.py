@@ -19,19 +19,29 @@ class RuleViolation:
 
     """ A hint to indicate that a violation typically only occur once per file. """
     ONCE_PER_FILE = 1
+
     """ A hint to indicate that a violation may occur more than once per file. """
     MANY_PER_FILE = 0
 
-    """ A severity indicator for violations that have a negative impact, but can't be objectively
-        deemed to be an issue.
+    """ A severity indicator for violations that have a negative impact, 
+        but can't be objectively deemed an issue.
+        
+        These violations typically represent code smells or refactoring opportunities.
     """
     ALLOW = 0
+
     """ A severity indicator for violations that have an objectively negative impact.
     
-        This is the default severity. 
+        These violations should be considered warnings.
+        
+        This is the default severity.
     """
     WARN = 1
-    """ A severity indicator for violations that have an objectively severe negative impact. """
+
+    """ A severity indicator for violations that have an objectively severe negative impact.
+    
+        These violations should be considered errors.
+    """
     DENY = 2
 
     def __init__(self, which: 'Rule', starting: (int, int), ending: (int, int), lines: List[Tuple[int, str]], meta: dict=None):
@@ -68,7 +78,14 @@ class RuleViolation:
 
     @staticmethod
     def report_severity_as(severity: int, is_strict: bool) -> int:
-        # increase severity if --strict is set
+        """ Return an elevated severity indicator for some severities when strict compliance
+            is enabled.
+
+            ALLOW becomes WARN
+            WARN  remains WARN
+            DENY  remains DENY
+        """
+
         should_increase_severity = severity < RuleViolation.WARN and is_strict
 
         return severity + (1 if should_increase_severity else 0)
