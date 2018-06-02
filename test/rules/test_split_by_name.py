@@ -19,6 +19,9 @@ def test_split_by_name():
          '\n'
          'void You\n'
          'VA_DECL(const char *, line)\n'
+         '{'),
+        ('#if ↓defined(SUPPORT_DEFAULT_FONT)\n'
+         'extern void LoadDefaultFont(void)\n'
          '{')
     ]
 
