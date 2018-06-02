@@ -123,18 +123,18 @@ class CheckFile:
         return self._original_lines
 
     @staticmethod
-    def line_number_in_text(index: int, text: str, span_entire_line: bool=False) -> (int, int):
+    def line_number_in_text(character_index: int, text: str, span_entire_line: bool=False) -> (int, int):
         """ Return the line number and column at which a character index occur in a text.
 
             Column is set to 0 if span_entire_line is True.
         """
 
-        line_index = text.count('\n', 0, index)
+        line_index = text.count('\n', 0, character_index)
 
         if span_entire_line:
             return CheckFile.line_number_at_start_of(line_index, span_entire_line)
 
-        column = index - text.rfind('\n', 0, index)
+        column = character_index - text.rfind('\n', 0, character_index)
 
         return line_index + 1, column
 
