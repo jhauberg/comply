@@ -272,7 +272,7 @@ In a way, this decision ties-in with the lack of pre-processing, as, in most cas
 
 No. This is left as a task for the human.
 
-While many rules are only related to the textual representation of code, some rules require more thought, consideration and human judgment to fix- a larger task than just applying a different formatting.
+While many rules are only related to the textual representation of code, some require more thought, consideration and human judgment to fix- a larger task than simply applying a different formatting.
 
 There is a point to be made in the usefulness of automatic formatting, see [Black](https://github.com/ambv/black) or [gofmt](https://golang.org/cmd/gofmt/), but for the time being that is out of scope for this project.
 
@@ -280,9 +280,9 @@ There is a point to be made in the usefulness of automatic formatting, see [Blac
 
 No. This is intentional.
 
-This project is all about defining a single ubiquitous style; it should not differ across compliant codebases.
+This project is all about defining a single ubiquitous style and guideline; it should not differ across Compliant codebases.
 
-> An exception to this is that using `comply` you can exclude, or include, only certain rules using the `--except` or `--check` arguments. These options contradict the philosophy of the project, but are made available for debugging purposes.
+> The arguments `--except` and `--check` (which allow you to exclude, or include, certain rules) contradict the philosophy of the project, but are made available for debugging purposes.
 
 ### Why use `comply` when we have [`clang-tidy`](http://clang.llvm.org/extra/clang-tidy/)?
 
