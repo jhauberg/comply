@@ -8,8 +8,8 @@ from comply.printing import Colors
 class FileTooLong(Rule):
     def __init__(self):
         Rule.__init__(self, name='file-too-long',
-                      description='File has too many lines ({length} > {max})',
-                      suggestion='Consider refactoring and splitting to separate units.')
+                      description='File is longer than recommended ({length} > {max} lines)',
+                      suggestion='Consider refactoring and splitting to separate files.')
 
     MAX = 600
 
@@ -27,11 +27,9 @@ class FileTooLong(Rule):
     def collect(self, file: CheckFile):
         offenders = []
 
-        text = file.original
-
         max_length = FileTooLong.MAX
 
-        length = text.count('\n')
+        length = file.original.count('\n')
 
         if length > max_length:
             offending_line_index = max_length

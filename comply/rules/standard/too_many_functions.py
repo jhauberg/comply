@@ -9,8 +9,8 @@ from comply.rules.patterns import FUNC_IMPL_PATTERN
 class TooManyFunctions(Rule):
     def __init__(self):
         Rule.__init__(self, name='too-many-funcs',
-                      description='Too many functions in a single file ({count} > {max})',
-                      suggestion='Consider splitting into separate units.')
+                      description='File might be too extensive ({count} > {max} functions)',
+                      suggestion='Consider whether it might make sense for some functions to be split into separate files.')
 
     MAX = 7
 

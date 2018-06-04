@@ -13,8 +13,8 @@ from comply.printing import Colors
 class FunctionTooLong(Rule):
     def __init__(self):
         Rule.__init__(self, name='func-too-long',
-                      description='Function is too long ({length} > {max})',
-                      suggestion='This function may be too complex. Consider refactoring.')
+                      description='Function is longer than recommended ({length} > {max} lines)',
+                      suggestion='This function might be too complex. Consider refactoring.')
 
     MAX = 40
 

@@ -10,7 +10,7 @@ from comply.printing import Colors
 class IdentifierTooLong(Rule):
     def __init__(self):
         Rule.__init__(self, name='identifier-too-long',
-                      description='Identifier is too long ({length} > {max})',
+                      description='Identifier is too long ({length} > {max} characters)',
                       suggestion='Use a shorter name.')
 
     MAX = 31

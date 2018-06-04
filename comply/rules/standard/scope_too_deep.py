@@ -11,7 +11,7 @@ from comply.util.scope import depth
 class ScopeTooDeep(Rule):
     def __init__(self):
         Rule.__init__(self, name='scope-too-deep',
-                      description='Scope is too deep ({depth} levels > {max})',
+                      description='Scope is too deep ({depth} > {max} levels)',
                       suggestion='Avoid nesting code too deeply. Consider refactoring.')
 
     MAX = 3

@@ -11,8 +11,8 @@ from comply.printing import Colors
 class TooManyParams(Rule):
     def __init__(self, only_check_implementations: bool=False):
         Rule.__init__(self, name='too-many-params',
-                      description='Too many function parameters ({count} > {max})',
-                      suggestion='This function may be taking on too much work. Consider refactoring.')
+                      description='Function might be too broad ({count} > {max} parameters)',
+                      suggestion='This function might be taking on too much work. Consider refactoring.')
 
         # determine whether to only match implementations, or both prototypes and implementations
         # (prefer both, as e.g. inline functions won't be caught otherwise-
