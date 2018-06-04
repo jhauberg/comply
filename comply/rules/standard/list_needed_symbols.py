@@ -14,7 +14,7 @@ class ListNeededSymbols(Rule):
                       description='#include directives should indicate which symbols are needed',
                       suggestion='Add a comment listing each needed symbol immediately after the #include directive.')
 
-    pattern = re.compile(INCLUDE_PATTERN + r'(.*)')
+    pattern = re.compile(INCLUDE_PATTERN)
 
     def augment(self, violation: RuleViolation):
         # assume only one offending line
@@ -26,20 +26,38 @@ class ListNeededSymbols(Rule):
     def collect(self, file: CheckFile):
         offenders = []
 
-        text = file.original
+        for inclusion in self.pattern.finditer(file.stripped):
+            symbols = symbols_for_inclusion(file, inclusion)
 
-        for inclusion in self.pattern.finditer(text):
-            suffix = inclusion.group(2)
-
-            if not is_symbol_list(suffix):
+            if len(symbols) == 0:
                 offender = self.violate_at_match(file, at=inclusion)
                 offenders.append(offender)
 
         return offenders
 
 
+def symbols_for_inclusion(file: CheckFile, match) -> list:
+    """ Return a list of symbols for a match. """
+
+    line_number, column = file.line_number_at(match.end())
+
+    line = file.line_at(line_number)
+
+    include_suffix = line[column:]
+
+    if not is_symbol_list(include_suffix):
+        return []
+
+    listing = include_suffix[2:]  # everything except starting comment dashes ('//')
+
+    return [symbol.strip() for symbol in listing.split(',')]
+
+
 def is_symbol_list(text: str) -> bool:
-    """ Determine if a text looks like a symbol list. """
+    """ Determine whether a text looks like a list of symbols.
+
+        e.g. '// symbol_t, another_symbol_t'.
+    """
 
     text = text.strip()
 
