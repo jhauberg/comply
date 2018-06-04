@@ -3,7 +3,8 @@
 import re
 
 from comply.rules.rule import *
-from comply.rules.standard.list_needed_symbols import is_symbol_list
+from comply.rules.standard.list_needed_symbols import symbols_for_inclusion
+from comply.rules.standard.no_headers_in_header import is_symbol_included_for_completeness
 from comply.rules.patterns import INCLUDE_PATTERN
 
 from comply.printing import Colors
@@ -15,7 +16,7 @@ class SymbolListedNotNeeded(Rule):
                       description='Unused symbol \'{symbol}\' should not be listed as needed',
                       suggestion='Remove symbol \'{symbol}\' from list.')
 
-    pattern = re.compile(INCLUDE_PATTERN + r'(.*)')
+    pattern = re.compile(INCLUDE_PATTERN)
 
     def augment(self, violation: RuleViolation):
         from_index, to_index = violation.meta['range'] if 'range' in violation.meta else (0, 0)
@@ -35,22 +36,22 @@ class SymbolListedNotNeeded(Rule):
         text = file.original
 
         for inclusion in self.pattern.finditer(text):
-            suffix = inclusion.group(2).strip()
+            symbols = symbols_for_inclusion(file, inclusion)
 
-            if is_symbol_list(suffix):
-                # assume comma-separated symbol list
-                symbols_list = suffix[2:]
-                symbols = [symbol.strip() for symbol in symbols_list.split(',')]
-
+            if len(symbols) > 0:
                 if '*' in symbols:
                     # a single star means everything will be matched; no violations can occur
                     continue
 
                 for symbol in symbols:
-                    symbol_components = symbol.split(' as ')
+                    symbol_type = symbol
+                    sought_symbol = symbol
 
-                    symbol_type = symbol_components[0].strip()
-                    sought_symbol = symbol_components[-1].strip()
+                    if is_symbol_included_for_completeness(symbol):
+                        symbol_components = symbol.split(':')
+
+                        symbol_type = symbol_components[0].strip()
+                        sought_symbol = symbol_type
 
                     if not is_valid_symbol(sought_symbol):
                         continue
@@ -59,7 +60,9 @@ class SymbolListedNotNeeded(Rule):
                     text_after_usage = file.stripped[inclusion.end():]
 
                     if not has_symbol_usage(sought_symbol, text_after_usage):
-                        offending_index = text.index(symbol, inclusion.start(1), inclusion.end())
+                        offending_index = text.index(symbol,
+                                                     inclusion.start(),  # from the #include
+                                                     text.index('\n', inclusion.end()))  # to end of line
 
                         linenumber, column = file.line_number_at(offending_index)
 
