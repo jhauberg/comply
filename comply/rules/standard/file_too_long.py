@@ -2,8 +2,6 @@
 
 from comply.rules.rule import *
 
-from comply.printing import Colors
-
 
 class FileTooLong(Rule):
     def __init__(self):
@@ -13,17 +11,6 @@ class FileTooLong(Rule):
 
     MAX = 600
 
-    def augment(self, violation: RuleViolation):
-        # assume offending line is the second one
-        breaker_linenumber, breaker_line = violation.lines[1]
-        # add breaker just above offending line
-        violation.lines.insert(1, (breaker_linenumber, '---'))
-
-        for i, (linenumber, line) in enumerate(violation.lines):
-            if i > 0:
-                # mark breaker and everything below it
-                violation.lines[i] = (linenumber, Colors.BAD + line + Colors.RESET)
-
     def collect(self, file: CheckFile):
         offenders = []
 
@@ -32,16 +19,7 @@ class FileTooLong(Rule):
         length = file.original.count('\n')
 
         if length > max_length:
-            offending_line_index = max_length
-
-            assert len(file.lines) > offending_line_index + 1
-
-            offending_lines = [(offending_line_index, file.lines[offending_line_index - 1]),
-                               (offending_line_index + 1, file.lines[offending_line_index]),
-                               (offending_line_index + 2, file.lines[offending_line_index + 1])]
-
             offender = self.violate(at=file.line_number_at_top(),
-                                    lines=offending_lines,
                                     meta={'length': length,
                                           'max': max_length})
 
