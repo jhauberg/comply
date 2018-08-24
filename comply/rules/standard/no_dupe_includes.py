@@ -19,13 +19,14 @@ class NoDuplicateIncludes(Rule):
     def collect(self, file: CheckFile):
         offenders = []
 
-        include_statements = []
+        included_filenames = []
 
         for inclusion in self.pattern.finditer(file.stripped):
-            include_statement = file.original[inclusion.start():inclusion.end()]
+            included_filename = file.original[inclusion.start('filename'):
+                                              inclusion.end('filename')]
 
-            if include_statement not in include_statements:
-                include_statements.append(include_statement)
+            if included_filename not in included_filenames:
+                included_filenames.append(included_filename)
             else:
                 offender = self.violate_at_match(file, at=inclusion)
                 offenders.append(offender)
