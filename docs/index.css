@@ -245,11 +245,15 @@ hr {
   font-size: .9em;
 }
 
-.reasoning {
+.reasoning > p {
   background-color: lightgoldenrodyellow;
   padding-left: .5cm;
   padding-right: .5cm;
   padding-top: .4cm;
   padding-bottom: .3cm;
   font-size: .85em;
+}
+
+.suggestion > p {
+  color: #bababa;
 }
