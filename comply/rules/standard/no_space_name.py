@@ -4,6 +4,12 @@ from comply.rules.rule import *
 
 
 class NoSpaceName(Rule):
+    """ Avoid whitespace in filenames.
+
+    Mostly a matter of convention, but helps in avoiding issues when interacting with external
+    tools.
+    """
+
     def __init__(self):
         Rule.__init__(self, name='no-space-name',
                       description='Avoid whitespace in filenames',

@@ -21,9 +21,29 @@ def match_unsigned(int_type: str) -> str:
 
 
 class PreferStandardInt(Rule):
+    """ Always use explicitly-sized integer types (e.g. `stdint.h`).
+
+    Being explicit about the type and size that you want to use helps improve portability.
+    <br/><br/>
+    It also increases readability as it makes types read more uniformly, and does away
+    entirely with the `unsigned` and `signed` keywords.
+
+    It's worth noting that when sticking with basic types (e.g. `int`), the compiler may just do a
+    *better* job than you at deciding which size is actually the optimal choice.
+    <br/><br/>
+    However, leaving that an implicit choice could result in unexpected issues down the line.
+    <br/><br/>
+    Being explicit lets you avoid making assumptions. The trade-off is potentially losing some
+    (often neglible) performance.
+
+    References:
+
+      * Matt Stancliff: [How to C in 2016: Writing Code- Types](https://matt.sh/howto-c)
+    """
+
     def __init__(self):
         Rule.__init__(self, name='prefer-stdint',
-                      description='Prefer \'{stdint}\' over \'{int}\'',
+                      description='\'{int}\' used instead of \'{stdint}\'',
                       suggestion='Use \'{stdint}\' instead of \'{int}\'.')
 
     INT_TYPES = {

@@ -8,10 +8,12 @@ from comply.printing import Colors
 
 
 class PadCommas(Rule):
+    """ Always follow comma-separators by whitespace. """
+
     def __init__(self):
         Rule.__init__(self, name='pad-commas',
-                      description='Comma separators should be followed by a single space',
-                      suggestion='Add a single whitespace to the right of \',\'.')
+                      description='Comma separator is not followed by whitespace',
+                      suggestion='Add a single whitespace or linebreak to the right of \',\'.')
 
     pattern = re.compile(r',[^\s]')  # any comma followed by non-whitespace
 

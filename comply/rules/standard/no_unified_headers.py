@@ -7,24 +7,22 @@ from comply.rules.patterns import INCLUDE_PATTERN, FUNC_PROT_PATTERN, FUNC_BODY_
 
 
 class NoUnifiedHeaders(Rule):
-    """
-    This rule wants you to avoid using unified headers.
+    """ Don't use unified headers if you can avoid it.
 
-    A unified header is a header-file whose only purpose is to include other header-files.
+    A unified header is a header file whose only purpose is to include other header files.
 
-    However convenient they may be, unified headers do not promote modularity.
-
-    Additionally, in any case where even just a single header is not needed by the consumer,
-    compile times are unnecessarily increased.
+    As convenient as they may be, unified headers do not promote modularity and increases
+    compile time in cases where the consumer does not need all of the included headers.
 
     References:
-        Malcolm Inglis: https://github.com/mcinglis/c-style#avoid-unified-headers
+
+      * Malcolm Inglis: [c-style](https://github.com/mcinglis/c-style#avoid-unified-headers)
     """
 
     def __init__(self):
         Rule.__init__(self, name='no-unified-headers',
-                      description='Avoid using and providing unified headers',
-                      suggestion='Prefer including each header individually as needed.')
+                      description='Avoid unified headers',
+                      suggestion='Prefer individually including each needed header.')
 
     pattern = re.compile(INCLUDE_PATTERN)
 

@@ -9,9 +9,19 @@ from comply.printing import Colors
 
 
 class SplitByName(Rule):
+    """ Always place function name and return type on separate lines (for function implementations).
+
+    This style provides a quick and consistent reading of functions, and helps in reducing line
+    length when return types are long and complicated.
+
+    References:
+
+      * Stack Exchange discussion: [Reason for placing function type and method name on different lines in C](https://softwareengineering.stackexchange.com/a/200830/260735)
+    """
+
     def __init__(self):
         Rule.__init__(self, name='split-by-name',
-                      description='Function names should be placed at the beginning of a line',
+                      description='Function name is not placed at the beginning of a line',
                       suggestion='Split function name and return type to separate lines.')
 
     pattern = re.compile(FUNC_IMPL_PATTERN)

@@ -8,10 +8,12 @@ from comply.printing import Colors
 
 
 class NoPaddedParens(Rule):
+    """ Don't pad parenthesized groups with whitespace. """
+
     def __init__(self):
         Rule.__init__(self, name='no-padded-parens',
-                      description='Opening or closing parens should not be padded with whitespace',
-                      suggestion='Remove whitespace from the {left_or_right} side of the paren.')
+                      description='Opening or closing parenthesis is padded with whitespace',
+                      suggestion='Remove whitespace from the {left_or_right} side of the parenthesis.')
 
     pattern = re.compile(r'\(( +)\S|'  # opening paren with one or more whitespace up to any character, on the right
                          r'\S( +)\)')  # closing paren with one or more whitespace up to any character, to the left

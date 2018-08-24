@@ -6,10 +6,16 @@ from comply.printing import Colors
 
 
 class NoInvisibles(Rule):
+    """ Don't put invisible characters in code.
+
+    Invisible characters (in code, i.e. not in literals) serve no useful purpose and may confuse
+    both readers and editors.
+    """
+
     def __init__(self):
         Rule.__init__(self, name='no-invisibles',
-                      description='Avoid invisible characters (found {count})',
-                      suggestion='Delete each occurence or replace with a space.')
+                      description='Remove invisible characters (found {count})',
+                      suggestion='Delete each occurence or replace with spaces.')
 
     INVISIBLES = ['\u200b', '\u200c', '\u200d',
                   '\uFEFF']

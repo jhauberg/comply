@@ -9,6 +9,12 @@ from comply.util.scope import depth
 
 
 class ScopeTooDeep(Rule):
+    """ Don't write deeply nested code.
+
+    A deeply nested scope is often an indication of too high complexity and can be
+    difficult to read.
+    """
+
     def __init__(self):
         Rule.__init__(self, name='scope-too-deep',
                       description='Scope is too deep ({depth} > {max} levels)',

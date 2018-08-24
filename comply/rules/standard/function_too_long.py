@@ -11,6 +11,16 @@ from comply.printing import Colors
 
 
 class FunctionTooLong(Rule):
+    """ Avoid exceeding 40 lines per function.
+
+    A large function can be difficult to read and easily comprehend- especially so if it requires
+    scrolling to fully fit on the viewers screen.
+
+    Similar to <tt>too-many-params</tt>, when a function is getting large and increasingly complex,
+    it is often a sign that it is doing too much and would likely benefit from being refactored
+    into smaller parts.
+    """
+
     def __init__(self):
         Rule.__init__(self, name='func-too-long',
                       description='Function is longer than recommended ({length} > {max} lines)',

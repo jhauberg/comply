@@ -9,9 +9,15 @@ from comply.printing import Colors
 
 
 class PadKeywords(Rule):
+    """ Always pad control keywords (`if`, `else`, `for` etc.) with space on both sides.
+
+    Padding control keywords helps to clearly separate them from macros and function calls and
+    improves readability.
+    """
+
     def __init__(self):
         Rule.__init__(self, name='pad-keywords',
-                      description='Keywords should be padded with space on both sides',
+                      description='Keyword is not padded with space on both sides',
                       suggestion='Add a single whitespace to the {left_or_right} of \'{keyword}\'.')
 
     neighbor_pattern = r'[;{}()]'

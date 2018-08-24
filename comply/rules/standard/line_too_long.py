@@ -6,10 +6,25 @@ from comply.printing import Colors
 
 
 class LineTooLong(Rule):
+    """ Don't exceed 80 characters per line.
+
+    Any line of code should fit on the screen it is being viewed on under any scenario;
+    whether single file or side-by-side.
+    <br/><br/>
+    Lines that are too long can be difficult to visually comprehend, and wrapping or
+    scrolling makes it harder to read.
+
+    Lines shorter than 80 characters will fit on most viewers, thus improving readability.
+
+    References:
+
+      * Malcolm Inglis: [c-style](https://github.com/mcinglis/c-style#never-have-more-than-79-characters-per-line)
+    """
+
     def __init__(self):
         Rule.__init__(self, name='line-too-long',
                       description='Line is too long ({length} > {max} characters)',
-                      suggestion='Use shorter names or split statements to multiple lines.')
+                      suggestion='Use shorter identifiers or split statements to multiple lines.')
 
     MAX = 80
 

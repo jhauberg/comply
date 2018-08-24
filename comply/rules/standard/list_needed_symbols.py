@@ -9,10 +9,23 @@ from comply.printing import Colors
 
 
 class ListNeededSymbols(Rule):
+    """ Always list needed symbols.
+
+    Helps in determining dependencies that are no longer needed and could be removed,
+    and encourages use of smaller, more well-defined headers.
+
+    Fewer dependencies reduce complexity, so being able to remove an inclusion is always an
+    improvement.
+
+    References:
+
+      * Malcolm Inglis: [c-style](https://github.com/mcinglis/c-style#comment-non-standard-library-includes-to-say-what-symbols-you-use-from-them)
+    """
+
     def __init__(self):
         Rule.__init__(self, name='list-needed-symbols',
-                      description='#include directives should indicate which symbols are needed',
-                      suggestion='Add a comment listing each needed symbol immediately after the #include directive.')
+                      description='#include directive does not list needed symbols',
+                      suggestion='Add a comma-separated list with each symbol needed.')
 
     pattern = re.compile(INCLUDE_PATTERN)
 

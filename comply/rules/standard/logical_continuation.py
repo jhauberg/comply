@@ -8,9 +8,11 @@ from comply.printing import Colors
 
 
 class LogicalContinuation(Rule):
+    """ Don't begin lines with a logical continuation. """
+
     def __init__(self):
         Rule.__init__(self, name='logical-continuation',
-                      description='Don\'t begin a line with a logical continuation',
+                      description='Line begins with logical continuation',
                       suggestion='Move the logical continuation to the end of the previous line.')
 
     pattern = re.compile(r'\n\s*(&&|\|\|)')

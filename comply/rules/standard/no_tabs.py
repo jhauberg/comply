@@ -6,9 +6,19 @@ from comply.printing import Colors, supports_unicode
 
 
 class NoTabs(Rule):
+    """ Don't use tabs instead of spaces.
+
+    Using tabs for indentation will produce inconsistent line lengths, as the size of a tab may
+    vary depending on the viewer.
+
+    References:
+
+      * Malcolm Inglis: [c-style](https://github.com/mcinglis/c-style#we-cant-get-tabs-right-so-use-spaces-everywhere)
+    """
+
     def __init__(self):
         Rule.__init__(self, name='no-tabs',
-                      description='Don\'t use tabs to keep line lengths consistent ({count} tabs)',
+                      description='Remove tabs ({count} tabs)',
                       suggestion='Replace each tab with spaces (typically 4).')
 
     TAB = '\t'

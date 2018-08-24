@@ -9,9 +9,19 @@ from comply.printing import Colors
 
 
 class NoRedundantName(Rule):
+    """ Don't name parameters identically to their type.
+
+    Redundant information is never useful. If a parameter can not be named something meaningful,
+    then it is typically better omitted.
+
+    References:
+
+      * Malcolm Inglis: [c-style](https://github.com/mcinglis/c-style#dont-write-argument-names-in-function-prototypes-if-they-just-repeat-the-type)
+    """
+
     def __init__(self):
         Rule.__init__(self, name='no-redundant-name',
-                      description='Parameter \'{param}\' should not be named identically to its type \'{type}\'',
+                      description='Parameter \'{param}\' is named identically to its type \'{type}\'',
                       suggestion='Rename parameter \'{param}\' to something meaningful or omit it.')
 
     # note that we intentionally only check function prototypes (implementations often *should*

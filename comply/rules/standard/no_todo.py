@@ -6,14 +6,26 @@ from comply.rules.rule import *
 
 from comply.util.truncation import truncated, Ellipsize
 
-from comply.printing import Colors
-
 
 class NoTodo(Rule):
+    """ Use `todo`'s liberally, but don't forget to deal with them.
+
+    These small notes are great for quickly persisting thoughts directly related to
+    specific parts of your code. They serve as reminders for both yourself, and others,
+    that something needs to be looked at eventually.
+
+    However, it is dangerous *todo-and-forget*; in time, these reminders may turn stale-
+    the context might be forgotten, or the issue silently fixed- yet the `todo` remains.
+    <br/><br/>
+    This is a problem, because future-you may no longer understand why, or even *what*, is wrong.
+    In such a case, you might not dare deleting it, rendering the `todo` as nothing but a source
+    of confusion and obfuscation.
+    """
+
     def __init__(self):
         Rule.__init__(self, name='no-todo',
                       description='TODO: {todo}',
-                      suggestion='Consider promoting this note to a full report in your issue tracker.')
+                      suggestion='Consider promoting to a full report in your issue tracker.')
 
     pattern = re.compile((r'(?:todo|fixme):'  # match notes in any combination of upper or lowercase
                           r'(.*)'),           # and everything until end of line

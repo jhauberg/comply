@@ -9,10 +9,24 @@ from comply.printing import Colors
 
 
 class BraceStatementBodies(Rule):
+    """ Always surround the bodies of control statement with scoped braces.
+
+    You might be tempted to save a line or two by not adding braces to that single-line `if`
+    statement.
+    <br/><br/>
+    However, such a decision may bite you later on, as an unsuspecting programmer may fail to
+    notice the lack of braces and unintentionally be writing code in the wrong scope- leading to
+    potentially undesirable or unpredictable consequences.
+
+    References:
+
+      * Carnegie Mellon University, SEI: [CERT C Secure Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/EXP19-C.+Use+braces+for+the+body+of+an+if%2C+for%2C+or+while+statement)
+    """
+
     def __init__(self):
         Rule.__init__(self, name='brace-statement-bodies',
-                      description='Always use braces for control statements',
-                      suggestion='Add opening and ending braces for the statement body.')
+                      description='Missing braces on control statement',
+                      suggestion='Add opening and ending braces for statement body.')
 
     pattern = re.compile(r'\b({keywords})\b'.format(keywords=KEYWORDS))
 

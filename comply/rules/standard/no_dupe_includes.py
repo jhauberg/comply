@@ -7,6 +7,8 @@ from comply.rules.patterns import INCLUDE_PATTERN
 
 
 class NoDuplicateIncludes(Rule):
+    """ Don't include another file more than once per file. """
+
     def __init__(self):
         Rule.__init__(self, name='no-dupe-includes',
                       description='File already included previously',

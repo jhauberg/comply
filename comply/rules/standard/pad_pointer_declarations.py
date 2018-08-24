@@ -8,9 +8,21 @@ from comply.printing import Colors
 
 
 class PadPointerDeclarations(Rule):
+    """ Always pad pointer declarations with space on both sides.
+
+    Having no padding for `*`'s makes for an inconsistent reading of types- especially when
+    combined with `const` qualifiers. See <tt>const-on-right</tt>.
+    <br/><br/>
+    Additionally, padding provides a clear separation between a declaration and a pointer dereference.
+
+    References:
+
+      * Malcolm Inglis: [c-style](https://github.com/mcinglis/c-style#always-put-const-on-the-right-and-read-types-right-to-left)
+    """
+
     def __init__(self):
         Rule.__init__(self, name='pad-pointer-decls',
-                      description='Pointer declarations should be padded with space on both sides',
+                      description='Pointer declaration is not padded with space on both sides',
                       suggestion='Add a single whitespace to the {left_or_right} of the asterisk.')
 
     pattern = re.compile(r'\*[^\s,*()=]|[^\s*()]\*')

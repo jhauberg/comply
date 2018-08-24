@@ -7,6 +7,13 @@ from comply.rules.patterns import FUNC_IMPL_PATTERN
 
 
 class TooManyFunctions(Rule):
+    """ Avoid exceeding 7 function implementations per file.
+
+    Similar to <tt>func-too-long</tt>, having many function implementations in a single source file
+    is often an indication that the file has too much going on, and would likely benefit from being
+    refactored or split up into smaller files.
+    """
+
     def __init__(self):
         Rule.__init__(self, name='too-many-funcs',
                       description='File might be too extensive ({count} > {max} functions)',

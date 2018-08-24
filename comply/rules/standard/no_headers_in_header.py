@@ -9,15 +9,30 @@ from comply.rules.standard.list_needed_symbols import symbols_for_inclusion
 
 
 class NoHeadersInHeader(Rule):
+    """ Don't include other headers if you can avoid it.
+
+    Avoiding header inclusions can help keep compile times low.
+
+    Forcing source files to include everything they need helps provide a clear picture on
+    the dependencies of the particular unit and makes it easier to spot redundancies.
+
+    References:
+
+      * Our Machinery: [Physical Design](http://ourmachinery.com/post/physical-design)
+      * Rob Pike: [Notes on Programming in C](http://www.lysator.liu.se/c/pikestyle.html)
+      * Malcolm Inglis: [c-style](https://github.com/mcinglis/c-style#include-the-definition-of-everything-you-use)
+    """
+
     def __init__(self):
         Rule.__init__(self, name='no-headers-in-header',
-                      description='Avoid including headers in header files',
+                      description='Header included in header',
                       suggestion='Replace \'{inclusion}\' with a forward-declaration for each needed type.')
 
     pattern = re.compile(INCLUDE_PATTERN)
 
     exceptions = ['stdbool.h',
                   'stdint.h',
+                  'stddef.h',
                   'inttypes.h']
 
     def is_excepted(self, included_filename: str):

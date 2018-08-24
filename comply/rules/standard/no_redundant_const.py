@@ -9,9 +9,16 @@ from comply.printing import Colors
 
 
 class NoRedundantConst(Rule):
+    """ Don't mark parameter names as `const` in function prototypes.
+
+    A function parameter name might be marked as `const` in its prototype, but implementations of
+    the function are *not* required to comply with that- making it an implementation detail that
+    should not be part of the exposed interface.
+    """
+
     def __init__(self):
         Rule.__init__(self, name='no-redundant-const',
-                      description='Don\'t provide const qualifiers for parameter names in function prototypes',
+                      description='Prototype parameter name marked as const',
                       suggestion='Remove const qualifier for parameter name.')
 
     pattern = re.compile(FUNC_PROT_PATTERN)

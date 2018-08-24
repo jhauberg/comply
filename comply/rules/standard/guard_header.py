@@ -8,9 +8,14 @@ from comply.printing import Colors
 
 
 class GuardHeader(Rule):
+    """ Always provide include guards in header files.
+
+    Helps prevent redundant inclusions and improves compilation times.
+    """
+
     def __init__(self):
         Rule.__init__(self, name='guard-header',
-                      description='Header files should provide an include guard to prevent double inclusion',
+                      description='Header does not provide an include guard',
                       suggestion='Wrap your header in an include guard named "{guard}" or use "#pragma once".')
 
     def augment(self, violation: RuleViolation):

@@ -11,9 +11,17 @@ from comply.printing import Colors
 
 
 class SymbolListedNotNeeded(Rule):
+    """ Don't list unused symbols as needed.
+
+    Helps in determining when a symbol is no longer used, potentially leading to being able to
+    remove an inclusion completely, reducing dependencies and improving maintainability.
+
+    See <tt>list-needed-symbols</tt>.
+    """
+
     def __init__(self):
         Rule.__init__(self, name='symbol-listed-not-needed',
-                      description='Unused symbol \'{symbol}\' should not be listed as needed',
+                      description='Unused symbol \'{symbol}\' is listed as needed',
                       suggestion='Remove symbol \'{symbol}\' from list.')
 
     pattern = re.compile(INCLUDE_PATTERN)

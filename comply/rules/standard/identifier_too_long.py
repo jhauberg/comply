@@ -8,6 +8,12 @@ from comply.printing import Colors
 
 
 class IdentifierTooLong(Rule):
+    """ Avoid exceeding 31 characters per identifier.
+
+    The longer the identifier, the more it hurts comprehension and readability, and makes code
+    more likely to trigger <tt>line-too-long</tt>.
+    """
+
     def __init__(self):
         Rule.__init__(self, name='identifier-too-long',
                       description='Identifier is too long ({length} > {max} characters)',

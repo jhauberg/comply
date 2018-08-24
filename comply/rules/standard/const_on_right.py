@@ -8,10 +8,19 @@ from comply.printing import Colors
 
 
 class ConstOnRight(Rule):
+    """ Always put `const` qualifiers to the right of type declarations.
+
+    Placing `const` qualifiers to the left makes for an inconsistent reading of types.
+
+    References:
+
+      * Malcolm Inglis: [c-style](https://github.com/mcinglis/c-style#always-put-const-on-the-right-and-read-types-right-to-left)
+    """
+
     def __init__(self):
         Rule.__init__(self, name='const-on-right',
-                      description='Prefer const qualifiers to the right',
-                      suggestion='Place const qualifier to the right of the type declaration.')
+                      description='Incorrectly placed const qualifier',
+                      suggestion='Move the const qualifier to the right side of the type declaration.')
 
     # match both struct/enum and standard type declarations
     type_pattern = r'((?:struct|enum)\s+?.+?\b|.+?\b)'

@@ -9,6 +9,25 @@ from comply.printing import Colors
 
 
 class TooManyParams(Rule):
+    """ Don't exceed 4 parameters per function.
+
+    When a function has many parameters, it is often a sign that it is doing too much and would
+    benefit from being refactored into smaller parts.
+
+    Each parameter adds to the complexity of a function, and the more it has, the harder it becomes
+    to understand (and use).
+    <br/><br/>
+    A common practice is to bundle parameters into a `struct` when many parameters are
+    absolutely necessary (a pattern commonly referred to as *Parameter Object*).
+    <br/><br/>
+    This practice, however, does *not* reduce the complexity of the function-
+    but it *does* improve its readability.
+
+    References:
+
+      * Stack Exchange discussion: [Are there guidelines on how many parameters a function should accept?](https://softwareengineering.stackexchange.com/a/145066)
+    """
+
     def __init__(self, only_check_implementations: bool=False):
         Rule.__init__(self, name='too-many-params',
                       description='Function might be too broad ({count} > {max} parameters)',

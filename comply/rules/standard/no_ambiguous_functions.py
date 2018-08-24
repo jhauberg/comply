@@ -9,9 +9,20 @@ from comply.printing import Colors
 
 
 class NoAmbiguousFunctions(Rule):
+    """ Don't provide ambiguous function declarations.
+
+    This mainly pertains to functions with parameter-less declarations. In C, a function
+    declaration with no parameters is ambiguous, as it implicitly declares a function that can
+    take an arbitrary number of parameters.
+
+    References:
+
+      * [Empty parameter list in C function, do you write func(void) or func()?](https://blog.zhaw.ch/icclab/empty-parameter-list-in-c-function-do-you-write-funcvoid-or-func/)
+    """
+
     def __init__(self):
         Rule.__init__(self, name='no-ambiguous-funcs',
-                      description='Avoid ambiguous function declarations',
+                      description='Ambiguous function declaration',
                       suggestion='Add \'void\' to indicate that this is a zero-parameter function.')
 
     pattern = re.compile(FUNC_PROT_PATTERN)
@@ -64,9 +75,15 @@ class NoAmbiguousFunctions(Rule):
 
 
 class ExplicitlyVoidFunctions(NoAmbiguousFunctions):
+    """ Always specify parameters as `void` if a function implementation takes zero parameters.
+
+    Technically, this is not required for the compiler to do its job, but being explicit helps in
+    keeping a clear and consistent interface.
+    """
+
     def __init__(self):
         NoAmbiguousFunctions.__init__(self)
 
         self.name = 'explicitly-void-funcs'
-        self.description = 'Parameter-less functions should specify parameters as \'void\''
+        self.description = 'Parameter-less function does not specify parameters as \'void\''
         self.pattern = re.compile(FUNC_IMPL_PATTERN)

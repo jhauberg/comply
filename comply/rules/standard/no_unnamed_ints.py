@@ -9,9 +9,21 @@ from comply.printing import Colors
 
 
 class NoUnnamedInts(Rule):
+    """ Provide meaningful names for integer parameters if able.
+
+    The majority of function prototypes will suffer from having unnamed integer parameters,
+    as their meaning can otherwise be difficult to derive.
+    <br/><br/>
+    There are exceptions, of course; a good example is a math function such as `max(int, int)`
+    where adding parameter names (e.g. `int a` and `int b`) would not add value or make it
+    easier to understand.
+    <br/><br/>
+    In general, however, it is almost always preferable to provide parameter names.
+    """
+
     def __init__(self):
         Rule.__init__(self, name='no-unnamed-ints',
-                      description='Prefer always naming integer parameters',
+                      description='Integer parameter is unnamed',
                       suggestion='Provide a name for this parameter.')
 
     pattern = re.compile(FUNC_PROT_PATTERN)

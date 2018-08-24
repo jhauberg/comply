@@ -4,10 +4,16 @@ from comply.rules.rule import *
 
 
 class FileTooLong(Rule):
+    """ Avoid exceeding 600 lines per source file.
+
+    Files that are very long can be difficult to comprehend and may indicate that the complexity
+    of the code is too high.
+    """
+
     def __init__(self):
         Rule.__init__(self, name='file-too-long',
                       description='File is longer than recommended ({length} > {max} lines)',
-                      suggestion='Consider refactoring and splitting to separate files.')
+                      suggestion='Consider refactoring or splitting into separate files.')
 
     MAX = 600
 

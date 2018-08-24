@@ -6,6 +6,13 @@ from comply.printing import Colors
 
 
 class TooManyBlanks(Rule):
+    """ Don't add more than 1 blank line, neither leading, nor following, any line of code.
+
+    Blank lines are occasionally used as a way of partitioning or grouping chunks of logically
+    separated code, but this is not recommended. Always prefer refactoring by splitting into
+    separate functions or files.
+    """
+
     def __init__(self):
         Rule.__init__(self, name='too-many-blanks',
                       description='Too many consecutive blank lines ({count} > {max})',

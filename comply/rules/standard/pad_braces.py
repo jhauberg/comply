@@ -8,9 +8,11 @@ from comply.printing import Colors
 
 
 class PadBraces(Rule):
+    """ Always pad braced bodies with inner whitespace. """
+
     def __init__(self):
         Rule.__init__(self, name='pad-braces',
-                      description='Braced bodies should be padded with space on both sides',
+                      description='Braced body is not padded with space',
                       suggestion='Add a single whitespace to the {left_or_right} of \'{brace}\'.')
 
     pattern = re.compile(r'(?:[^\s]({)|({)[^\s])|'     # starting braces without whitespace to the left or right
