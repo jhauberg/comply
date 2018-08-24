@@ -4,11 +4,11 @@
 
 <br/>
 
-A linter to help (pedantic) programmers enforce a consistent coding style and better practices for C99 sources.
+A linter to help (pedantic) programmers enforce better practices and a consistent coding style for C99 sources.
 
 It's not *just* a matter of formatting.
 
-![](assets/example_terminal.png "An example of reported violations using the Human reporting mode in a terminal")
+![](assets/example_terminal.png "An example of violations using the Human reporting mode in a terminal")
 
 Jump to: [Usage](#usage), [Options](#options), [Integration](#integrating-with-xcode), [FAQ](#faq)
 
@@ -74,9 +74,9 @@ You can then go through all listed files and manually delete each one.
 
 ## The *Compliant* Style
 
-To enforce its guidelines, `comply` defines some (highly) opinionated rules and conventions on best practices for writing code that both reads better and is more durable, making it easier to maintain and contribute.
+To enforce its guidelines, `comply` defines some (highly) opinionated rules and conventions on best practices for writing code that both reads better and is more durable, making it easier to maintain and contribute to. That's the idea, anyway.
 
-These rules span from formatting, to design and structure, and must all be satisfied for a project to be regarded as being of the *Compliant* style.
+These rules span from formatting to design and structure, and must all be satisfied for a project to be regarded as being of the [*Compliant*](#spread-the-word) style.
 
 You might not like some of them, but each rule has thought and reasoning behind it.
 
@@ -86,7 +86,7 @@ You can read more about the rules on the [project page](http://jhauberg.github.i
 
 **Disclaimer**
 
-The proposed guidelines are fully based on my personal convictions of what is "the correct style"; they have not been battle-tested on production quality codebases.
+I created this project for my own sake, and the proposed guidelines are fully based on my personal convictions of what is "the correct style"; they have not been battle-tested on production quality codebases.
 
 Additionally, this is a **work in progress**; as such, it is under constant development and breaking changes may happen frequently.
 
@@ -252,7 +252,7 @@ Pre-processing is difficult and is a project in its own. It is also a solved pro
 
 Avoiding dependencies, especially complex ones, makes `comply` much leaner, easier to use and more portable.
 
-Because it does not even attempt to do deal with the pre-processing, it does not need to know about any include paths, standard library or anything like that either. You can just point and shoot at any C source file.
+Because it does not even attempt to deal with the pre-processing, it does not need to know about any include paths, standard library or anything like that either. You can just point and shoot at any C source file.
 
 However, the bad news is that pre-processor directives, such as `#define`, which are widely and commonly used, won't be resolved properly when `comply` looks at it. This means that macros can cause a lot of trouble and potentially cause false-positives.
 
@@ -280,18 +280,19 @@ There is a point to be made in the usefulness of automatic formatting, see [Blac
 
 No. This is intentional.
 
-This project is all about defining a single ubiquitous style and guideline; it should not differ across Compliant codebases.
+The core idea behind this project is to define a single, ubiquitous style and guideline; it should not differ across *Compliant* codebases.
 
 > The arguments `--except` and `--check` (which allow you to exclude, or include, certain rules) contradict the philosophy of the project, but are made available for debugging purposes.
 
 ### Why use `comply` when we have [`clang-tidy`](http://clang.llvm.org/extra/clang-tidy/)?
 
-Because it provides a stricter set of rules going beyond just formatting.
+To get a different perspective.
+
+These tools- while similar in nature- are not identical, and both will look at your codebase differently, offering unique insights.
 
 However, objectively, `clang-tidy` is without question the more mature and seasoned choice for general linting purposes. It is also a much larger beast, and can be daunting at a glance.
 
 At the very least, `comply` is easy to get going with, so why not give it a try?
-
 
 ## License
 
