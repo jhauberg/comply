@@ -90,13 +90,15 @@ def check_triggers(text: str, rule, assumed_filename: str=None):
 
         raise AssertionError(('Found unexpected number of violations ({0} != {1}):\n'
                               'Found {2}\n'
-                              'Expected {3}').format(
+                              'Expected {3}\n'
+                              'In text:\n{4}').format(
             total_violations, expected_number_of_violations,
-            violation_locations, trigger_locations))
+            violation_locations, trigger_locations, text))
 
     for i, violation in enumerate(violations_in_order):
         trigger_location = trigger_locations[i]
 
         if violation.starting != trigger_location:
-            raise AssertionError('Found unexpected violation ({0} != {1})'.format(
-                violation.starting, trigger_location))
+            raise AssertionError(('Found unexpected violation ({0} != {1})\n'
+                                  'In text:\n{2}').format(
+                violation.starting, trigger_location, text))
