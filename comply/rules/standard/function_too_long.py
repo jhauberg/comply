@@ -45,7 +45,7 @@ class FunctionTooLong(Rule):
                 violation.lines[i] = (linenumber, Colors.BAD + line + Colors.RESET)
 
         info_line = (Colors.EMPHASIS +
-                     '(in {0}(..) starting at line {1})'.format(name, line_number) +
+                     '(in \'{0}\' starting at line {1})'.format(name, line_number) +
                      Colors.RESET)
 
         violation.lines.insert(0, (None, info_line))
@@ -105,9 +105,11 @@ class FunctionTooLong(Rule):
 
                             body = file.original[func_body_start_index:func_body_start_index + offset]
 
+                            position = file.line_number_at(function_match.start('name'))
+
                             # we found end of body; now determine if it violates rule
                             check_func_body(body, function_match.group('name'), line_number,
-                                            file.line_number_at(function_match.start(), span_entire_line=True))
+                                            starting_from_position=position)
 
                             break
 
