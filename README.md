@@ -72,7 +72,7 @@ You can then go through all listed files and manually delete each one.
 
 ## The *Compliant* Style
 
-To enforce its guidelines, `comply` defines some (highly) opinionated rules and conventions on best practices for writing code that both reads better and is more durable, making it easier to maintain and contribute to.
+The style guide is comprised of a set of (highly) opinionated rules and conventions on best practices for writing code that is more durable, easier to maintain and reads better.
 
 These rules span from formatting to design and structure, and must all be satisfied for a project to be regarded as being of the [*Compliant*](#spread-the-word) style.
 
@@ -163,8 +163,6 @@ Options (non-compliant):
 ### Integrating with Xcode
 
 `comply` can be integrated as a *Run Script Build Phase* in Xcode to have violations reported directly in the IDE:
-
-![](assets/example.png "An example of reported violations in Xcode")
 
 <img width="988" src="assets/example_xcode.png" alt="An example of reported violations in Xcode">
 
