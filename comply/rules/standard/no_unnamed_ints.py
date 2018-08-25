@@ -31,8 +31,10 @@ class NoUnnamedInts(Rule):
     # todo: long long would not be matched
     int_types = 'uint8_t|uint16_t|uint32_t|uint64_t|int8_t|int16_t|int32_t|int64_t|int|short|long'
 
-    unnamed_int_pattern = re.compile(r'({types})(?:\s*?,|$)'.format(
+    unnamed_int_pattern = re.compile(r'\b({types})(?:\s*?(?:,|$))'.format(
         types=int_types))
+    # unnamed_int_pattern = re.compile(r'(?:\(|\b)({types})(?:\s*?(?:,|\))|$)'.format(
+    #     types=int_types))
 
     def augment(self, violation: RuleViolation):
         # assume only one offending line
