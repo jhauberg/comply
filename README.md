@@ -8,7 +8,7 @@ A linter to help (pedantic) programmers enforce better practices and a consisten
 
 It's not *just* a matter of formatting.
 
-![](assets/example_terminal.png "An example of violations using the Human reporting mode in a terminal")
+![](assets/example_terminal.png "An example of the Human reporting mode in a terminal")
 
 Jump to: [Usage](#usage), [Options](#options), [Integration](#integrating-with-xcode), [FAQ](#faq)
 
@@ -74,7 +74,7 @@ You can then go through all listed files and manually delete each one.
 
 ## The *Compliant* Style
 
-To enforce its guidelines, `comply` defines some (highly) opinionated rules and conventions on best practices for writing code that both reads better and is more durable, making it easier to maintain and contribute to. That's the idea, anyway.
+To enforce its guidelines, `comply` defines some (highly) opinionated rules and conventions on best practices for writing code that both reads better and is more durable, making it easier to maintain and contribute to.
 
 These rules span from formatting to design and structure, and must all be satisfied for a project to be regarded as being of the [*Compliant*](#spread-the-word) style.
 
