@@ -1,14 +1,12 @@
-<img width="90" src="assets/logo.png" alt="comply" align="left">
+<img width="80" src="assets/logo.png" alt="comply" align="left">
 
 # comply
 
 <br/>
 
-A linter to help (pedantic) programmers enforce better practices and a consistent coding style for C99 sources.
+A style guide and linter to help you enforce better practices when writing C99.
 
-It's not *just* a matter of formatting.
-
-![](assets/example_terminal.png "An example of the Human reporting mode in a terminal")
+<img width="684" src="assets/example_terminal.png" alt="An example of the Human reporting mode in a terminal">
 
 Jump to: [Usage](#usage), [Options](#options), [Integration](#integrating-with-xcode), [FAQ](#faq)
 
@@ -168,6 +166,8 @@ Options (non-compliant):
 
 ![](assets/example.png "An example of reported violations in Xcode")
 
+<img width="988" src="assets/example_xcode.png" alt="An example of reported violations in Xcode">
+
 You have two options for making this happen:
 
 <details>
@@ -244,7 +244,7 @@ You can use this badge in your own project's `README.md`:
 
 ## FAQ
 
-### Does `comply` do any pre-processing?
+### Does `comply` do any pre-processing of C sources?
 
 No. This is intentional and deliberate.
 
