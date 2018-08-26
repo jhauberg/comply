@@ -18,7 +18,7 @@ class NoRedundantConst(Rule):
 
     def __init__(self):
         Rule.__init__(self, name='no-redundant-const',
-                      description='Prototype parameter name marked as const',
+                      description='Parameter name marked const',
                       suggestion='Remove const qualifier for parameter name.')
 
     pattern = re.compile(FUNC_PROT_PATTERN)

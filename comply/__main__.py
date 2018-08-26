@@ -2,7 +2,7 @@
 # coding=utf-8
 
 """
-Make your C follow the rules
+Compliant Style Guide
 
 Usage:
   comply <input>... [--reporter=<name>] [--check=<rule>]... [--except=<rule>]...
