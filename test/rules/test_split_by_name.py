@@ -12,17 +12,7 @@ def test_split_by_name():
         # non-triggers
         'void func();',
         ('void\n'
-         'func(void) { ... }'),
-        # false-positives
-        ('#define ↓YouMessage(pointer, prefix, text) \\\n'
-         '    strcat((YouPrefix(pointer, prefix, text), pointer), text)\n'
-         '\n'
-         'void You\n'
-         'VA_DECL(const char *, line)\n'
-         '{'),
-        ('#if ↓defined(SUPPORT_DEFAULT_FONT)\n'
-         'extern void LoadDefaultFont(void)\n'
-         '{')
+         'func(void) { ... }')
     ]
 
     match_triggers(texts, SplitByName)

@@ -14,11 +14,7 @@ def test_too_many_params():
         # non-triggers
         'void func(int, int, int, unsigned short);',
         'void func(int a, int b, int c, unsigned short d);',
-        'void func(int a, int b, int c, unsigned short d) { ... }',
-        # false-positives
-        ('#define ↓DOUBLE_ROUND(v0,v1,v2,v3)  \\\n'  # this is both an issue with pre-processing
-         '    HALF_ROUND(v0,v1,v2,v3,13,16); \\\n')  # but also with paren balance- e.g. realizing
-                                                     # that function sig actually ends first line
+        'void func(int a, int b, int c, unsigned short d) { ... }'
     ]
 
     match_triggers(texts, TooManyParams)
