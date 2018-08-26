@@ -72,9 +72,9 @@ You can then go through all listed files and manually delete each one.
 
 ## The *Compliant* Style
 
-The style guide is comprised of a set of (highly) opinionated rules and conventions on best practices for writing code that is more durable, easier to maintain and reads better.
+C is a great language; it gives you a lot of power and allows you to do things *your way*. That power, however, can often lead to bad, or at least, unconventional, practices.
 
-These rules span from formatting to design and structure, and must all be satisfied for a project to be regarded as being of the [*Compliant*](#spread-the-word) style.
+The *Compliant* style can be applied to mitigate this concern. It is comprised of a set of sensible (but opinionated) rules that vary in focus, spanning from formatting to design and structure, and must all be satisfied for a project to be regarded as being of the [*Compliant*](#spread-the-word) style.
 
 You might not like some of them, but each rule has thought and reasoning behind it.
 
@@ -84,7 +84,7 @@ You can read more about the rules on the [project page](http://jhauberg.github.i
 
 **Disclaimer**
 
-I created this project for my own sake, and the proposed guidelines are fully based on my personal convictions of what is "the correct style"; they have not been battle-tested on production quality codebases.
+I created this project for my own sake, and the proposed guidelines are fully based on my personal convictions of what is "the correct style".
 
 Additionally, this is a **work in progress**; as such, it is under constant development and breaking changes may happen frequently.
 
@@ -135,7 +135,7 @@ $ python -m comply path/to/src/
 ### Options
 
 ```console
-Make your C follow the rules
+Compliant Style Guide
 
 Usage:
   comply <input>... [--reporter=<name>] [--check=<rule>]... [--except=<rule>]...
@@ -148,14 +148,14 @@ Usage:
 Options:
   -r --reporter=<name>    Specify type of reported output [default: human]
   -i --limit=<amount>     Limit the amount of reported violations
-  -s --strict             Report all violations (and don't suppress similar ones)
+  -s --strict             Increase severity for less severe rules
   -P --profile            Show profiling/benchmark results
   -v --verbose            Show diagnostic messages
   -h --help               Show program help
   --version               Show program version
 
 Options (non-compliant):
-  -e --only-severe        Report only severe violations
+  -e --only-severe        Only run checks for rules of high severity
   -I --check=<rule>       Only run checks for specific rules
   -E --except=<rule>      Don't run checks for specific rules
 ```
