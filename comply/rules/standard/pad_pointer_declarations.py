@@ -22,10 +22,10 @@ class PadPointerDeclarations(Rule):
 
     def __init__(self):
         Rule.__init__(self, name='pad-pointer-decls',
-                      description='Pointer declaration is not padded with space on both sides',
+                      description='Pointer declaration is not padded with whitespace',
                       suggestion='Add a single whitespace to the {left_or_right} of the asterisk.')
 
-    pattern = re.compile(r'\*[^\s,*()=]|[^\s*()]\*')
+    pattern = re.compile(r'\*\w|\w\*')
 
     def augment(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
@@ -53,7 +53,8 @@ class PadPointerDeclarations(Rule):
             for i in range(index_left_of_star, 0, -1):
                 c = text[i]
 
-                if c in [',', ';', '=', '!', '+', '-', '/', '(', ')', '[', ']', '\r', '\n']:
+                if c in [',', ';', ':', '?', '=', '!', '+', '-', '/', '(', ')', '[', ']',
+                         '\r', '\n']:
                     # found a character that signifies this is probably a dereferencing pointer
                     break
                 else:
