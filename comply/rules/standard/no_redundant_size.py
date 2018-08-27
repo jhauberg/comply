@@ -19,7 +19,7 @@ class NoRedundantSize(Rule):
 
     References:
 
-      * Glennan Carnie: [Shock horror! I learned something about arrays in C](https://blog.feabhas.com/2013/11/shock-horror-i-learned-something-about-arrays-in-c/)
+      * Glennan Carnie: [Shock horror! I learned something about arrays in C](https://blog.feabhas.com/2013/11/shock-horror-i-learned-something-about-arrays-in-c)
     """
 
     def __init__(self):
@@ -29,7 +29,7 @@ class NoRedundantSize(Rule):
 
     pattern = re.compile(FUNC_BOTH_PATTERN)
 
-    size_pattern = re.compile(r'\[([^\[\]]+?)\]')
+    size_pattern = re.compile(r'\[\s*?([^\s\[\]]+?)\s*?\]')
 
     def augment(self, violation: RuleViolation):
         line_index = violation.index_of_starting_line()
