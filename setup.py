@@ -47,7 +47,7 @@ VERSION_IDENTIFIER = determine_version_or_exit()
 setup(
     name='comply',
     version=VERSION_IDENTIFIER,
-    description='Make your C follow the rules',
+    description='Compliant Style Guide',
     long_description=open('README.md').read(),
     url='https://github.com/jhauberg/comply',
     download_url='https://github.com/jhauberg/comply/archive/master.zip',

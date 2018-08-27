@@ -72,9 +72,11 @@ You can then go through all listed files and manually delete each one.
 
 ## The *Compliant* Style
 
-C is a great language; it gives you a lot of power and allows you to do things *your way*. That power, however, can often lead to bad, or at least, unconventional, practices.
+C is a great language; it gives you a lot of power, control and a degree of freedom that allow you to do things *your way*.
 
-The *Compliant* style can be applied to mitigate this concern. It is comprised of a set of sensible (but opinionated) rules that vary in focus, spanning from formatting to design and structure, and must all be satisfied for a project to be regarded as being of the [*Compliant*](#spread-the-word) style.
+That power, however, can often lead to bad, or at the very least, unconventional, practices.
+
+The *Compliant* style can be applied to mitigate this concern. It is comprised of a set of sensible (but opinionated) rules that vary in focus. Spanning in theme from formatting to design and structure, these rules must all be satisfied for a project to be regarded as being of the [*Compliant*](#spread-the-word) style.
 
 You might not like some of them, but each rule has thought and reasoning behind it.
 
@@ -86,7 +88,7 @@ You can read more about the rules on the [project page](http://jhauberg.github.i
 
 I created this project for my own sake, and the proposed guidelines are fully based on my personal convictions of what is "the correct style".
 
-Additionally, this is a **work in progress**; as such, it is under constant development and breaking changes may happen frequently.
+Additionally, this is a **work in progress**; it is under constant development and breaking changes may happen frequently.
 
 ## Usage
 
