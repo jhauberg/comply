@@ -331,6 +331,8 @@ def main():
     if enable_profiling and not is_verbose:
         printdiag('Profiling is enabled; --verbose was set automatically')
 
+        is_verbose = True
+
     is_strict = arguments['--strict']
     only_severe = arguments['--only-severe']
     checks = expand_params(arguments['--check'])
@@ -350,7 +352,7 @@ def main():
     reporter = make_reporter(reporting_mode)
     reporter.suppress_similar = not is_strict
     reporter.is_strict = is_strict
-    reporter.is_verbose = True if enable_profiling else is_verbose
+    reporter.is_verbose = is_verbose
 
     if arguments['--limit'] is not None:
         reporter.limit = int(arguments['--limit'])
