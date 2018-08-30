@@ -53,48 +53,6 @@ def md2html(text) -> str:
         return markdown(textbytes, textlen, opts)
 
 
-def find_all_rules() -> List[Rule]:
-    # find all rule subclasses
-    rule_types = [rule_class for rule_class in Rule.__subclasses__()]
-
-    for idx, rule_type in enumerate(rule_types):
-        sub_rule_types = [rule_class for rule_class in rule_type.__subclasses__()]
-
-        next_idx = idx + 1
-
-        # extend types by any found sub-types; this is practically recursive, as the next
-        # enumeration iteration will automatically hit the newly discovered sub-types and then
-        # find any sub-sub-types from the sub-types, and so on, indefinitely
-        rule_types[next_idx:next_idx] = sub_rule_types
-
-    # convert types to names (strings)
-    rule_type_names = [rule_type.__name__ for rule_type in rule_types]
-
-    # will hold Rule-subclassed object instances
-    rule_instances = []
-
-    # find all sub-modules inside the .rules package
-    # (mod[1] is module object- mod[0] is just the name)
-    modules = [mod[1] for mod in inspect.getmembers(comply.rules, inspect.ismodule)]
-
-    for rule_type_name in rule_type_names:
-        # brute-force our way through each module until we find the one it belongs in
-        # then instantiate it and hold on to it for later
-        for rule_module in modules:
-            try:
-                rule_attr = getattr(rule_module, rule_type_name)
-            except AttributeError:
-                # the rule did not belong in this module
-                pass
-            else:
-                # we found the right module
-                rule_instances.append(rule_attr())
-
-                break
-
-    return rule_instances
-
-
 def fill_rule_template(tmp: str, rule: Rule) -> str:
     docstring = rule.__doc__
 
@@ -179,7 +137,10 @@ template = template.replace('{{ date }}', date)
 rule_templates = [file for file in os.listdir(rule_templates_path) if not file.startswith('.')]
 rule_templates = sorted(rule_templates)
 
-rules = find_all_rules()
+rulesets = [comply.rules.standard,
+            comply.rules.experimental]
+
+rules = Rule.rules_in(rulesets)
 
 if len(rules) == 0:
     sys.exit('No rules found.')
