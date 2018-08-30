@@ -20,7 +20,7 @@ $ pytest
 
 As mentioned, tests should be small, simple and concise scripts that `assert` that expectations match results.
 
-The utility script [`expect.py`](rules/expect.py) can be used for conveniently testing whether rules produce violations on the expected lines/columns.
+If you're adding a test for a specific `Rule`, the utility script [`expect.py`](rules/expect.py) can be used for conveniently testing whether a rule produces violations on the expected lines/columns.
 
 For example, this test checks the `PadPointerDeclarations` rule:
 
@@ -32,7 +32,7 @@ texts = [
     'char const * a = "abc"'
 ]
 
-match_triggers(texts, PadPointerDeclarations)
+match_triggers(texts, PadPointerDeclarations())
 ```
 
 Note the `↓` character, which is used to indicate that a violation occurs at this exact line and column. There can be multiple triggers in a text.
@@ -55,7 +55,7 @@ texts = [
 match_triggers(texts, NoUnifiedHeaders, assumed_filename='header.h')
 ```
 
-*Some rules expect a filename; this can be provided through `assumed_filename`- the file does not have to exist.*
+*Some rules expect a filename; this can be provided through `assumed_filename`. The file does not have to exist.*
 
 ### Marking and fixing false-positives
 
@@ -63,7 +63,7 @@ Sometimes we find code that produce false-positive violations. This is not unusu
 
 When finding these, they should always be captured and noted in a test. This way we have a documented and reproducible case which helps a lot when looking for a fix.
 
-False-positive tests should always be marked under a `# false-positives` section, like so:
+False-positive tests should be marked under a `# false-positives` section, like so:
 
 ```
 texts = [
