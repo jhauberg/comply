@@ -88,7 +88,7 @@ def check_text(text: str, rules: List[Rule], assumed_filename: str=None) -> Chec
 
     path = assumed_filename
 
-    filename, extension = os.path.splitext(path) if path is not None else (None, None)
+    filename, extension = os.path.splitext(path) if path is not None else ('', '')
 
     file = prepare(text, filename, extension, path)
 
