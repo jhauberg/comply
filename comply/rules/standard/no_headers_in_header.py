@@ -57,10 +57,10 @@ class NoHeadersInHeader(Rule):
         return True
 
     def collect(self, file: CheckFile):
-        offenders = []
-
         if '.h' not in file.extension:
-            return offenders
+            return []
+
+        offenders = []
 
         for inclusion in self.pattern.finditer(file.stripped):
             include_filename = file.original[inclusion.start('filename'):
@@ -86,6 +86,31 @@ class NoHeadersInHeader(Rule):
     @property
     def severity(self):
         return RuleViolation.ALLOW
+
+    @property
+    def triggering_filename(self):
+        return 'header.h'
+
+    @property
+    def triggers(self):
+        return [
+            ('// some header file\n'
+             '↓#include <header.h>'),
+            ('// some header file\n'
+             '↓#include <header.h> // type')
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            ('#include <stdbool.h>\n'
+             '#include <stdint.h>\n'
+             '#include <inttypes.h>'),
+            ('// some header file\n'
+             'struct symbol_t;'),
+            '#include <header.h> // type :completeness',
+            '#include <header.h> // type:completeness'
+        ]
 
 
 def is_symbol_included_for_completeness(symbol: str) -> bool:

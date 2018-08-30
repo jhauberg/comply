@@ -51,3 +51,18 @@ class PadCommas(Rule):
             offenders.append(offender)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+            'func(int a↓,int b)',
+            '#define MACRO(a↓,b↓,c)',
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            'func(int a, int b)',
+            ('void func(int a,\n'
+             '          int b')
+        ]

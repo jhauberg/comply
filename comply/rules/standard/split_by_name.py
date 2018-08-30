@@ -66,3 +66,18 @@ class SplitByName(Rule):
                 offenders.append(offender)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+            'void ↓func(void) { ... }',
+            'struct mytype_t ↓func() { ... }'
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            'void func();',
+            ('void\n'
+             'func(void) { ... }')
+        ]

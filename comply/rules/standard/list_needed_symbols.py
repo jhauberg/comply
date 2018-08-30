@@ -48,6 +48,18 @@ class ListNeededSymbols(Rule):
 
         return offenders
 
+    @property
+    def triggers(self):
+        return [
+
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+
+        ]
+
 
 def symbols_for_inclusion(file: CheckFile, match) -> list:
     """ Return a list of symbols for a match. """

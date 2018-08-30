@@ -86,3 +86,21 @@ class PadPointerDeclarations(Rule):
                 offenders.append(offender)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+            'char const ↓*a = "abc";',
+            '(struct command↓*)cmd',
+            'return *((uint64_t↓*)&index);'
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            'char const * a = "abc";',
+            'char const a = *ptr;',
+            '*ptr = a;',
+            'char const a = b ? c : *ptr;',
+            'char const a = b ? *ptr : c;'
+        ]

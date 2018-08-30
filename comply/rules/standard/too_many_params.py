@@ -93,3 +93,19 @@ class TooManyParams(Rule):
                 offenders.append(offender)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+            'void ↓func(int, int, int, unsigned short, long);',
+            'void ↓func(int a, int b, int c, unsigned short d, long f);',
+            'void ↓func(int a, int b, int c, unsigned short d, long f) { ... }'
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            'void func(int, int, int, unsigned short);',
+            'void func(int a, int b, int c, unsigned short d);',
+            'void func(int a, int b, int c, unsigned short d) { ... }'
+        ]

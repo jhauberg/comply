@@ -75,9 +75,9 @@ def check_triggers(text: str, rule, assumed_filename: str=None):
     expected_number_of_violations = len(trigger_locations)
 
     if assumed_filename is not None:
-        result = check_text(snippet, [rule()], assumed_filename)
+        result = check_text(snippet, [rule], assumed_filename)
     else:
-        result = check_text(snippet, [rule()])
+        result = check_text(snippet, [rule])
 
     # make sure resulting violations are in ascending order to match the trigger indices
     violations_in_order = sorted(result.violations,
@@ -88,17 +88,17 @@ def check_triggers(text: str, rule, assumed_filename: str=None):
     if total_violations != expected_number_of_violations:
         violation_locations = [violation.starting for violation in violations_in_order]
 
-        raise AssertionError(('Found unexpected number of violations ({0} != {1}):\n'
+        raise AssertionError(('[{5}] Found unexpected number of violations ({0} != {1}):\n'
                               'Found {2}\n'
                               'Expected {3}\n'
                               'In text:\n{4}').format(
             total_violations, expected_number_of_violations,
-            violation_locations, trigger_locations, text))
+            violation_locations, trigger_locations, text, rule.name))
 
     for i, violation in enumerate(violations_in_order):
         trigger_location = trigger_locations[i]
 
         if violation.starting != trigger_location:
-            raise AssertionError(('Found unexpected violation ({0} != {1})\n'
+            raise AssertionError(('[{3}] Found unexpected violation ({0} != {1})\n'
                                   'In text:\n{2}').format(
-                violation.starting, trigger_location, text))
+                violation.starting, trigger_location, text, rule.name))

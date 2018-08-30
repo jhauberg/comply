@@ -33,8 +33,6 @@ class NoUnnamedInts(Rule):
 
     unnamed_int_pattern = re.compile(r'\b({types})(?:\s*?(?:,|$))'.format(
         types=int_types))
-    # unnamed_int_pattern = re.compile(r'(?:\(|\b)({types})(?:\s*?(?:,|\))|$)'.format(
-    #     types=int_types))
 
     def augment(self, violation: RuleViolation):
         # assume only one offending line
@@ -83,3 +81,24 @@ class NoUnnamedInts(Rule):
     @property
     def severity(self):
         return RuleViolation.ALLOW
+
+    @property
+    def triggers(self):
+        return [
+            'void func(↓int);',
+            'void func(  ↓int);',
+            'void func(↓int  );',
+            'void func(  ↓int  );',
+            ('void func(↓int,\n'
+             '          unsigned ↓int);')
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            'void func(int a);',
+            'void func(int    a);',
+            ('void func(int\n'
+             '          a);'),
+            'void func(struct point);'
+        ]

@@ -90,3 +90,20 @@ class BraceStatementBodies(Rule):
             offenders.append(offender)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+            '↓if (true) run();',
+            ('↓if (true)\n'
+             '    run();')
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            'if (true) { run(); }',
+            ('if (true) {\n'
+             '    run();\n'
+             '}')
+        ]

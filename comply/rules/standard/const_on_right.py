@@ -8,7 +8,7 @@ from comply.printing import Colors
 
 
 class ConstOnRight(Rule):
-    """ Always put `const` qualifiers to the right of type declarations.
+    """ Always place `const` qualifiers to the right of type declarations.
 
     Placing `const` qualifiers to the left makes for an inconsistent reading of types.
 
@@ -68,3 +68,26 @@ class ConstOnRight(Rule):
             offenders.append(offender)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+            '↓const int a = 1;',
+            '↓const int * const b = &a;',
+            '↓const struct mytype_t * const c = NULL;',
+            '↓const mytype_t * c;',
+            'int const a = * (↓const int *)b;',
+            ('↓const int32_t\n'
+             'my_func(↓const struct mytype_t * const lhs,\n'
+             '        ↓const struct mytype_t * const rhs)'),
+            # false-positives
+            ('int\n'
+             '↓const a = 1;')
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            'int const a = 1;',
+            'mytype_t const * c;',
+        ]

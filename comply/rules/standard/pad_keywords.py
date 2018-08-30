@@ -74,3 +74,24 @@ class PadKeywords(Rule):
             offenders.append(offender)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+            '↓if() { ... }',
+            '↓for() { ... }',
+            '↓while() { ... }',
+            '↓switch() { ... }',
+            'if () { ... }↓else{ }',  # only 1 non-overlapping match
+            'if (a == b) { ... }↓else if (a == c) { ... } ↓else{ ... }'
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            'my_format = "switcheroo";',
+            'myformat = forx',
+            'myif();',
+            'myfunc(iflags);',
+            '#ifndef'
+        ]

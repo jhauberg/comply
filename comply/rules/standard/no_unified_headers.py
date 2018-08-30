@@ -27,10 +27,10 @@ class NoUnifiedHeaders(Rule):
     pattern = re.compile(INCLUDE_PATTERN)
 
     def collect(self, file: CheckFile):
-        offenders = []
-
         if '.h' not in file.extension:
-            return offenders
+            return []
+
+        offenders = []
 
         text = file.stripped
 
@@ -53,3 +53,24 @@ class NoUnifiedHeaders(Rule):
     @property
     def collection_hint(self):
         return RuleViolation.ONCE_PER_FILE
+
+    @property
+    def triggering_filename(self):
+        return 'header.h'
+
+    @property
+    def triggers(self):
+        return [
+            ('▶// some header file\n'
+             '#include <header.h>\n'
+             '#include "other_header.h"')
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            ('// some header file\n'
+             '#include <header.h>\n'
+             '#include "other_header.h"'
+             'void proto_func(int a);')
+        ]

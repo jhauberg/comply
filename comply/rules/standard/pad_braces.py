@@ -64,3 +64,20 @@ class PadBraces(Rule):
             offenders.append(offender)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+            '↓{a, b, c }',
+            '↓{a, b, c↓}',
+            'if ((struct a_t)↓{ .x = 0↓})↓{ ... ↓}else ↓{something }'
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            '{ a, b, c }',
+            ('{\n'
+             'a\n'
+             '}')
+        ]

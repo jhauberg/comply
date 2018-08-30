@@ -32,3 +32,24 @@ class NoDuplicateIncludes(Rule):
                 offenders.append(offender)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+            ('#include <header.h>\n'
+             '↓#include <header.h>'),
+            ('#include "header.h"\n'
+             '↓#include "header.h"'),
+            ('#include <header.h>\n'
+             '↓#include "header.h"'),
+            ('#include "header.h"\n'
+             '↓#include <header.h>')
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            ('#include <header.h>\n'
+             '#include <other_header.h>\n'
+             '#include "and_another_header.h"\n')
+        ]

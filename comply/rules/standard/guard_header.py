@@ -62,3 +62,15 @@ class GuardHeader(Rule):
     @property
     def collection_hint(self):
         return RuleViolation.ONCE_PER_FILE
+
+    @property
+    def triggers(self):
+        return [
+
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+
+        ]

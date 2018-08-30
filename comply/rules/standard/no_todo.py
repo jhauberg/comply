@@ -50,3 +50,19 @@ class NoTodo(Rule):
     @property
     def severity(self):
         return RuleViolation.ALLOW
+
+    @property
+    def triggers(self):
+        return [
+            'source with a // ↓todo: find me',
+            'source with a // ↓TODO: find me',
+            'source           ↓todo: f'
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            'source with a // todo don\'t find me',
+            'source with a // TODO don\'t find me',
+            'source todo'
+        ]

@@ -106,3 +106,15 @@ class PreferStandardInt(Rule):
                 offenders.append(offender)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+
+        ]

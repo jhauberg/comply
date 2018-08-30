@@ -63,3 +63,17 @@ class LineTooLong(Rule):
             offenders.append(offender)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+            'this line is waaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaay ↓too long',
+            'this line is waaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaay too lon↓g',
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            'this line is nooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooot',
+            'neither is this liiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiine'
+        ]

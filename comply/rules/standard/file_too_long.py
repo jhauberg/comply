@@ -40,3 +40,30 @@ class FileTooLong(Rule):
     @property
     def collection_hint(self):
         return RuleViolation.ONCE_PER_FILE
+
+    @property
+    def triggers(self):
+        return [
+            '▶' + make_filebody(FileTooLong.MAX + 1)
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            make_filebody(FileTooLong.MAX),
+            make_filebody(FileTooLong.MAX - 1)
+        ]
+
+
+def make_filebody(number_of_lines: int) -> str:
+    """ Return a string representing the contents of a file with a given number of lines.
+
+        Only used for testing purposes.
+    """
+
+    body = ''
+
+    for i in range(0, number_of_lines):
+        body += '{n}/{c}: line\n'.format(n=i, c=number_of_lines)
+
+    return body

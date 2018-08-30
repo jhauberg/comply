@@ -34,3 +34,18 @@ class NoSourceIncludes(Rule):
                 offenders.append(offender)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+            '↓#include "source.c"',
+            ('// some source file\n'
+             '↓#include <source.c>')
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            ('// some header file\n'
+             '#include <file.h>')
+        ]

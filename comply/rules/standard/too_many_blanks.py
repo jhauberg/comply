@@ -77,3 +77,25 @@ class TooManyBlanks(Rule):
                     count=consecutive_blanks)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+            ('source with some blank lines\n'
+             '\n'
+             '\n'
+             '▶more source'),
+            ('source with some blank lines\n'
+             '\n'
+             '\n'
+             '▶more source\n'
+             'asdasd')
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            ('source with a single blank line\n'
+             '\n'
+             'more source')
+        ]

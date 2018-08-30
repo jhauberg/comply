@@ -71,3 +71,15 @@ class IdentifierTooLong(Rule):
             check_identifier(identifier_match.group(), location)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+
+        ]

@@ -102,3 +102,15 @@ class NoRedundantConst(Rule):
                 param_index += len(param) + 1  # +1 to account for the split by ','
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+
+        ]

@@ -61,3 +61,17 @@ class NoPaddedParens(Rule):
             offenders.append(offender)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+            'func(↓ a, b, c)',
+            'func(a, b, c↓ )',
+            'func(↓  a, b, c↓ )'
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            'func(a, b, c)'
+        ]

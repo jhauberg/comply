@@ -120,3 +120,32 @@ class FunctionTooLong(Rule):
     @property
     def severity(self):
         return RuleViolation.ALLOW
+
+    @property
+    def triggers(self):
+        return [
+            make_funcbody(FunctionTooLong.MAX + 1, expects_violation=True)
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            make_funcbody(FunctionTooLong.MAX),
+            make_funcbody(FunctionTooLong.MAX - 1)
+        ]
+
+
+def make_funcbody(number_of_lines: int, expects_violation: bool=False) -> str:
+    """ Return a string representing the contents of a function with a given number of lines.
+
+        Only used for testing purposes.
+    """
+
+    body = 'void ↓func() {' if expects_violation else 'void func() {'
+
+    for i in range(0, number_of_lines):
+        body += '{n}/{c}: line\n'.format(n=i, c=number_of_lines)
+
+    body += '}'
+
+    return body

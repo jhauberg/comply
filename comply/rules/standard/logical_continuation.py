@@ -64,3 +64,21 @@ class LogicalContinuation(Rule):
             offenders.append(offender)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+            ('if (flag_a\n'
+             ' ↓&& flag_b)'),
+            ('if (flag_a\n'
+             ' ↓|| flag_b)')
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            ('if (flag_a &&\n'
+             '    flag_b)'),
+            ('if (flag_a ||\n'
+             '    flag_b)')
+        ]

@@ -75,3 +75,15 @@ class NoTabs(Rule):
     @property
     def collection_hint(self):
         return RuleViolation.ONCE_PER_FILE
+
+    @property
+    def triggers(self):
+        return [
+            'source with a↓	tab'
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            'source without tabs'
+        ]

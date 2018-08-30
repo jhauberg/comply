@@ -257,6 +257,33 @@ class Rule:
 
         return RuleViolation.MANY_PER_FILE
 
+    @property
+    def triggering_filename(self) -> str:
+        """ Return an assumed filename for a file triggering violations.
+
+            This is only used for test purposes.
+        """
+
+        return None
+
+    @property
+    def triggers(self) -> List[str]:
+        """ Return a list of texts containing triggering examples.
+
+            This is only used for test purposes.
+        """
+
+        return []
+
+    @property
+    def nontriggers(self) -> List[str]:
+        """ Return a list of texts containing non-triggering examples.
+
+            This is only used for test purposes.
+        """
+
+        return []
+
     def profile_begin(self):
         """ Mark the beginning of a violation collection. """
 

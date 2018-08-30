@@ -109,3 +109,17 @@ class NoRedundantSize(Rule):
                 offenders.append(offender)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+            'void func(int arr[↓12]);',
+            'void func(int a, int arr[  ↓12  ]);',
+            'void func(int arr[↓12]) { ... }'
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            'void func(int (* arr)[12]);'
+        ]

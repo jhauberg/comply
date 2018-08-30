@@ -88,6 +88,18 @@ class SymbolListedNotNeeded(Rule):
 
         return offenders
 
+    @property
+    def triggers(self):
+        return [
+
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+
+        ]
+
 
 def is_valid_symbol(symbol: str) -> bool:
     return ' ' not in symbol

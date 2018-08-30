@@ -73,6 +73,18 @@ class NoAmbiguousFunctions(Rule):
 
         return offenders
 
+    @property
+    def triggers(self):
+        return [
+
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+
+        ]
+
 
 class ExplicitlyVoidFunctions(NoAmbiguousFunctions):
     """ Always specify parameters as `void` if a function implementation takes zero parameters.
@@ -87,3 +99,15 @@ class ExplicitlyVoidFunctions(NoAmbiguousFunctions):
         self.name = 'explicitly-void-funcs'
         self.description = 'Parameter-less function does not specify parameters as \'void\''
         self.pattern = re.compile(FUNC_IMPL_PATTERN)
+
+    @property
+    def triggers(self):
+        return [
+
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+
+        ]
