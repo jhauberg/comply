@@ -6,8 +6,7 @@ from comply.rules.rule import Rule
 
 from test.expect import match_triggers
 
-rulesets = [comply.rules.standard,
-            comply.rules.experimental]
+rulesets = [comply.rules.standard]
 
 rules = Rule.rules_in(rulesets)
 
