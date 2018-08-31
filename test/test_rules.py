@@ -13,7 +13,13 @@ rules = Rule.rules_in(rulesets)
 
 def test_rule_triggers():
     for rule in rules:
-        texts = rule.triggers + rule.nontriggers
+        triggers = rule.triggers
+        nontriggers = rule.nontriggers
+
+        if len(triggers) == 0:
+            raise AssertionError('[{0}] No triggering texts to test'.format(rule.name))
+
+        texts = triggers + nontriggers
 
         match_triggers(texts, rule, assumed_filename=rule.triggering_filename)
 
