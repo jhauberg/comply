@@ -29,13 +29,13 @@ class GuardHeader(Rule):
         ]
 
     def collect(self, file: CheckFile):
-        offenders = []
-
         if '.h' not in file.extension:
-            return offenders
+            return []
 
         if '#pragma once' in file.stripped:
-            return offenders
+            return []
+
+        offenders = []
 
         guard_name = file.filename.strip() + file.extension
 
@@ -64,13 +64,26 @@ class GuardHeader(Rule):
         return RuleViolation.ONCE_PER_FILE
 
     @property
+    def triggering_filename(self):
+        return 'header.h'
+
+    @property
     def triggers(self):
         return [
-
+            ('▶// some header file\n'
+             '...\n'
+             '...'),
         ]
 
     @property
     def nontriggers(self):
         return [
-
+            ('// some header file\n'
+             '#pragma once\n'
+             '...'),
+            ('// some header file\n'
+             '#ifndef header_h\n'
+             '#define header_h\n'
+             '...\n'
+             '#endif')
         ]

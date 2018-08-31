@@ -98,11 +98,12 @@ class NoRedundantName(Rule):
     @property
     def triggers(self):
         return [
-
+            'void func(struct color ↓color);',
+            'void func(color ↓color);'
         ]
 
     @property
     def nontriggers(self):
         return [
-
+            'void func(struct color);',
         ]

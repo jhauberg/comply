@@ -90,11 +90,14 @@ class NoInvisibles(Rule):
     @property
     def triggers(self):
         return [
-
+            'source with an ↓\uFEFF invisible',
+            'source with an ↓\u200b invisible',
+            'source with an ↓\u200c invisible',
+            'source with an ↓\u200d invisible',
         ]
 
     @property
     def nontriggers(self):
         return [
-
+            'source without invisibles'
         ]

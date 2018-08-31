@@ -76,13 +76,13 @@ class NoAmbiguousFunctions(Rule):
     @property
     def triggers(self):
         return [
-
+            'void ↓func();'
         ]
 
     @property
     def nontriggers(self):
         return [
-
+            'void func(void);'
         ]
 
 
@@ -103,11 +103,11 @@ class ExplicitlyVoidFunctions(NoAmbiguousFunctions):
     @property
     def triggers(self):
         return [
-
+            'void ↓func() { ... }'
         ]
 
     @property
     def nontriggers(self):
         return [
-
+            'void func(void) { ... }'
         ]

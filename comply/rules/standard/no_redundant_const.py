@@ -106,11 +106,18 @@ class NoRedundantConst(Rule):
     @property
     def triggers(self):
         return [
-
+            'void func(int ↓const a);'
+            'void func(↓const int a);'
+            'void func(int ↓const);'
+            'void func(int a, int ↓const b, int ↓const c);'
+            'void func(int const * ↓const a);'
+            'void func(struct mytype_t ↓const my_type);'
         ]
 
     @property
     def nontriggers(self):
         return [
-
+            'void func(int a);'
+            'void func(int);'
+            'void func(int const * a);'
         ]

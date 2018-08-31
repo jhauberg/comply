@@ -75,11 +75,11 @@ class IdentifierTooLong(Rule):
     @property
     def triggers(self):
         return [
-
+            'int ↓my_waaaaaaay_too_long_identifier;'
         ]
 
     @property
     def nontriggers(self):
         return [
-
+            'int my_shorter_identifier;'
         ]

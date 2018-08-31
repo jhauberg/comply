@@ -51,13 +51,16 @@ class ListNeededSymbols(Rule):
     @property
     def triggers(self):
         return [
-
+            '↓#include <header.h>',
+            '↓#include "header.h"',
+            '↓#include <header.h> /* mytype_t */'
         ]
 
     @property
     def nontriggers(self):
         return [
-
+            '#include <header.h> // mytype_t',
+            '#include "header.h" // mytype_t'
         ]
 
 

@@ -79,7 +79,8 @@ class NoTabs(Rule):
     @property
     def triggers(self):
         return [
-            'source with a↓	tab'
+            'source with a↓	tab',
+            'source with a↓\t tab'
         ]
 
     @property

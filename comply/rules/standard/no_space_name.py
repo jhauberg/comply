@@ -35,13 +35,9 @@ class NoSpaceName(Rule):
         return RuleViolation.ONCE_PER_FILE
 
     @property
-    def triggers(self):
-        return [
-
-        ]
+    def triggering_filename(self):
+        return 'a filename.c'
 
     @property
-    def nontriggers(self):
-        return [
-
-        ]
+    def triggers(self):
+        return ['▶']  # any content will trigger due to the assumed filename

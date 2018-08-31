@@ -91,13 +91,24 @@ class SymbolListedNotNeeded(Rule):
     @property
     def triggers(self):
         return [
-
+            ('#include <header.h> // ↓mytype_t, ↓mytype_other_t\n'
+             '...\n'
+             'void func(...) {\n'
+             '    ...\n'
+             '}\n'
+             '...')
         ]
 
     @property
     def nontriggers(self):
         return [
-
+            ('#include <header.h> // mytype_t, mytype_other_t\n'
+             '...\n'
+             'void func(...) {\n'
+             '    struct mytype_t a;\n'
+             '    struct mytype_other_t b;\n'
+             '}\n'
+             '...')
         ]
 
 

@@ -50,11 +50,29 @@ class ScopeTooDeep(Rule):
     @property
     def triggers(self):
         return [
-
+            ('void func(...) {\n'
+             '    if (true) {\n'
+             '        if (false) {\n'
+             '            if (true) {\n'
+             '▶               if (true) {\n'
+             '                    ...\n'
+             '                }\n'
+             '            }\n'
+             '        }\n'
+             '    }\n'
+             '}')
         ]
 
     @property
     def nontriggers(self):
         return [
-
+            ('void func(...) {\n'
+             '    if (true) {\n'
+             '        if (false) {\n'
+             '            if (true) {\n'
+             '                ...\n'
+             '            }\n'
+             '        }\n'
+             '    }\n'
+             '}')
         ]

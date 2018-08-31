@@ -53,11 +53,26 @@ class TooManyFunctions(Rule):
     @property
     def triggers(self):
         return [
-
+            ('▶// some file with too many functions\n'
+             'void func1() { ... }\n'
+             'void func2() { ... }\n'
+             'void func3() { ... }\n'
+             'void func4() { ... }\n'
+             'void func5() { ... }\n'
+             'void func6() { ... }\n'
+             'void func7() { ... }\n'
+             'void func8() { ... }')
         ]
 
     @property
     def nontriggers(self):
         return [
-
+            ('// some file with functions\n'
+             'void func1() { ... }\n'
+             'void func2() { ... }\n'
+             'void func3() { ... }\n'
+             'void func4() { ... }\n'
+             'void func5() { ... }\n'
+             'void func6() { ... }\n'
+             'void func7() { ... }')
         ]

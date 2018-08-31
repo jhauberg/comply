@@ -110,11 +110,11 @@ class PreferStandardInt(Rule):
     @property
     def triggers(self):
         return [
-
+            'void func(↓int a);'
         ]
 
     @property
     def nontriggers(self):
         return [
-
+            'void func(int32_t a);'
         ]
