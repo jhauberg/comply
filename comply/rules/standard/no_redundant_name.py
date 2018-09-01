@@ -66,8 +66,9 @@ class NoRedundantName(Rule):
                     func_param_name = func_param_match.group()
 
                     types = [x.group().lower() for x in func_param_types]
+                    name = func_param_name.lower()
 
-                    if func_param_name.lower() in types:
+                    if name in types or name + '_t' in types:
                         param_start = func_param.start(1) + func_param_match.start()
 
                         offending_index = (function_match.start('params') +
@@ -99,7 +100,9 @@ class NoRedundantName(Rule):
     def triggers(self):
         return [
             'void func(struct color ↓color);',
-            'void func(color ↓color);'
+            'void func(struct color_t ↓color);',
+            'void func(color ↓color);',
+            'void func(struct Color ↓color);',
         ]
 
     @property
