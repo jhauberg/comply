@@ -32,9 +32,6 @@ class GuardHeader(Rule):
         if '.h' not in file.extension:
             return []
 
-        if '#pragma once' in file.stripped:
-            return []
-
         offenders = []
 
         guard_name = file.filename.strip() + file.extension
@@ -43,15 +40,20 @@ class GuardHeader(Rule):
         guard_name = guard_name.replace('-', '_')
         guard_name = guard_name.replace('.', '_')
 
-        pattern = re.compile(
-            r'^[\s\S]*#ifndef {guard}\s*(?:\n|\r\n)\s*#define {guard}[\s\S]*#endif\s*$'.format(
-                guard=guard_name))
+        pattern = re.compile((r'^(?:'
+                              r'(\s*#ifndef {guard}\s*(?:\n|\r\n)'  # which is either an #ifndef
+                              r'\s*#define {guard}\s*(?:\n|\r\n)'
+                              r'[\s\S]*'
+                              r'\s*#endif\s*$)'
+                              r'|'
+                              r'(\s*#pragma once))')  # or a #pragma once
+                             .format(guard=guard_name))
 
-        text = file.stripped
+        match = pattern.match(file.stripped)
 
-        match = pattern.match(text)
+        is_violation = True if match is None else False
 
-        if match is None:
+        if is_violation:
             offender = self.violate(at=file.line_number_at_top(),
                                     meta={'guard': guard_name})
 
@@ -73,6 +75,22 @@ class GuardHeader(Rule):
             ('▶// some header file\n'
              '...\n'
              '...'),
+            ('▶// some header file\n'
+             '...\n'
+             '#pragma once'),
+            ('▶// some header file\n'
+             '...\n'
+             '#ifndef header_h\n'
+             '#define header_h\n'
+             '...\n'
+             '#endif'),
+            ('▶// some header file\n'
+             '#ifndef header_h\n'
+             '#define header_h\n'
+             '...\n'
+             '#endif\n'
+             '...\n'
+             '...\n')
         ]
 
     @property
