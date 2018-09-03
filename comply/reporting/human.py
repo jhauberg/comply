@@ -81,9 +81,10 @@ class HumanReporter(Reporter):
                         n = ''
 
                     line = l.expandtabs(4)
+                    lineno = str(n)
 
-                    context += Colors.EMPHASIS + str(n) + Colors.RESET
-                    context += Colors.RESET + '\t{0}'.format(line)
+                    context += Colors.EMPHASIS + lineno + Colors.RESET
+                    context += Colors.RESET + '{0}{1}'.format('\t\t' if len(lineno) < 4 else '\t', line)
 
                     if j != len(expanded_lines) - 1:
                         context += '\n'
