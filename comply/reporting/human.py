@@ -103,6 +103,9 @@ class HumanReporter(Reporter):
     def expand_line(line_number: int, line: str):
         """ Like str.splitlines() except including line numbers. """
 
+        if len(line) == 0:
+            return [(line_number, line)]
+
         lines = []
 
         for i, l in enumerate(line.splitlines()):
