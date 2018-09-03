@@ -38,8 +38,7 @@ class TooManyBlanks(Rule):
         consecutive_blanks = 0
 
         def trigger(at, lines, count):
-            offender = self.violate(at, lines, meta={'count': count,
-                                                     'max': max_lines})
+            offender = self.violate(at, lines=lines, meta={'count': count, 'max': max_lines})
             offenders.append(offender)
 
         def previous_lines(lines, from_index, count):
