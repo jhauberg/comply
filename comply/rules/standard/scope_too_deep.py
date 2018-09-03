@@ -36,9 +36,10 @@ class ScopeTooDeep(Rule):
             scope_depth = depth(scope_index, text)
 
             if scope_depth > max_depth:
-                line_number, column = file.line_number_at(scope_index, text)
+                line_number, column = file.line_number_at(scope_index)
 
                 offender = self.violate(at=(line_number, column),
+                                        to=(line_number, column + 1),
                                         lines=[(line_number, file.lines[line_number - 1])],
                                         meta={'depth': scope_depth,
                                               'max': max_depth})
@@ -54,7 +55,7 @@ class ScopeTooDeep(Rule):
              '    if (true) {\n'
              '        if (false) {\n'
              '            if (true) {\n'
-             '▶               if (true) {\n'
+             '               if (true) ↓{\n'
              '                    ...\n'
              '                }\n'
              '            }\n'
