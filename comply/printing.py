@@ -65,6 +65,12 @@ def supports_unicode() -> bool:
     return True
 
 
+def can_apply_colors() -> bool:
+    """ Determine whether coloring can be applied to printouts. """
+
+    return Colors.is_supported(results)
+
+
 class Colors:
     """ Provides escape codes for commonly used colors. """
 
@@ -99,7 +105,7 @@ class Colors:
         return True
 
 
-if not Colors.is_supported(results):
+if not can_apply_colors():
     # note that we're assuming that diagnostics/stderr output is never colored
     Colors.STRONG = ''
     Colors.EMPHASIS = ''

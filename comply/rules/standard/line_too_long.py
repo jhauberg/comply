@@ -28,7 +28,7 @@ class LineTooLong(Rule):
 
     MAX = 80
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         # insert cursor to indicate max line length
         insertion_index = violation.meta['max']
 

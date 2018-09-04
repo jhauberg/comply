@@ -18,7 +18,7 @@ class PadBraces(Rule):
     pattern = re.compile(r'(?:[^\s]({)|({)[^\s])|'     # starting braces without whitespace to the left or right
                          r'(?:[^\s](})|(})[^\s;),])')  # ending braces without whitespace to the left, or whitespace/certain chars to the right
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
 
         from_index, to_index = violation.meta['range']

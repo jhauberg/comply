@@ -43,7 +43,7 @@ class TooManyParams(Rule):
 
     pattern = re.compile(FUNC_BOTH_PATTERN)
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         line_index = violation.index_of_starting_line()
 
         function_line_number, function_line = violation.lines[line_index]

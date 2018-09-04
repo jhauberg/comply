@@ -20,7 +20,7 @@ class NoInvisibles(Rule):
     INVISIBLES = ['\u200b', '\u200c', '\u200d',
                   '\uFEFF']
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         # assume only one offending line
         linenumber, line = violation.lines[0]
 

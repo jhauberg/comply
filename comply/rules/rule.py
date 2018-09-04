@@ -11,7 +11,7 @@ from typing import List, Tuple
 
 from comply.rules.report import CheckFile
 
-from comply.printing import Colors
+from comply.printing import can_apply_colors, Colors
 
 
 class RuleViolation:
@@ -148,17 +148,12 @@ class Rule:
 
         return suggestion.format(**violation.meta)
 
-    def augment(self, violation: RuleViolation):
-        """ Augment the offending lines of a violation to improve hints of its occurrence.
+    def augment_by_color(self, violation: RuleViolation):
+        """ Augment the offending lines by applying highlight coloring that span the range of
+            the occurrence.
 
-            Default implementation applies coloring spanning the range of the occurence.
-
-            Subclasses may override to provide customized augments.
+            Subclasses may override to provide a customized result output.
         """
-
-        if len(violation.lines) == 0:
-            # nothing to augment; this violation has not captured any lines
-            return
 
         starting_line_number, starting_column = violation.starting
         ending_line_number, ending_column = violation.ending
@@ -194,6 +189,60 @@ class Rule:
                         Colors.RESET)
 
             violation.lines[line_index] = (line_number, line)
+
+    def augment_by_marker(self, violation: RuleViolation):
+        """ Augment the offending lines by adding an indicator marker (^) at the location
+            of the occurrence.
+
+            Subclasses may override to provide a customized result output.
+        """
+
+        starting_line_number, starting_column = violation.starting
+        ending_line_number, ending_column = violation.ending
+
+        if starting_column == 0 or ending_column == 0:
+            return
+
+        violation_is_in_lines = False
+
+        for (line_number, line) in violation.lines:
+            if line_number == starting_line_number:
+                violation_is_in_lines = True
+
+                break
+
+        if not violation_is_in_lines:
+            return
+
+        prefix = ' ' * (starting_column - 1)
+        suffix = '-' * ((ending_column - starting_column) - 1)
+
+        line = (None, prefix + '^' + suffix)
+
+        starting_line_index = violation.index_of_line_number(starting_line_number)
+        ending_line_index = len(violation.lines) - 1
+
+        if starting_line_index < ending_line_index:
+            violation.lines.insert(starting_line_index + 1, line)
+        else:
+            violation.lines.append(line)
+
+    def augment(self, violation: RuleViolation):
+        """ Augment the offending lines of a violation to improve hints of its occurrence.
+
+            Default implementation either applies coloring spanning the range of the occurrence, or
+            provides a ^-marker indicating the location of the occurrence depending on whether
+            coloring is supported.
+        """
+
+        if len(violation.lines) == 0:
+            # nothing to augment; this violation has not captured any lines
+            return
+
+        if can_apply_colors():
+            self.augment_by_color(violation)
+        else:
+            self.augment_by_marker(violation)
 
     def violate(self, at: (int, int), to: (int, int)=None, lines: List[Tuple[int, str]]=list(), meta: dict=None) -> RuleViolation:
         """ Return a rule violation spanning over a range of consecutive line numbers and

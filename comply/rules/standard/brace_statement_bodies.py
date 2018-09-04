@@ -30,7 +30,7 @@ class BraceStatementBodies(Rule):
 
     pattern = re.compile(r'\b({keywords})\b'.format(keywords=KEYWORDS))
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
 
         i = len(line) - len(line.lstrip())

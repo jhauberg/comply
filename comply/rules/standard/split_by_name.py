@@ -26,7 +26,7 @@ class SplitByName(Rule):
 
     pattern = re.compile(FUNC_IMPL_PATTERN)
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         function_linenumber, function_line = violation.lines[0]
 
         from_index, to_index = violation.meta['range']

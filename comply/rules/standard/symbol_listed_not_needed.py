@@ -26,7 +26,7 @@ class SymbolListedNotNeeded(Rule):
 
     pattern = re.compile(INCLUDE_PATTERN)
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         from_index, to_index = violation.meta['range'] if 'range' in violation.meta else (0, 0)
 
         # assume only one offending line

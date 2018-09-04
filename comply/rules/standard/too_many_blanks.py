@@ -20,7 +20,7 @@ class TooManyBlanks(Rule):
 
     MAX = 1
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         for i, (linenumber, line) in enumerate(violation.lines):
             if i != len(violation.lines) - 1:
                 # only mark the excess blanks

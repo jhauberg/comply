@@ -17,7 +17,7 @@ class LogicalContinuation(Rule):
 
     pattern = re.compile(r'\n\s*(&&|\|\|)')
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         line_index = violation.index_of_starting_line()
         line_number, line = violation.lines[line_index]
 

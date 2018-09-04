@@ -27,7 +27,7 @@ class NoAmbiguousFunctions(Rule):
 
     pattern = re.compile(FUNC_PROT_PATTERN)
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         # assume only one offending line
         line_index = violation.index_of_starting_line()
 

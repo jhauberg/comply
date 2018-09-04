@@ -34,7 +34,7 @@ class NoUnnamedInts(Rule):
     unnamed_int_pattern = re.compile(r'\b({types})(?:\s*?(?:,|$))'.format(
         types=int_types))
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         # assume only one offending line
         line_index = violation.index_of_starting_line()
 

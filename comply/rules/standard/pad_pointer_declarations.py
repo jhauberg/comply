@@ -27,7 +27,7 @@ class PadPointerDeclarations(Rule):
 
     pattern = re.compile(r'\*\w|\w\*')
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
 
         from_index, to_index = violation.meta['range']

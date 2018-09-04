@@ -31,7 +31,7 @@ class NoRedundantSize(Rule):
 
     size_pattern = re.compile(r'\[\s*?([^\s\[\]]+?)\s*?\]')
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         line_index = violation.index_of_starting_line()
 
         function_linenumber, function_line = violation.lines[line_index]

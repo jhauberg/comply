@@ -31,7 +31,7 @@ class NoRedundantName(Rule):
     params_pattern = re.compile(r'(.*?)(,|$)')
     const_pattern = re.compile(r'(?!const\b)\b\w[^\s]*\b')
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         line_index = violation.index_of_starting_line()
 
         function_linenumber, function_line = violation.lines[line_index]

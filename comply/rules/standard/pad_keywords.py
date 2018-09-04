@@ -26,7 +26,7 @@ class PadKeywords(Rule):
         keywords=KEYWORDS,
         neighbors=neighbor_pattern))
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
 
         from_index, to_index = violation.meta['range']

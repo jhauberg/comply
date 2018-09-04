@@ -25,7 +25,7 @@ class IdentifierTooLong(Rule):
     def severity(self):
         return RuleViolation.ALLOW
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
 
         from_index, to_index = violation.meta['range'] if 'range' in violation.meta else (0, 0)

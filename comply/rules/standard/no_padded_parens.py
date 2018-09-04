@@ -18,7 +18,7 @@ class NoPaddedParens(Rule):
     pattern = re.compile(r'\(( +)\S|'  # opening paren with one or more whitespace up to any character, on the right
                          r'\S( +)\)')  # closing paren with one or more whitespace up to any character, to the left
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
 
         from_index, to_index = violation.meta['range']

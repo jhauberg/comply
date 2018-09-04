@@ -29,7 +29,7 @@ class ListNeededSymbols(Rule):
 
     pattern = re.compile(INCLUDE_PATTERN)
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         # assume only one offending line
         linenumber, line = violation.lines[0]
 

@@ -18,7 +18,7 @@ class GuardHeader(Rule):
                       description='Header does not provide an include guard',
                       suggestion='Wrap your header in an include guard named "{guard}" or use "#pragma once".')
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         guard = violation.meta['guard'] if 'guard' in violation.meta else '???'
 
         violation.lines = [

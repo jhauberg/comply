@@ -30,7 +30,7 @@ class FunctionTooLong(Rule):
 
     pattern = re.compile(FUNC_IMPL_PATTERN)
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         name = violation.meta['func'] if 'func' in violation.meta else '<unknown>'
         line_number = violation.meta['line'] if 'line' in violation.meta else 0
 
