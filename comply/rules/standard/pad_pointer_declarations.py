@@ -53,7 +53,7 @@ class PadPointerDeclarations(Rule):
             for i in range(index_left_of_star, 0, -1):
                 c = text[i]
 
-                if c in [',', ';', ':', '?', '=', '!', '+', '-', '/', '(', ')', '[', ']',
+                if c in [',', ';', ':', '?', '=', '!', '|', '&', '+', '-', '/', '(', ')', '[', ']',
                          '\r', '\n']:
                     # found a character that signifies this is probably a dereferencing pointer
                     break
