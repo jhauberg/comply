@@ -6,7 +6,7 @@ Provides an implementation of a reporting mode for machines or editors.
 
 import os
 
-from comply.rules.rule import RuleViolation
+from comply.rules.rule import Rule, RuleViolation
 
 from comply.reporting.base import Reporter
 
@@ -21,6 +21,9 @@ class OneLineReporter(Reporter):
     def report_before_checking(self, path: str, encoding: str=None, show_progress: bool=True):
         # disable showing progress
         super(OneLineReporter, self).report_before_checking(path, encoding, show_progress=False)
+
+    def format_message(self, reason: str, rule: Rule) -> str:
+        return '{0} [{1}]'.format(reason, rule.name)
 
     def report(self, violations: list, path: str):
         """ Looks like:
@@ -52,11 +55,8 @@ class OneLineReporter(Reporter):
                         ('warning' if severity > RuleViolation.ALLOW else
                          'note'))
 
-                if reason is None or len(reason) == 0:
-                    reason = '({0})'.format(rule.name)
-
-                why = '{0} [{1}]'.format(reason, rule.name)
-                output = '{0} {1}: {2}'.format(location, kind, why)
+                message = self.format_message(reason, rule)
+                output = '{0} {1}: {2}'.format(location, kind, message)
 
                 results.append(output)
 

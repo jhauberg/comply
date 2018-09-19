@@ -42,7 +42,7 @@ from comply import (
     exit_if_not_compatible
 )
 
-from comply.reporting import Reporter, OneLineReporter, HumanReporter
+from comply.reporting import Reporter, OneLineReporter, HumanReporter, XcodeReporter
 from comply.printing import printdiag, diagnostics, supports_unicode, is_windows_environment, Colors
 from comply.checking import find_checkable_files, check
 from comply.version import __version__
@@ -172,6 +172,8 @@ def make_reporter(reporting_mode: str) -> Reporter:
         return HumanReporter()
     elif reporting_mode == 'oneline':
         return OneLineReporter()
+    elif reporting_mode == 'xcode':
+        return XcodeReporter()
 
     printdiag('Reporting mode \'{0}\' not available.'.format(reporting_mode),
               as_error=True)
