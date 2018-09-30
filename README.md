@@ -74,7 +74,7 @@ You can then go through all listed files and manually delete each one.
 
 C is a great language; it gives you a lot of power, control and a degree of freedom that allow you to do things your own way.
 
-That power, however, can often lead to bad, or at the very least, unconventional, practices.
+That freedom, however, can often lead to bad, or at the very least, unconventional, practices.
 
 The *Compliant* style can be applied to mitigate this concern. It is comprised of a set of sensible (but opinionated) rules that vary in focus. Spanning in theme, from formatting to design and structure, these rules must all be satisfied for a project to be regarded as being of the [*Compliant*](#spread-the-word) style.
 
@@ -244,6 +244,28 @@ You can use this badge in your own project's `README.md`:
 
 ## FAQ
 
+### Is the *Compliant* style configurable?
+
+No. This is intentional.
+
+The core idea behind this project is to define a single, ubiquitous style and guideline; it should not differ across *Compliant* codebases.
+
+> The arguments `--except` and `--check` (which allow you to exclude, or include, certain rules) contradict the philosophy of the project, but are made available for debugging purposes.
+
+### Does `comply` find bugs in my code?
+
+No. Unless you consider style issues as bugs, `comply` will not find bugs in your code.
+
+That kind of static code analysis is out of scope for this project and excellent tools already exist for the job (cppcheck, pclint etc.).
+
+### Will `comply` automatically "fix" my code?
+
+No. This is left as a task for a human.
+
+While many rules are only related to the textual representation of code, some require more thought, consideration and human judgment to fix- a larger task than simply applying a different formatting.
+
+There is a point to be made in the usefulness of automatic formatting, see [Black](https://github.com/ambv/black) or [gofmt](https://golang.org/cmd/gofmt/), but for the time being that is out of scope for this project.
+
 ### Does `comply` do any pre-processing of C sources?
 
 No. This is intentional and deliberate.
@@ -266,25 +288,9 @@ Like with the lack of [pre-processing](#does-it-do-any-pre-processing), this is 
 
 Instead, each rule apply pattern-matching (Regex) to find violations. This can be problematic for some edge-cases (of which C has a lot), but generally works out and makes it simple and clear to understand how a rule works and what it looks for.
 
-### Will `comply` automatically "fix" my code?
-
-No. This is left as a task for a human.
-
-While many rules are only related to the textual representation of code, some require more thought, consideration and human judgment to fix- a larger task than simply applying a different formatting.
-
-There is a point to be made in the usefulness of automatic formatting, see [Black](https://github.com/ambv/black) or [gofmt](https://golang.org/cmd/gofmt/), but for the time being that is out of scope for this project.
-
-### Is the *Compliant* style configurable?
-
-No. This is intentional.
-
-The core idea behind this project is to define a single, ubiquitous style and guideline; it should not differ across *Compliant* codebases.
-
-> The arguments `--except` and `--check` (which allow you to exclude, or include, certain rules) contradict the philosophy of the project, but are made available for debugging purposes.
-
 ### Why use `comply` when we have [`clang-tidy`](http://clang.llvm.org/extra/clang-tidy/) (among others)?
 
-The answer to that is, simply, to get a different perspective.
+The answer to that is simply to get a different perspective.
 
 These tools- while similar in nature- are not identical, and both will look at your codebase differently, offering unique insights. There's no reason why you couldn't just use both.
 
