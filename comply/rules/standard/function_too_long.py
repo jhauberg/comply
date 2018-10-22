@@ -7,8 +7,6 @@ from comply.rules.patterns import FUNC_IMPL_PATTERN
 
 from comply.util.scope import depth
 
-from comply.printing import Colors
-
 
 class FunctionTooLong(Rule):
     """ Avoid exceeding 40 lines per function.
@@ -30,58 +28,10 @@ class FunctionTooLong(Rule):
 
     pattern = re.compile(FUNC_IMPL_PATTERN)
 
-    def augment_by_color(self, violation: RuleViolation):
-        name = violation.meta['func'] if 'func' in violation.meta else '<unknown>'
-        line_number = violation.meta['line'] if 'line' in violation.meta else 0
-
-        # assume offending line is the second one
-        breaker_linenumber, breaker_line = violation.lines[1]
-        # add breaker just above offending line
-        violation.lines.insert(1, (breaker_linenumber, '---'))
-
-        for i, (linenumber, line) in enumerate(violation.lines):
-            if i > 0:
-                # mark breaker and everything below it
-                violation.lines[i] = (linenumber, Colors.BAD + line + Colors.RESET)
-
-        info_line = (Colors.EMPHASIS +
-                     '(in \'{0}\' starting at line {1})'.format(name, line_number) +
-                     Colors.RESET)
-
-        violation.lines.insert(0, (None, info_line))
-
     def collect(self, file: CheckFile):
         text = file.stripped
 
         offenders = []
-
-        def check_func_body(body: str, name: str, line_number: int, starting_from_position: (int, int)):
-            max_length = FunctionTooLong.MAX
-            length = body.count('\n')
-
-            if length > max_length:
-                lines = body.splitlines()  # without newlines
-
-                offending_line_index = max_length
-
-                assert len(lines) > offending_line_index + 1
-
-                actual_line_number = line_number - 1 + offending_line_index
-
-                offending_lines = [
-                    (actual_line_number, lines[offending_line_index - 1]),
-                    (actual_line_number + 1, lines[offending_line_index]),
-                    (actual_line_number + 2, lines[offending_line_index + 1])
-                ]
-
-                offender = self.violate(at=starting_from_position,
-                                        lines=offending_lines,
-                                        meta={'length': length,
-                                              'max': max_length,
-                                              'func': name,
-                                              'line': starting_from_position[0]})
-
-                offenders.append(offender)
 
         for function_match in self.pattern.finditer(text):
             func_body_start_index = function_match.end()  # we want to start before opening brace
@@ -101,15 +51,25 @@ class FunctionTooLong(Rule):
                         func_inner_depth = depth(func_body_start_index + offset, text)
 
                         if func_inner_depth == 0:
-                            line_number, column = file.line_number_at(func_body_start_index)
+                            body = file.original[func_body_start_index:
+                                                 func_body_start_index + offset]
 
-                            body = file.original[func_body_start_index:func_body_start_index + offset]
+                            length = body.count('\n')
+                            max_length = FunctionTooLong.MAX
 
-                            position = file.line_number_at(function_match.start('name'))
+                            if length > max_length:
+                                start = function_match.start('name')
+                                end = function_match.end('name')
 
-                            # we found end of body; now determine if it violates rule
-                            check_func_body(body, function_match.group('name'), line_number,
-                                            starting_from_position=position)
+                                offender = self.violate_at_character_range(
+                                    file, starting=start, ending=end)
+
+                                offender.meta = {
+                                    'length': length,
+                                    'max': max_length
+                                }
+
+                                offenders.append(offender)
 
                             break
 
