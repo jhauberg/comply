@@ -98,7 +98,7 @@ class ExplicitlyVoidFunctions(NoAmbiguousFunctions):
         NoAmbiguousFunctions.__init__(self)
 
         self.name = 'explicitly-void-funcs'
-        self.description = 'Parameter-less function does not specify parameters as \'void\''
+        self.description = 'Parameterless function does not specify parameters as \'void\''
         self.pattern = re.compile(FUNC_IMPL_PATTERN)
 
     @property

@@ -12,8 +12,8 @@ class PadCommas(Rule):
 
     def __init__(self):
         Rule.__init__(self, name='pad-commas',
-                      description='Comma separator is not followed by whitespace',
-                      suggestion='Add a single whitespace or linebreak to the right of \',\'.')
+                      description='Comma separator not followed by whitespace',
+                      suggestion='Add a single whitespace or linebreak to the right of the comma.')
 
     pattern = re.compile(r',[^\s]')  # any comma followed by non-whitespace
 

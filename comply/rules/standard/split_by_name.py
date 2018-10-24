@@ -21,7 +21,7 @@ class SplitByName(Rule):
 
     def __init__(self):
         Rule.__init__(self, name='split-by-name',
-                      description='Function name is not placed at the beginning of a line',
+                      description='Function name not at beginning of line',
                       suggestion='Split function name and return type to separate lines.')
 
     pattern = re.compile(FUNC_IMPL_PATTERN)

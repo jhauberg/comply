@@ -14,7 +14,7 @@ class SymbolNeededNotListed(Rule):
 
     def __init__(self):
         Rule.__init__(self, name='symbol-needed-not-listed',
-                      description='Used symbol \'{symbol}\' is not listed as needed',
+                      description='Used symbol \'{symbol}\' not listed as needed',
                       suggestion='Add symbol \'{symbol}\' to list.')
 
     @property

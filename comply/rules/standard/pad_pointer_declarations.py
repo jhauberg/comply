@@ -22,7 +22,7 @@ class PadPointerDeclarations(Rule):
 
     def __init__(self):
         Rule.__init__(self, name='pad-pointer-decls',
-                      description='Pointer declaration is not padded with whitespace',
+                      description='Pointer declaration not padded with whitespace',
                       suggestion='Add a single whitespace to the {left_or_right} of the asterisk.')
 
     pattern = re.compile(r'\*\w|\w\*')

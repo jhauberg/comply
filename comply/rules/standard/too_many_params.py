@@ -31,7 +31,8 @@ class TooManyParams(Rule):
     def __init__(self, only_check_implementations: bool=False):
         Rule.__init__(self, name='too-many-params',
                       description='Function might be too broad ({count} > {max} parameters)',
-                      suggestion='This function might be taking on too much work. Consider refactoring.')
+                      suggestion='This function might be taking on too much work. '
+                                 'Consider refactoring.')
 
         # determine whether to only match implementations, or both prototypes and implementations
         # (prefer both, as e.g. inline functions won't be caught otherwise-

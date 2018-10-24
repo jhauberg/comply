@@ -12,8 +12,9 @@ class NoPaddedParens(Rule):
 
     def __init__(self):
         Rule.__init__(self, name='no-padded-parens',
-                      description='Opening or closing parenthesis is padded with whitespace',
-                      suggestion='Remove whitespace from the {left_or_right} side of the parenthesis.')
+                      description='Opening or closing parenthesis padded with whitespace',
+                      suggestion='Remove whitespace from the {left_or_right} side of the '
+                                 'parenthesis.')
 
     pattern = re.compile(r'\(( +)\S|'  # opening paren with one or more whitespace up to any character, on the right
                          r'\S( +)\)')  # closing paren with one or more whitespace up to any character, to the left

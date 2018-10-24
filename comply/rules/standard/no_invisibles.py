@@ -14,8 +14,8 @@ class NoInvisibles(Rule):
 
     def __init__(self):
         Rule.__init__(self, name='no-invisibles',
-                      description='Remove invisible characters (found {count})',
-                      suggestion='Delete each occurence or replace with spaces.')
+                      description='File contains invisible characters (found {count})',
+                      suggestion='Delete each occurrence or replace with whitespace.')
 
     INVISIBLES = ['\u200b', '\u200c', '\u200d',
                   '\uFEFF']

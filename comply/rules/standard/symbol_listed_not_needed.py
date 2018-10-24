@@ -21,7 +21,7 @@ class SymbolListedNotNeeded(Rule):
 
     def __init__(self):
         Rule.__init__(self, name='symbol-listed-not-needed',
-                      description='Unused symbol \'{symbol}\' is listed as needed',
+                      description='Unused symbol \'{symbol}\' listed as needed',
                       suggestion='Remove symbol \'{symbol}\' from list.')
 
     pattern = re.compile(INCLUDE_PATTERN)

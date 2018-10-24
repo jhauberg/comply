@@ -6,7 +6,7 @@ from comply.printing import Colors, supports_unicode
 
 
 class NoTabs(Rule):
-    """ Don't use tabs instead of spaces.
+    """ Don't use tabs. Use spaces.
 
     Using tabs for indentation will produce inconsistent line lengths, as the size of a tab may
     vary depending on the viewer.
@@ -18,7 +18,7 @@ class NoTabs(Rule):
 
     def __init__(self):
         Rule.__init__(self, name='no-tabs',
-                      description='Remove tabs ({count} tabs)',
+                      description='File contains tab characters ({count} tabs)',
                       suggestion='Replace each tab with spaces (typically 4).')
 
     TAB = '\t'

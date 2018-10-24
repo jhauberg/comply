@@ -25,8 +25,9 @@ class BraceStatementBodies(Rule):
 
     def __init__(self):
         Rule.__init__(self, name='brace-statement-bodies',
-                      description='Missing braces on control statement',
-                      suggestion='Add opening and ending braces for statement body.')
+                      description='Unbraced control statement',
+                      suggestion='Add opening and ending braces for the body of the control '
+                                 'statement.')
 
     pattern = re.compile(r'\b({keywords})\b'.format(keywords=KEYWORDS))
 

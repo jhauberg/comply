@@ -12,7 +12,7 @@ class PadBraces(Rule):
 
     def __init__(self):
         Rule.__init__(self, name='pad-braces',
-                      description='Braced body is not padded with space',
+                      description='Braced body not padded with whitespace',
                       suggestion='Add a single whitespace to the {left_or_right} of \'{brace}\'.')
 
     pattern = re.compile(r'(?:[^\s]({)|({)[^\s])|'     # starting braces without whitespace to the left or right

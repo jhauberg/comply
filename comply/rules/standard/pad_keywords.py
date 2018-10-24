@@ -17,7 +17,7 @@ class PadKeywords(Rule):
 
     def __init__(self):
         Rule.__init__(self, name='pad-keywords',
-                      description='Keyword is not padded with space on both sides',
+                      description='Keyword not padded with whitespace on both sides',
                       suggestion='Add a single whitespace to the {left_or_right} of \'{keyword}\'.')
 
     neighbor_pattern = r'[;{}()]'

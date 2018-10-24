@@ -21,8 +21,8 @@ class NoUnifiedHeaders(Rule):
 
     def __init__(self):
         Rule.__init__(self, name='no-unified-headers',
-                      description='Avoid unified headers',
-                      suggestion='Prefer individually including each needed header.')
+                      description='Header contains no prototype declarations',
+                      suggestion='Avoid having headers that only includes other headers.')
 
     pattern = re.compile(INCLUDE_PATTERN)
 

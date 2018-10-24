@@ -15,7 +15,7 @@ class NoSourceIncludes(Rule):
 
     def __init__(self):
         Rule.__init__(self, name='no-src-includes',
-                      description='Including source file',
+                      description='Source file included',
                       suggestion='Find a way to remove the #include directive.')
 
     pattern = re.compile(INCLUDE_PATTERN)

@@ -23,7 +23,7 @@ class NoUnnamedInts(Rule):
 
     def __init__(self):
         Rule.__init__(self, name='no-unnamed-ints',
-                      description='Integer parameter is unnamed',
+                      description='Unnamed integer parameter',
                       suggestion='Provide a name for this parameter.')
 
     pattern = re.compile(FUNC_PROT_PATTERN)

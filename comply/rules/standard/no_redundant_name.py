@@ -21,7 +21,7 @@ class NoRedundantName(Rule):
 
     def __init__(self):
         Rule.__init__(self, name='no-redundant-name',
-                      description='Parameter \'{param}\' is named identically to its type \'{type}\'',
+                      description='Parameter \'{param}\' named identically to its type \'{type}\'',
                       suggestion='Rename parameter \'{param}\' to something meaningful or omit it.')
 
     # note that we intentionally only check function prototypes (implementations often *should*

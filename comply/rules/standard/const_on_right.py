@@ -19,8 +19,8 @@ class ConstOnRight(Rule):
 
     def __init__(self):
         Rule.__init__(self, name='const-on-right',
-                      description='Incorrectly placed const qualifier',
-                      suggestion='Move the const qualifier to the right side of the type declaration.')
+                      description='Left-aligned const qualifier',
+                      suggestion='Move \'const\' to the right side of the type declaration.')
 
     # match both struct/enum and standard type declarations
     type_pattern = r'((?:struct|enum)\s+?.+?\b|.+?\b)'
