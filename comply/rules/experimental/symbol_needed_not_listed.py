@@ -8,10 +8,7 @@ class SymbolNeededNotListed(Rule):
 
     If your code is using a symbol, but not explicitly telling where it got it from, you might have
     a hard time figuring out just how far your code reaches out.
-
-    By maintaining these lists obsessively you make it much easier for yourself, and others,
-    to determine the actual dependencies of your code.
-
+    <br/><br/>
     See <tt>list-needed-symbols</tt>.
     """
 

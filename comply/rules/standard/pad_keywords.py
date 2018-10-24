@@ -11,8 +11,8 @@ from comply.printing import Colors
 class PadKeywords(Rule):
     """ Always pad control keywords (`if`, `else`, `for` etc.) with space on both sides.
 
-    Padding control keywords helps to clearly separate them from macros and function calls and
-    improves readability.
+    Padding control keywords improves readability by clearly separating them from macros and
+    function calls.
     """
 
     def __init__(self):

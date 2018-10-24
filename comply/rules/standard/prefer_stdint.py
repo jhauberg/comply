@@ -21,7 +21,7 @@ def match_unsigned(int_type: str) -> str:
 
 
 class PreferStandardInt(Rule):
-    """ Always use explicitly-sized integer types (e.g. `stdint.h`).
+    """ Always use explicitly sized integer types (e.g. `stdint.h`).
 
     Being explicit about the type and size that you want to use helps improve portability.
     <br/><br/>

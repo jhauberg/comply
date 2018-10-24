@@ -12,7 +12,7 @@ class NoRedundantConst(Rule):
     """ Don't mark parameter names as `const` in function prototypes.
 
     A function parameter name might be marked as `const` in its prototype, but implementations of
-    the function are *not* required to comply with that- making it an implementation detail that
+    that function are *not* required to comply with that- making it an implementation detail that
     should not be part of the exposed interface.
     """
 

@@ -6,8 +6,8 @@ from comply.rules.rule import *
 class FileTooLong(Rule):
     """ Avoid exceeding 600 lines per source file.
 
-    Files that are very long can be difficult to comprehend and may indicate that the complexity
-    of the code is too high.
+    Files that are very long can be difficult to easily comprehend and may indicate that the
+    file is too extensive and covering too many things.
     """
 
     def __init__(self):

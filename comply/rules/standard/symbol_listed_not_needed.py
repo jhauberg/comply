@@ -15,7 +15,7 @@ class SymbolListedNotNeeded(Rule):
 
     Helps in determining when a symbol is no longer used, potentially leading to being able to
     remove an inclusion completely, reducing dependencies and improving maintainability.
-
+    <br/><br/>
     See <tt>list-needed-symbols</tt>.
     """
 

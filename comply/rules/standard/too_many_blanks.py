@@ -9,8 +9,7 @@ class TooManyBlanks(Rule):
     """ Don't add more than 1 blank line, neither leading, nor following, any line of code.
 
     Blank lines are occasionally used as a way of partitioning or grouping chunks of logically
-    separated code, but this is not recommended. Always prefer refactoring by splitting into
-    separate functions or files.
+    separated code, but this is not recommended.
     """
 
     def __init__(self):

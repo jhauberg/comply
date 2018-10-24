@@ -12,11 +12,19 @@ class FunctionTooLong(Rule):
     """ Avoid exceeding 40 lines per function.
 
     A large function can be difficult to read and easily comprehend- especially so if it requires
-    scrolling to fully fit on the viewers screen.
+    scrolling to fully fit on the screen/display of the viewer.
+    <br/><br/>
+    Basing this rule on a 40 line maximum may seem like an arbitrary number, and while it is
+    certainly not a scientifically proven limit, it does represent a viable breaking point where
+    most displays will be able to keep every line visible.
 
-    Similar to <tt>too-many-params</tt>, when a function is getting large and increasingly complex,
-    it is often a sign that it is doing too much and would likely benefit from being refactored
-    into smaller parts.
+    Additionally, and similar to <tt>too-many-params</tt>, when a function is getting large and
+    increasingly complex, it is also often a sign that it is doing too much and would likely
+    benefit from being refactored into smaller parts.
+
+    References:
+
+      * Stack Exchange discussion: [What should be the maximum length of a function?](https://softwareengineering.stackexchange.com/a/27976)
     """
 
     def __init__(self):
@@ -54,7 +62,12 @@ class FunctionTooLong(Rule):
                             body = file.original[func_body_start_index:
                                                  func_body_start_index + offset]
 
+                            # note that we're intentionally counting ALL lines, even those not
+                            # considered code; e.g. comments, because ultimately it is more a matter
+                            # of readability than it is of complexity, and a comment line is still a
+                            # line that takes up space and reading attention
                             length = body.count('\n')
+
                             max_length = FunctionTooLong.MAX
 
                             if length > max_length:

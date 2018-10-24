@@ -13,9 +13,12 @@ class ListNeededSymbols(Rule):
 
     Helps in determining dependencies that are no longer needed and could be removed,
     and encourages use of smaller, more well-defined headers.
-
+    <br/><br/>
     Fewer dependencies reduce complexity, so being able to remove an inclusion is always an
     improvement.
+
+    By maintaining these lists obsessively you make it much easier for yourself, and others,
+    to determine the actual dependencies of your code.
 
     References:
 

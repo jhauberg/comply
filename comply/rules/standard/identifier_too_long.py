@@ -10,8 +10,11 @@ from comply.printing import Colors
 class IdentifierTooLong(Rule):
     """ Avoid exceeding 31 characters per identifier.
 
-    The longer the identifier, the more it hurts comprehension and readability, and makes code
-    more likely to trigger <tt>line-too-long</tt>.
+    Identifiers should be kept as short as possible, while still retaining enough meaning that it
+    is immediately clear what it represents- or does.
+    <br/><br/>
+    An identifier that requires *more* than 31 characters to provide meaning is an indication that
+    complexity is too high in the specific context and often presents a refactoring opportunity.
     """
 
     def __init__(self):

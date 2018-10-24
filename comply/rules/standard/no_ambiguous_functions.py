@@ -11,9 +11,10 @@ from comply.printing import Colors
 class NoAmbiguousFunctions(Rule):
     """ Don't provide ambiguous function declarations.
 
-    This mainly pertains to functions with parameter-less declarations. In C, a function
-    declaration with no parameters is ambiguous, as it implicitly declares a function that can
-    take an arbitrary number of parameters.
+    This mainly pertains to functions with parameter-less declarations.
+    <br/><br/>
+    In C, a function declaration with no parameters is ambiguous, as it implicitly declares a
+    function that can take an arbitrary number of parameters.
 
     References:
 

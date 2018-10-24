@@ -9,7 +9,7 @@ class NoInvisibles(Rule):
     """ Don't put invisible characters in code.
 
     Invisible characters (in code, i.e. not in literals) serve no useful purpose and may confuse
-    both readers and editors.
+    both editing tools and readers.
     """
 
     def __init__(self):
