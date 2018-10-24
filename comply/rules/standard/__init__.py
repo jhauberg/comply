@@ -11,7 +11,6 @@ from comply.rules.standard.no_redundant_const import NoRedundantConst
 from comply.rules.standard.too_many_params import TooManyParams
 from comply.rules.standard.split_by_name import SplitByName
 from comply.rules.standard.function_too_long import FunctionTooLong
-from comply.rules.standard.too_many_functions import TooManyFunctions
 from comply.rules.standard.no_redundant_name import NoRedundantName
 from comply.rules.standard.no_redundant_size import NoRedundantSize
 from comply.rules.standard.no_unnamed_ints import NoUnnamedInts
