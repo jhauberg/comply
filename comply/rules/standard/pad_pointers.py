@@ -13,7 +13,7 @@ class PadPointers(Rule):
     Having no padding for `*`'s makes for an inconsistent reading of types- especially when
     combined with `const` qualifiers.
     <br/><br/>
-    See <tt>const-on-right</tt>.
+    See <tt>left-aligned-const</tt>.
     <br/><br/>
     Additionally, padding provides a clear separation between a declaration and a pointer dereference.
 

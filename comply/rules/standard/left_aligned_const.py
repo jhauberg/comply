@@ -7,7 +7,7 @@ from comply.rules.rule import *
 from comply.printing import Colors
 
 
-class ConstOnRight(Rule):
+class LeftAlignedConst(Rule):
     """ Always place `const` qualifiers to the right of type declarations.
 
     Placing `const` qualifiers to the left makes for an inconsistent reading of types.
@@ -18,7 +18,7 @@ class ConstOnRight(Rule):
     """
 
     def __init__(self):
-        Rule.__init__(self, name='const-on-right',
+        Rule.__init__(self, name='left-aligned-const',
                       description='Left-aligned const qualifier',
                       suggestion='Move \'const\' to the right side of the type declaration.')
 

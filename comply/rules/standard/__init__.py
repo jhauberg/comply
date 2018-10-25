@@ -25,7 +25,7 @@ from comply.rules.standard.prefer_sized_integers import PreferSizedIntegers
 from comply.rules.standard.todo import Todo
 from comply.rules.standard.identifier_too_long import IdentifierTooLong
 from comply.rules.standard.scope_too_deep import ScopeTooDeep
-from comply.rules.standard.const_on_right import ConstOnRight
+from comply.rules.standard.left_aligned_const import LeftAlignedConst
 from comply.rules.standard.filename_contains_whitespace import FilenameContainsWhitespace
 from comply.rules.standard.pad_keywords import PadKeywords
 from comply.rules.standard.pad_pointers import PadPointers
