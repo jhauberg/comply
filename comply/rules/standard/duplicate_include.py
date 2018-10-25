@@ -6,11 +6,11 @@ from comply.rules.rule import *
 from comply.rules.patterns import INCLUDE_PATTERN
 
 
-class NoDuplicateIncludes(Rule):
+class DuplicateInclude(Rule):
     """ Don't include another file more than once (per file). """
 
     def __init__(self):
-        Rule.__init__(self, name='no-dupe-includes',
+        Rule.__init__(self, name='duplicate-include',
                       description='File already included previously',
                       suggestion='Remove duplicate #include directive.')
 

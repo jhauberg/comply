@@ -7,7 +7,7 @@ from comply.rules.rule import *
 from comply.util.truncation import truncated, Ellipsize
 
 
-class NoTodo(Rule):
+class Todo(Rule):
     """ Use `todo`'s liberally, but don't forget to deal with them.
 
     These small notes are great for quickly persisting thoughts directly related to
@@ -23,7 +23,7 @@ class NoTodo(Rule):
     """
 
     def __init__(self):
-        Rule.__init__(self, name='no-todo',
+        Rule.__init__(self, name='todo',
                       description='TODO: {todo}',
                       suggestion='Consider promoting to a full report in your issue tracker.')
 

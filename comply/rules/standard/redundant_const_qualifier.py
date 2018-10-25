@@ -8,7 +8,7 @@ from comply.rules.patterns import FUNC_PROT_PATTERN
 from comply.printing import Colors
 
 
-class NoRedundantConst(Rule):
+class RedundantConstQualifier(Rule):
     """ Don't mark parameter names as `const` in function prototypes.
 
     A function parameter name might be marked as `const` in its prototype, but implementations of
@@ -17,7 +17,7 @@ class NoRedundantConst(Rule):
     """
 
     def __init__(self):
-        Rule.__init__(self, name='no-redundant-const',
+        Rule.__init__(self, name='redundant-const',
                       description='Parameter name marked const',
                       suggestion='Remove const qualifier for parameter name.')
 

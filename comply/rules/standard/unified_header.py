@@ -6,7 +6,7 @@ from comply.rules.rule import *
 from comply.rules.patterns import INCLUDE_PATTERN, FUNC_PROT_PATTERN, FUNC_BODY_PATTERN
 
 
-class NoUnifiedHeaders(Rule):
+class UnifiedHeader(Rule):
     """ Don't use unified headers if you can avoid it.
 
     A unified header is a header file whose only purpose is to include other header files.
@@ -20,7 +20,7 @@ class NoUnifiedHeaders(Rule):
     """
 
     def __init__(self):
-        Rule.__init__(self, name='no-unified-headers',
+        Rule.__init__(self, name='unified-header',
                       description='Header contains no prototype declarations',
                       suggestion='Avoid having headers that only includes other headers.')
 

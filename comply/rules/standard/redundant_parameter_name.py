@@ -8,7 +8,7 @@ from comply.rules.patterns import FUNC_PROT_PATTERN
 from comply.printing import Colors
 
 
-class NoRedundantName(Rule):
+class RedundantParameterName(Rule):
     """ Don't name parameters identically to their type.
 
     Redundant information is never useful. If a parameter can not be named something meaningful,
@@ -20,7 +20,7 @@ class NoRedundantName(Rule):
     """
 
     def __init__(self):
-        Rule.__init__(self, name='no-redundant-name',
+        Rule.__init__(self, name='redundant-name',
                       description='Parameter \'{param}\' named identically to its type \'{type}\'',
                       suggestion='Rename parameter \'{param}\' to something meaningful or omit it.')
 

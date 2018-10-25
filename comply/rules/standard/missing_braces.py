@@ -8,8 +8,8 @@ from comply.rules.patterns import KEYWORDS
 from comply.printing import Colors
 
 
-class BraceStatementBodies(Rule):
-    """ Always surround the bodies of control statement with scoped braces.
+class MissingBraces(Rule):
+    """ Always surround the bodies of control statements with scoped braces.
 
     You might be tempted to save a line or two by not adding braces to that single-line `if`
     statement.
@@ -24,7 +24,7 @@ class BraceStatementBodies(Rule):
     """
 
     def __init__(self):
-        Rule.__init__(self, name='brace-statement-bodies',
+        Rule.__init__(self, name='missing-braces',
                       description='Body of control statement not surrounded by braces',
                       suggestion='Add opening and ending braces for the body of the control '
                                  'statement.')

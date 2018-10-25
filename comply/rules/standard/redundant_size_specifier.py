@@ -8,14 +8,14 @@ from comply.rules.patterns import FUNC_BOTH_PATTERN
 from comply.printing import Colors
 
 
-class NoRedundantSize(Rule):
+class RedundantSizeSpecifier(Rule):
     """ Don't specify array length in function signatures unless it can be enforced.
 
     The size specification for pointer-degrading array parameters is not enforced by the compiler,
     thus making it a source of confusion that should be avoided.
     <br/><br/>
-    For example, you could, without warning, specify one length in a function prototype,
-    but another in the implementation. Neither would have any effect.
+    For example, you could, *without warning*, specify one length in a function prototype,
+    but another in the implementation.
 
     References:
 
@@ -23,7 +23,7 @@ class NoRedundantSize(Rule):
     """
 
     def __init__(self):
-        Rule.__init__(self, name='no-redundant-size',
+        Rule.__init__(self, name='redundant-size',
                       description='Size specifier has no effect',
                       suggestion='Remove size specifier \'{size}\'.')
 

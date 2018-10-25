@@ -3,24 +3,24 @@
 import re
 
 from comply.rules.rule import *
-from comply.rules.standard.list_needed_symbols import symbols_for_inclusion
-from comply.rules.standard.no_headers_in_header import is_symbol_included_for_completeness
+from comply.rules.standard.require_symbols import symbols_for_inclusion
+from comply.rules.standard.header_in_header import is_symbol_included_for_completeness
 from comply.rules.patterns import INCLUDE_PATTERN
 
 from comply.printing import Colors
 
 
-class SymbolListedNotNeeded(Rule):
+class UnusedSymbol(Rule):
     """ Don't list unused symbols as needed.
 
     Helps in determining when a symbol is no longer used, potentially leading to being able to
     remove an inclusion completely, reducing dependencies and improving maintainability.
     <br/><br/>
-    See <tt>list-needed-symbols</tt>.
+    See <tt>require-symbols</tt>.
     """
 
     def __init__(self):
-        Rule.__init__(self, name='symbol-listed-not-needed',
+        Rule.__init__(self, name='unused-symbol',
                       description='Unused symbol \'{symbol}\' listed as needed',
                       suggestion='Remove symbol \'{symbol}\' from list.')
 

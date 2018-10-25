@@ -14,7 +14,8 @@ class IdentifierTooLong(Rule):
     is immediately clear what it represents- or does.
     <br/><br/>
     An identifier that requires *more* than 31 characters to provide meaning is an indication that
-    complexity is too high in the specific context and often presents a refactoring opportunity.
+    complexity might be too high in the specific context and often presents a refactoring
+    opportunity.
     """
 
     def __init__(self):

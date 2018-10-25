@@ -8,8 +8,8 @@ from comply.rules.patterns import INCLUDE_PATTERN
 from comply.printing import Colors
 
 
-class ListNeededSymbols(Rule):
-    """ Always list needed symbols.
+class RequireSymbols(Rule):
+    """ Always list needed/required symbols.
 
     Helps in determining dependencies that are no longer needed and could be removed,
     and encourages use of smaller, more well-defined headers.
@@ -26,7 +26,7 @@ class ListNeededSymbols(Rule):
     """
 
     def __init__(self):
-        Rule.__init__(self, name='list-needed-symbols',
+        Rule.__init__(self, name='require-symbols',
                       description='#include directive does not list needed symbols',
                       suggestion='Add a comma-separated list with each symbol needed.')
 

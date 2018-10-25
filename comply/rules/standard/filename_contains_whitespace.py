@@ -3,15 +3,15 @@
 from comply.rules.rule import *
 
 
-class NoSpaceName(Rule):
+class FilenameContainsWhitespace(Rule):
     """ Avoid whitespace in filenames.
 
-    Mostly a matter of convention, but helps in avoiding issues when interacting with external
-    tools.
+    Mostly a matter of convention, but helps in avoiding issues when interacting with the file on
+    the command-line or through external tools.
     """
 
     def __init__(self):
-        Rule.__init__(self, name='no-space-name',
+        Rule.__init__(self, name='filename-has-whitespace',
                       description='Filename contains whitespace',
                       suggestion='Replace whitespaces with underscores (e.g. \'{filename}\').')
 

@@ -7,11 +7,11 @@ from comply.rules.rule import *
 from comply.printing import Colors
 
 
-class NoPaddedParens(Rule):
+class PaddedParenthesis(Rule):
     """ Don't pad parenthesized groups with whitespace. """
 
     def __init__(self):
-        Rule.__init__(self, name='no-padded-parens',
+        Rule.__init__(self, name='padded-parens',
                       description='Opening or closing parenthesis padded with whitespace',
                       suggestion='Remove whitespace from the {left_or_right} side of the '
                                  'parenthesis.')

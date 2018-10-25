@@ -3,17 +3,17 @@
 from comply.rules.rule import *
 
 
-class SymbolNeededNotListed(Rule):
-    """ Always list used symbols as needed.<br/><br/>**_Not implemented._**
+class SymbolUsed(Rule):
+    """ Always list used symbols as needed/required.<br/><br/>**_Not implemented._**
 
     If your code is using a symbol, but not explicitly telling where it got it from, you might have
     a hard time figuring out just how far your code reaches out.
     <br/><br/>
-    See <tt>list-needed-symbols</tt>.
+    See <tt>require-symbols</tt>.
     """
 
     def __init__(self):
-        Rule.__init__(self, name='symbol-needed-not-listed',
+        Rule.__init__(self, name='symbol-used',
                       description='Used symbol \'{symbol}\' not listed as needed',
                       suggestion='Add symbol \'{symbol}\' to list.')
 

@@ -7,7 +7,7 @@ from comply.rules.rule import *
 from comply.printing import Colors
 
 
-class PadPointerDeclarations(Rule):
+class PadPointers(Rule):
     """ Always pad pointer declarations with space on both sides.
 
     Having no padding for `*`'s makes for an inconsistent reading of types- especially when
@@ -23,7 +23,7 @@ class PadPointerDeclarations(Rule):
     """
 
     def __init__(self):
-        Rule.__init__(self, name='pad-pointer-decls',
+        Rule.__init__(self, name='pad-pointers',
                       description='Pointer declaration not padded with whitespace',
                       suggestion='Add a single whitespace to the {left_or_right} of the asterisk.')
 

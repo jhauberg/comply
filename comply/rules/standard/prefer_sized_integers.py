@@ -20,7 +20,7 @@ def match_unsigned(int_type: str) -> str:
         type=int_type)
 
 
-class PreferStandardInt(Rule):
+class PreferSizedIntegers(Rule):
     """ Always use explicitly sized integer types (e.g. `stdint.h`).
 
     Being explicit about the type and size that you want to use helps improve portability.
@@ -71,13 +71,13 @@ class PreferStandardInt(Rule):
 
         ranges_collected = []
 
-        int_types = [int_type for int_type in PreferStandardInt.INT_TYPES]
+        int_types = [int_type for int_type in PreferSizedIntegers.INT_TYPES]
         # sort by length of type
         sorted_int_types = sorted(int_types, key=lambda int_type: len(int_type.split(' ')))
 
         # go through each type, but reversed so that we start with the longest types
         for int_type in reversed(sorted_int_types):
-            prefer_int_type, pattern = PreferStandardInt.INT_TYPES[int_type]
+            prefer_int_type, pattern = PreferSizedIntegers.INT_TYPES[int_type]
 
             for int_match in re.finditer(pattern, text):
                 if not int_match.group(1):

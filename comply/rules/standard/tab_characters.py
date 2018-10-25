@@ -5,7 +5,7 @@ from comply.rules.rule import *
 from comply.printing import Colors, supports_unicode
 
 
-class NoTabs(Rule):
+class TabCharacters(Rule):
     """ Don't use tabs. Use spaces.
 
     Using tabs for indentation will produce inconsistent line lengths, as the size of a tab may
@@ -17,7 +17,7 @@ class NoTabs(Rule):
     """
 
     def __init__(self):
-        Rule.__init__(self, name='no-tabs',
+        Rule.__init__(self, name='tab-characters',
                       description='File contains tab characters ({count} tabs)',
                       suggestion='Replace each tab with spaces (typically 4).')
 
@@ -30,7 +30,7 @@ class NoTabs(Rule):
         replacement_char = '⇥' if supports_unicode() else '~'
 
         augmented_line = (linenumber,
-                          line.replace(NoTabs.TAB, Colors.BAD + replacement_char + Colors.RESET))
+                          line.replace(TabCharacters.TAB, Colors.BAD + replacement_char + Colors.RESET))
 
         count = violation.meta['count'] if 'count' in violation.meta else 0
         count_in_line = violation.meta['count_in_line'] if 'count_in_line' in violation.meta else 0
@@ -48,16 +48,16 @@ class NoTabs(Rule):
 
         text = file.original
 
-        tabs_found = text.count(NoTabs.TAB)
+        tabs_found = text.count(TabCharacters.TAB)
 
         if tabs_found > 0:
-            first_tab_index = text.find(NoTabs.TAB)
+            first_tab_index = text.find(TabCharacters.TAB)
 
             linenumber, column = file.line_number_at(first_tab_index)
 
             offending_line = (linenumber, file.lines[linenumber - 1])
 
-            tabs_in_line = offending_line[1].count(NoTabs.TAB)
+            tabs_in_line = offending_line[1].count(TabCharacters.TAB)
 
             offender = self.violate(at=(linenumber, column),
                                     lines=[offending_line],

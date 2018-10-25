@@ -5,10 +5,10 @@ import re
 from comply.rules.rule import *
 from comply.rules.patterns import INCLUDE_PATTERN
 
-from comply.rules.standard.list_needed_symbols import symbols_for_inclusion
+from comply.rules.standard.require_symbols import symbols_for_inclusion
 
 
-class NoHeadersInHeader(Rule):
+class HeaderInHeader(Rule):
     """ Don't include other headers if you can avoid it.
 
     Avoiding header inclusions can help keep compile times low.
@@ -24,7 +24,7 @@ class NoHeadersInHeader(Rule):
     """
 
     def __init__(self):
-        Rule.__init__(self, name='no-headers-in-header',
+        Rule.__init__(self, name='header-in-header',
                       description='Header included in header',
                       suggestion='Replace \'{inclusion}\' with a forward-declaration for each '
                                  'needed type.')

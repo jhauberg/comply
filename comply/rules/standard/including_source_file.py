@@ -6,7 +6,7 @@ from comply.rules.rule import *
 from comply.rules.patterns import INCLUDE_PATTERN
 
 
-class NoSourceIncludes(Rule):
+class IncludingSourceFile(Rule):
     """ Don't include source files (.c) in other source files.
 
     This is advisable to avoid potentially compiling the same unit twice, resulting in multiple
@@ -14,8 +14,8 @@ class NoSourceIncludes(Rule):
     """
 
     def __init__(self):
-        Rule.__init__(self, name='no-src-includes',
-                      description='Source file included',
+        Rule.__init__(self, name='including-source',
+                      description='Including source file',
                       suggestion='Find a way to remove the #include directive.')
 
     pattern = re.compile(INCLUDE_PATTERN)

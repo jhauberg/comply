@@ -3,12 +3,12 @@
 import re
 
 from comply.rules.rule import *
-from comply.rules.patterns import FUNC_PROT_PATTERN, FUNC_IMPL_PATTERN
+from comply.rules.patterns import FUNC_PROT_PATTERN
 
 from comply.printing import Colors
 
 
-class NoAmbiguousFunctions(Rule):
+class AmbiguousFunction(Rule):
     """ Don't provide ambiguous function declarations.
 
     This mainly pertains to functions with parameterless declarations.
@@ -22,7 +22,7 @@ class NoAmbiguousFunctions(Rule):
     """
 
     def __init__(self):
-        Rule.__init__(self, name='no-ambiguous-funcs',
+        Rule.__init__(self, name='ambiguous-func',
                       description='Ambiguous function declaration',
                       suggestion='Add \'void\' to indicate that this is a parameterless function.')
 
@@ -84,31 +84,4 @@ class NoAmbiguousFunctions(Rule):
     def nontriggers(self):
         return [
             'void func(void);'
-        ]
-
-
-class ExplicitlyVoidFunctions(NoAmbiguousFunctions):
-    """ Always specify parameters as `void` if a function implementation takes zero parameters.
-
-    Technically, this is not required for the compiler to do its job, but being explicit helps in
-    keeping a clear and consistent interface.
-    """
-
-    def __init__(self):
-        NoAmbiguousFunctions.__init__(self)
-
-        self.name = 'explicitly-void-funcs'
-        self.description = 'Parameterless function does not specify parameters as \'void\''
-        self.pattern = re.compile(FUNC_IMPL_PATTERN)
-
-    @property
-    def triggers(self):
-        return [
-            'void ↓func() { ... }'
-        ]
-
-    @property
-    def nontriggers(self):
-        return [
-            'void func(void) { ... }'
         ]

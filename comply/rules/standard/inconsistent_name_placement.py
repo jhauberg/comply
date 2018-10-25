@@ -8,7 +8,7 @@ from comply.rules.patterns import FUNC_IMPL_PATTERN
 from comply.printing import Colors
 
 
-class SplitByName(Rule):
+class InconsistentNamePlacement(Rule):
     """ Always place function name and return type on separate lines (for function implementations).
 
     This style provides a quick and consistent reading of functions, and helps in reducing line
@@ -20,7 +20,7 @@ class SplitByName(Rule):
     """
 
     def __init__(self):
-        Rule.__init__(self, name='split-by-name',
+        Rule.__init__(self, name='inconsistent-name-placement',
                       description='Function name not at beginning of line',
                       suggestion='Split function name and return type to separate lines.')
 
