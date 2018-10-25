@@ -164,7 +164,7 @@ Options (non-compliant):
 
 `comply` can be integrated as a *Run Script Build Phase* in Xcode to have violations reported directly in the IDE:
 
-<img width="988" src="assets/example_xcode.png" alt="An example of reported violations in Xcode">
+<img width="990" src="assets/example_xcode.png" alt="An example of reported violations in Xcode">
 
 You have two options for making this happen:
 
