@@ -104,9 +104,7 @@ If provided with a directory, `comply` will automatically traverse the entire di
 $ comply mylib/src/
 ```
 
-Keep in mind that `comply` is not a compiler and will run its checks even if your code contains errors.
-
-Because of this, you should only run `comply` as a post-compile process.
+*Keep in mind that `comply` is not a compiler and will run its checks even if your code contains errors.*
 
 <details>
   <summary><strong>Running without installing</strong></summary>
@@ -256,19 +254,19 @@ The core idea behind this project is to define a single, ubiquitous style and gu
 
 No. Unless you consider style issues as bugs, `comply` will not find bugs in your code.
 
-That kind of static code analysis is out of scope for this project and excellent tools already exist for the job (cppcheck, pclint etc.).
+That kind of static code analysis is out of scope for this project and excellent tools already exist for the job ([cppcheck](http://cppcheck.sourceforge.net), [PC-lint](https://www.gimpel.com/html/pcl.htm) to name a few).
 
 ### Will `comply` automatically "fix" my code?
 
 No. This is left as a task for a human.
 
-While many rules are only related to the textual representation of code, some require more thought, consideration and human judgment to fix- a larger task than simply applying a different formatting.
+While many rules are only related to the textual representation of code, some do require more thought, consideration and human judgment to fix- a larger task than simply applying a different formatting.
 
 There is a point to be made in the usefulness of automatic formatting, see [Black](https://github.com/ambv/black) or [gofmt](https://golang.org/cmd/gofmt/), but for the time being that is out of scope for this project.
 
 ### Does `comply` do any pre-processing of C sources?
 
-No. This is intentional and deliberate.
+No. This is intentional.
 
 Pre-processing is difficult and is a project in its own. It is also a solved problem- but comes at the cost of adding a large dependency (and all the complexity it involves) for one of the *huge* compiler toolchains (`clang`, `gcc` etc.).
 
@@ -276,7 +274,7 @@ Avoiding dependencies, especially complex ones, makes `comply` much leaner, easi
 
 Because it does not even attempt to deal with the pre-processing, it does not need to know about any include paths, standard library or anything like that either. You can just point and shoot at any C source file.
 
-However, the bad news is that pre-processor directives, such as `#define`, which are widely and commonly used, won't be resolved properly when `comply` looks at it. This means that macros can cause a lot of trouble and potentially cause false-positives.
+However, the downside is that pre-processor directives (e.g. `#define`), which are widely and commonly used, won't be resolved properly when `comply` looks at it. This means that macros can cause a lot of trouble and very likely cause false-positives.
 
 If you feel like it, you can always run something like `clang -E` on your source to have it pre-processed before letting `comply` have a look. But that can be a whole deal in itself.
 
