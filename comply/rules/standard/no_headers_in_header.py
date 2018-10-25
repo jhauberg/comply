@@ -26,7 +26,8 @@ class NoHeadersInHeader(Rule):
     def __init__(self):
         Rule.__init__(self, name='no-headers-in-header',
                       description='Header included in header',
-                      suggestion='Replace \'{inclusion}\' with a forward-declaration for each needed type.')
+                      suggestion='Replace \'{inclusion}\' with a forward-declaration for each '
+                                 'needed type.')
 
     pattern = re.compile(INCLUDE_PATTERN)
 

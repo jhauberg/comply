@@ -25,7 +25,7 @@ class BraceStatementBodies(Rule):
 
     def __init__(self):
         Rule.__init__(self, name='brace-statement-bodies',
-                      description='Unbraced control statement',
+                      description='Body of control statement not surrounded by braces',
                       suggestion='Add opening and ending braces for the body of the control '
                                  'statement.')
 

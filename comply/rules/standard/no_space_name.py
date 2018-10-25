@@ -12,7 +12,7 @@ class NoSpaceName(Rule):
 
     def __init__(self):
         Rule.__init__(self, name='no-space-name',
-                      description='Whitespace in filename',
+                      description='Filename contains whitespace',
                       suggestion='Replace whitespaces with underscores (e.g. \'{filename}\').')
 
     def collect(self, file: CheckFile):

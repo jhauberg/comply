@@ -11,7 +11,7 @@ from comply.printing import Colors
 class NoAmbiguousFunctions(Rule):
     """ Don't provide ambiguous function declarations.
 
-    This mainly pertains to functions with parameter-less declarations.
+    This mainly pertains to functions with parameterless declarations.
     <br/><br/>
     In C, a function declaration with no parameters is ambiguous, as it implicitly declares a
     function that can take an arbitrary number of parameters.
@@ -24,7 +24,7 @@ class NoAmbiguousFunctions(Rule):
     def __init__(self):
         Rule.__init__(self, name='no-ambiguous-funcs',
                       description='Ambiguous function declaration',
-                      suggestion='Add \'void\' to indicate that this is a zero-parameter function.')
+                      suggestion='Add \'void\' to indicate that this is a parameterless function.')
 
     pattern = re.compile(FUNC_PROT_PATTERN)
 

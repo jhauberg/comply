@@ -11,7 +11,9 @@ class PadPointerDeclarations(Rule):
     """ Always pad pointer declarations with space on both sides.
 
     Having no padding for `*`'s makes for an inconsistent reading of types- especially when
-    combined with `const` qualifiers. See <tt>const-on-right</tt>.
+    combined with `const` qualifiers.
+    <br/><br/>
+    See <tt>const-on-right</tt>.
     <br/><br/>
     Additionally, padding provides a clear separation between a declaration and a pointer dereference.
 
