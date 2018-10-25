@@ -8,15 +8,17 @@ from comply.printing import Colors
 
 
 class PadBraces(Rule):
+    """ Always pad braced bodies with inner whitespace. """
+
     def __init__(self):
         Rule.__init__(self, name='pad-braces',
-                      description='Braced bodies should be padded with space on both sides',
+                      description='Braced body not padded with whitespace',
                       suggestion='Add a single whitespace to the {left_or_right} of \'{brace}\'.')
 
     pattern = re.compile(r'(?:[^\s]({)|({)[^\s])|'     # starting braces without whitespace to the left or right
                          r'(?:[^\s](})|(})[^\s;),])')  # ending braces without whitespace to the left, or whitespace/certain chars to the right
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
 
         from_index, to_index = violation.meta['range']
@@ -62,3 +64,20 @@ class PadBraces(Rule):
             offenders.append(offender)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+            '↓{a, b, c }',
+            '↓{a, b, c↓}',
+            'if ((struct a_t)↓{ .x = 0↓})↓{ ... ↓}else ↓{something }'
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            '{ a, b, c }',
+            ('{\n'
+             'a\n'
+             '}')
+        ]

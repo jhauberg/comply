@@ -5,7 +5,14 @@ Commonly used patterns for matching C-like syntax.
 """
 
 # base pattern for function prototypes and signatures
-FUNC_BASE_PATTERN = r'(?<!return)(?:(?<=[\w*])\s+|\*)(?P<name>\w+)\s*\((?P<params>[^&%^?#@!/<>=+\-{};]*)\)'
+FUNC_BASE_PATTERN = (r'(?<!#define)'
+                     r'(?<!#if)'
+                     r'(?<!return)'
+                     r'(?:(?<=[\w*])\s+|\*)'
+                     r'(?P<name>\w+)'
+                     r'\s*\('
+                     r'(?P<params>[^&%^?#@!/<>=+\-{};]*)'
+                     r'\)')
 
 # match only prototypes
 FUNC_PROT_PATTERN = FUNC_BASE_PATTERN + r'(?=\s*;)'
@@ -18,11 +25,10 @@ FUNC_BOTH_PATTERN = FUNC_BASE_PATTERN + r'(?=\s*[{;])'
 # note: this pattern will match the inner-most bodies
 FUNC_BODY_PATTERN = r'{([^{}]+)}'
 
-INCLUDE_PATTERN = (r'#include\s*'  # starting with #include and zero or more whitespace
-                   r'[<"]'         # up to a starting angle bracket or quote
-                   r'.+?'          # anything between, but at least one character
-                   r'[>"]')        # until ending with angle bracket or quote
-
+INCLUDE_PATTERN = (r'#include\s*'        # starting with #include and zero or more whitespace
+                   r'[<"]'               # up to a starting angle bracket or quote
+                   r'(?P<filename>.+?)'  # anything between, but at least one character
+                   r'[>"]')              # until ending with angle bracket or quote
 
 COMMENT_BLOCK_PATTERN = r'/\*(?:.|[\n])*?\*/'
 # note that this pattern requires re.MULTILINE

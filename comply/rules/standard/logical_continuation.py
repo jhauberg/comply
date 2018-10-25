@@ -8,15 +8,17 @@ from comply.printing import Colors
 
 
 class LogicalContinuation(Rule):
+    """ Don't begin lines with a logical continuation. """
+
     def __init__(self):
         Rule.__init__(self, name='logical-continuation',
-                      description='Don\'t begin a line with a logical continuation',
+                      description='Line begins with logical continuation',
                       suggestion='Move the logical continuation to the end of the previous line.')
 
     pattern = re.compile(r'\n\s*(&&|\|\|)')
 
-    def augment(self, violation: RuleViolation):
-        line_index = violation.index_of_violating_line()
+    def augment_by_color(self, violation: RuleViolation):
+        line_index = violation.index_of_starting_line()
         line_number, line = violation.lines[line_index]
 
         from_index, to_index = violation.meta['range']
@@ -62,3 +64,21 @@ class LogicalContinuation(Rule):
             offenders.append(offender)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+            ('if (flag_a\n'
+             ' ↓&& flag_b)'),
+            ('if (flag_a\n'
+             ' ↓|| flag_b)')
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            ('if (flag_a &&\n'
+             '    flag_b)'),
+            ('if (flag_a ||\n'
+             '    flag_b)')
+        ]

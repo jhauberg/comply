@@ -5,11 +5,13 @@ Models for defining rules and violations.
 """
 
 import datetime
+import comply
 
 from typing import List, Tuple
 
-from comply import PROFILING_IS_ENABLED
 from comply.rules.report import CheckFile
+
+from comply.printing import can_apply_colors, Colors
 
 
 class RuleViolation:
@@ -17,39 +19,76 @@ class RuleViolation:
 
     """ A hint to indicate that a violation typically only occur once per file. """
     ONCE_PER_FILE = 1
+
     """ A hint to indicate that a violation may occur more than once per file. """
     MANY_PER_FILE = 0
 
-    """ A severity indicator for violations that have a negative impact, but can't be objectively
-        deemed to be an issue.
+    """ A severity indicator for violations that have a negative impact, 
+        but can't be objectively deemed an issue.
+        
+        These violations typically represent code smells or refactoring opportunities.
     """
     ALLOW = 0
+
     """ A severity indicator for violations that have an objectively negative impact.
     
-        This is the default severity. 
+        These violations should be considered warnings.
+        
+        This is the default severity.
     """
     WARN = 1
-    """ A severity indicator for violations that have an objectively severe negative impact. """
+
+    """ A severity indicator for violations that have an objectively severe negative impact.
+    
+        These violations should be considered errors.
+    """
     DENY = 2
 
-    def __init__(self, which: 'Rule', where: (int, int), lines: List[Tuple[int, str]], meta: dict=None):
+    def __init__(self, which: 'Rule', starting: (int, int), ending: (int, int), lines: List[Tuple[int, str]], meta: dict=None):
         self.which = which
-        self.where = where
+        self.starting = starting
+        self.ending = ending
         self.lines = lines
         self.meta = meta
 
     def __repr__(self):
         return '{0} at {1}'.format(self.which, self.lines)
 
-    def index_of_violating_line(self) -> int:
+    def index_of_starting_line(self) -> int:
         """ Return the index of the line where this violation occurs.
 
-            Note that the index *is not* the line number.
+            Note that the index *is not* the same as the line number.
+        """
+
+        violating_line_number = self.starting[0]
+
+        return self.index_of_line_number(violating_line_number)
+
+    def index_of_line_number(self, line_number: int) -> int:
+        """ Return the index of the line that corresponds to a line number.
+
+            Note that the index *is not* the same as the line number.
         """
 
         line_numbers = [line[0] for line in self.lines]
 
-        return line_numbers.index(self.where[0])
+        violating_line_index = line_numbers.index(line_number)
+
+        return violating_line_index
+
+    @staticmethod
+    def report_severity_as(severity: int, is_strict: bool) -> int:
+        """ Return an elevated severity indicator for some severities when strict compliance
+            is enabled.
+
+            ALLOW becomes WARN
+            WARN  remains WARN
+            DENY  remains DENY
+        """
+
+        should_increase_severity = severity < RuleViolation.WARN and is_strict
+
+        return severity + (1 if should_increase_severity else 0)
 
 
 class Rule:
@@ -60,7 +99,7 @@ class Rule:
         self.description = description
         self.suggestion = suggestion
 
-        if PROFILING_IS_ENABLED:
+        if comply.PROFILING_IS_ENABLED:
             self.time_started_collecting = None
             self.total_time_spent_collecting = 0
 
@@ -109,18 +148,140 @@ class Rule:
 
         return suggestion.format(**violation.meta)
 
-    def augment(self, violation: RuleViolation):
-        """ Augment a violation to improve hints of its occurrence.
+    def augment_by_color(self, violation: RuleViolation):
+        """ Augment the offending lines by applying highlight coloring that span the range of
+            the occurrence.
 
-            Subclasses may override and provide custom augments.
+            Subclasses may override to provide a customized result output.
         """
 
-        pass
+        starting_line_number, starting_column = violation.starting
+        ending_line_number, ending_column = violation.ending
 
-    def violate(self, at: (int, int), lines: List[Tuple[int, str]]=list(), meta: dict=None) -> RuleViolation:
-        """ Return a rule violation originating from a chunk of text. """
+        starting_line_index = violation.index_of_line_number(starting_line_number)
+        ending_line_index = violation.index_of_line_number(ending_line_number)
 
-        return RuleViolation(self, at, lines, meta)
+        starting_char_index = starting_column - 1
+        ending_char_index = ending_column - 1
+
+        # go through each affected line, with the ending line included
+        for line_index in range(starting_line_index, ending_line_index + 1):
+            line_number, line = violation.lines[line_index]
+
+            if line_index == starting_line_index:
+                # markup begins on this line
+                if starting_line_index == ending_line_index:
+                    # markup also ends on this line
+                    line = (line[:starting_char_index] + Colors.BAD +
+                            line[starting_char_index:ending_char_index] + Colors.RESET +
+                            line[ending_char_index:])
+                else:
+                    # markup exceeds this line
+                    line = (line[:starting_char_index] + Colors.BAD +
+                            line[starting_char_index:] + Colors.RESET)
+            elif line_index == ending_line_index:
+                # markup ends on this line
+                line = (Colors.BAD + line[:ending_char_index] +
+                        Colors.RESET + line[ending_char_index:])
+            else:
+                # markup spans entire line
+                line = (Colors.BAD + line +
+                        Colors.RESET)
+
+            violation.lines[line_index] = (line_number, line)
+
+    def augment_by_marker(self, violation: RuleViolation):
+        """ Augment the offending lines by adding an indicator marker (^) at the location
+            of the occurrence.
+
+            Subclasses may override to provide a customized result output.
+        """
+
+        starting_line_number, starting_column = violation.starting
+        ending_line_number, ending_column = violation.ending
+
+        if starting_column == 0 or ending_column == 0:
+            return
+
+        violation_is_in_lines = False
+
+        for (line_number, line) in violation.lines:
+            if line_number == starting_line_number:
+                violation_is_in_lines = True
+
+                break
+
+        if not violation_is_in_lines:
+            return
+
+        prefix = ' ' * (starting_column - 1)
+        suffix = '-' * ((ending_column - starting_column) - 1)
+
+        line = (None, prefix + '^' + suffix)
+
+        starting_line_index = violation.index_of_line_number(starting_line_number)
+        ending_line_index = len(violation.lines) - 1
+
+        if starting_line_index < ending_line_index:
+            violation.lines.insert(starting_line_index + 1, line)
+        else:
+            violation.lines.append(line)
+
+    def augment(self, violation: RuleViolation):
+        """ Augment the offending lines of a violation to improve hints of its occurrence.
+
+            Default implementation either applies coloring spanning the range of the occurrence, or
+            provides a ^-marker indicating the location of the occurrence depending on whether
+            coloring is supported.
+        """
+
+        if len(violation.lines) == 0:
+            # nothing to augment; this violation has not captured any lines
+            return
+
+        if can_apply_colors():
+            self.augment_by_color(violation)
+        else:
+            self.augment_by_marker(violation)
+
+    def violate(self, at: (int, int), to: (int, int)=None, lines: List[Tuple[int, str]]=list(), meta: dict=None) -> RuleViolation:
+        """ Return a rule violation spanning over a range of consecutive line numbers and
+            columns.
+
+            Captured lines do not have to match with the provided ranges.
+        """
+
+        if to is None:
+            to = at
+
+        return RuleViolation(self, at, to, lines, meta)
+
+    def violate_at_file(self, file: CheckFile) -> RuleViolation:
+        """ Return a violation spanning no lines or characters, starting from the beginning of a
+            file.
+        """
+
+        return self.violate(at=file.line_number_at_top())
+
+    def violate_at_match(self, file: CheckFile, at) -> RuleViolation:
+        """ Return a rule violation spanning the full result of a match. """
+
+        return self.violate_at_character_range(file, starting=at.start(), ending=at.end())
+
+    def violate_at_character_range(self, file: CheckFile, starting: int, ending: int=-1) -> RuleViolation:
+        """ Return a rule violation spanning over a range of character indices. """
+
+        if ending < 0:
+            ending = starting
+
+        starting_line_number, starting_column = file.line_number_at(starting)
+        ending_line_number, ending_column = file.line_number_at(ending)
+
+        offending_lines = file.lines_in_character_range((starting, ending))
+
+        return self.violate(at=(starting_line_number, starting_column),
+                            to=(ending_line_number, ending_column),
+                            lines=offending_lines)
 
     def collect(self, file: CheckFile) -> List[RuleViolation]:
         """ Analyze a given text and return a list of any found violations.
@@ -145,15 +306,40 @@ class Rule:
 
         return RuleViolation.MANY_PER_FILE
 
+    @property
+    def triggering_filename(self) -> str:
+        """ Return an assumed filename for a file triggering violations.
+
+            This is only used for test purposes.
+        """
+
+        return None
+
+    @property
+    def triggers(self) -> List[str]:
+        """ Return a list of texts containing triggering examples.
+
+            This is only used for test purposes.
+        """
+
+        return []
+
+    @property
+    def nontriggers(self) -> List[str]:
+        """ Return a list of texts containing non-triggering examples.
+
+            This is only used for test purposes.
+        """
+
+        return []
+
     def profile_begin(self):
-        if not PROFILING_IS_ENABLED:
-            return
+        """ Mark the beginning of a violation collection. """
 
         self.time_started_collecting = datetime.datetime.now()
 
     def profile_end(self):
-        if not PROFILING_IS_ENABLED:
-            return
+        """ Mark the end of a violation collection and accumulate the time taken. """
 
         time_since_started_collecting = datetime.datetime.now() - self.time_started_collecting
         time_spent_collecting = time_since_started_collecting / datetime.timedelta(seconds=1)
@@ -161,3 +347,28 @@ class Rule:
         self.total_time_spent_collecting += time_spent_collecting
 
         self.time_started_collecting = None
+
+    @staticmethod
+    def rules_in(modules: list) -> list:
+        """ Return a list of instances of all Rule-subclasses found in the provided modules.
+
+            Does not recurse through submodules.
+        """
+
+        classes = []
+
+        def is_rule_implementation(cls):
+            """ Determine whether a class is a Rule implementation. """
+
+            return cls != Rule and type(cls) == type and issubclass(cls, Rule)
+
+        for module in modules:
+            for item in dir(module):
+                attr = getattr(module, item)
+
+                if is_rule_implementation(attr):
+                    classes.append(attr)
+
+        instances = [c() for c in classes]
+
+        return instances

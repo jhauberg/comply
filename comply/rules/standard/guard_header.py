@@ -8,12 +8,17 @@ from comply.printing import Colors
 
 
 class GuardHeader(Rule):
+    """ Always provide include guards in header files.
+
+    Helps prevent redundant inclusions and improves compilation times.
+    """
+
     def __init__(self):
         Rule.__init__(self, name='guard-header',
-                      description='Header files should provide an include guard to prevent double inclusion',
+                      description='Header does not provide an include guard',
                       suggestion='Wrap your header in an include guard named "{guard}" or use "#pragma once".')
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         guard = violation.meta['guard'] if 'guard' in violation.meta else '???'
 
         violation.lines = [
@@ -24,13 +29,10 @@ class GuardHeader(Rule):
         ]
 
     def collect(self, file: CheckFile):
-        offenders = []
-
         if '.h' not in file.extension:
-            return offenders
+            return []
 
-        if '#pragma once' in file.stripped:
-            return offenders
+        offenders = []
 
         guard_name = file.filename.strip() + file.extension
 
@@ -38,15 +40,20 @@ class GuardHeader(Rule):
         guard_name = guard_name.replace('-', '_')
         guard_name = guard_name.replace('.', '_')
 
-        pattern = re.compile(
-            r'^[\s\S]*#ifndef {guard}\s*(?:\n|\r\n)\s*#define {guard}[\s\S]*#endif\s*$'.format(
-                guard=guard_name))
+        pattern = re.compile((r'^(?:'
+                              r'(\s*#ifndef {guard}\s*(?:\n|\r\n)'  # which is either an #ifndef
+                              r'\s*#define {guard}\s*(?:\n|\r\n)'
+                              r'[\s\S]*'
+                              r'\s*#endif\s*$)'
+                              r'|'
+                              r'(\s*#pragma once))')  # or a #pragma once
+                             .format(guard=guard_name))
 
-        text = file.stripped
+        match = pattern.match(file.stripped)
 
-        match = pattern.match(text)
+        is_violation = True if match is None else False
 
-        if match is None:
+        if is_violation:
             offender = self.violate(at=file.line_number_at_top(),
                                     meta={'guard': guard_name})
 
@@ -57,3 +64,44 @@ class GuardHeader(Rule):
     @property
     def collection_hint(self):
         return RuleViolation.ONCE_PER_FILE
+
+    @property
+    def triggering_filename(self):
+        return 'header.h'
+
+    @property
+    def triggers(self):
+        return [
+            ('▶// some header file\n'
+             '...\n'
+             '...'),
+            ('▶// some header file\n'
+             '...\n'
+             '#pragma once'),
+            ('▶// some header file\n'
+             '...\n'
+             '#ifndef header_h\n'
+             '#define header_h\n'
+             '...\n'
+             '#endif'),
+            ('▶// some header file\n'
+             '#ifndef header_h\n'
+             '#define header_h\n'
+             '...\n'
+             '#endif\n'
+             '...\n'
+             '...\n')
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            ('// some header file\n'
+             '#pragma once\n'
+             '...'),
+            ('// some header file\n'
+             '#ifndef header_h\n'
+             '#define header_h\n'
+             '...\n'
+             '#endif')
+        ]

@@ -3,17 +3,14 @@
     <p><tt class="{{ rule_severity }}">{{ rule_name }}</tt></p>
   </td>
   <td>
-    <p>Requires use of explicitly-sized integer datatypes, as defined in <code>&lt;stdint.h&gt;</code>, rather than the common <code>int</code>, <code>unsigned int</code>, <code>long</code> and so on.</p>
+    {{ rule_description }}
         <details>
       <summary><strong>Read more</strong></summary>
-      <p>It's worth noting that when sticking with use of <code>int</code> and the like, the compiler may just do a better job than you at deciding which size is actually the better, and faster, choice.</p>
-      <p>However, leaving that an implicit choice could result in issues down the line. Being explicit lets you avoid making assumptions.</p>
-      <p>The trade-off is potentially losing some (often neglible) performance.</p>
       <p>Here's a general table of reference:</p>
       <table>
         <thead>
           <tr>
-            <th>Integer type</a></th>
+            <th>Integer type</th>
             <th>&lt;stdint.h&gt;</th>
           </tr>
         </thead>
@@ -55,13 +52,7 @@
     </details>
   </td>
   <td>
-    <p class="reasoning">Being explicit about the type and size that you're expecting helps improve portability.<br/></br/>
-      It also increases readability as it does away with the <code>unsigned</code> and <code>signed</code> keywords and makes types read more uniformly.</p>
-    <div class="references">
-      <p><strong>References:</strong></p>
-      <ul class="indent">
-        <li>Matt Stancliff: <a href="https://matt.sh/howto-c"><em>How to C in 2016: Writing Code- Types</em></a></li>
-     </ul>
-    </div>
+    {{ rule_reasoning }}
+    {{ rule_references }}
   </td>
 </tr>

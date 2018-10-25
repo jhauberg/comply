@@ -11,6 +11,7 @@ class CheckResult:
     """ Represents the result of running a check on one or more files. """
 
     FILE_CHECKED = 1
+    FILE_SKIPPED = 2
     FILE_NOT_FOUND = -1
     FILE_NOT_SUPPORTED = -2
     FILE_NOT_READ = -3
@@ -53,28 +54,22 @@ class CheckFile:
         self._stripped_collaped = None
         self._original_lines = None
 
-    def line_number_at(self, index: int, at_beginning: bool=False) -> (int, int):
-        """ Return the line number and column at which a character index occur in the original text.
+    def line_number_at(self, character_index: int, span_entire_line: bool=False) -> (int, int):
+        """ Return the line number and column at which a character index occur. """
 
-            Column is set to 1 if at_beginning is True.
-        """
-
-        return CheckFile.line_number_in_text(index, self.original, at_beginning)
+        return CheckFile.line_number_in_text(character_index, self.original, span_entire_line)
 
     def line_number_at_top(self) -> (int, int):
-        """ Return the line number and column at the top of a text. """
+        """ Return the line number and column at the beginning of a text. """
 
-        return self.line_number_at(0, at_beginning=True)
+        return self.line_number_at(0, span_entire_line=True)
 
-    def lines_in(self, character_indices: (int, int)) -> List[Tuple[int, str]]:
-        """ Return the lines and line numbers within starting and ending character indices. """
-
-        starting, ending = character_indices
-
-        starting_line_number, _ = self.line_number_at(starting)
-        ending_line_number, _ = self.line_number_at(ending)
+    def lines_in_line_range(self, line_numbers: (int, int)) -> List[Tuple[int, str]]:
+        """ Return the lines and line numbers in a range of line numbers. """
 
         all_lines = self.lines
+
+        starting_line_number, ending_line_number = line_numbers
 
         lines_in_range = []
 
@@ -88,13 +83,25 @@ class CheckFile:
 
         return lines_in_range
 
+    def lines_in_character_range(self, characters: (int, int)) -> List[Tuple[int, str]]:
+        """ Return the lines and line numbers that spans the starting and ending character
+            indices.
+        """
+
+        starting, ending = characters
+
+        starting_line_number, _ = self.line_number_at(starting)
+        ending_line_number, _ = self.line_number_at(ending)
+
+        return self.lines_in_line_range((starting_line_number, ending_line_number))
+
     def lines_in_match(self, match) -> List[Tuple[int, str]]:
         """ Return the lines and line numbers of which the match spans. """
 
-        character_range = (match.start(),
-                           match.end())
+        characters = (match.start(),
+                      match.end())
 
-        return self.lines_in(character_range)
+        return self.lines_in_character_range(characters)
 
     def line_at(self, line_number: int) -> str:
         """ Return the line at a line number.
@@ -116,26 +123,29 @@ class CheckFile:
         return self._original_lines
 
     @staticmethod
-    def line_number_in_text(index: int, text: str, at_beginning: bool=False) -> (int, int):
+    def line_number_in_text(character_index: int, text: str, span_entire_line: bool=False) -> (int, int):
         """ Return the line number and column at which a character index occur in a text.
 
-            Column is set to 1 if at_beginning is True.
+            Column is set to 0 if span_entire_line is True.
         """
 
-        line_index = text.count('\n', 0, index)
+        line_index = text.count('\n', 0, character_index)
 
-        if at_beginning:
-            return CheckFile.line_number_at_start_of(line_index)
+        if span_entire_line:
+            return CheckFile.line_number_at_start_of(line_index, span_entire_line)
 
-        column = index - text.rfind('\n', 0, index)
+        column = character_index - text.rfind('\n', 0, character_index)
 
         return line_index + 1, column
 
     @staticmethod
-    def line_number_at_start_of(line_index: int) -> (int, int):
-        """ Return the line number and column at a given line index. """
+    def line_number_at_start_of(line_index: int, span_entire_line: bool=False) -> (int, int):
+        """ Return the line number and column at a given line index.
 
-        return line_index + 1, 1
+            Column is set to 0 if span_entire_line is True.
+        """
+
+        return line_index + 1, 0 if span_entire_line else 1
 
     @property
     def collapsed(self):

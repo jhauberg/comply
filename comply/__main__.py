@@ -2,24 +2,29 @@
 # coding=utf-8
 
 """
-Make your C follow the rules
+Compliant Style Guide
 
 Usage:
   comply <input>... [--reporter=<name>] [--check=<rule>]... [--except=<rule>]...
                     [--limit=<amount>] [--strict] [--only-severe] [--verbose]
+                    [--profile]
+
   comply -h | --help
   comply --version
 
 Options:
   -r --reporter=<name>    Specify type of reported output [default: human]
-  -c --check=<rule>       Only run checks for a specific rule
-  -e --except=<rule>      Don't run checks for a specific rule
   -i --limit=<amount>     Limit the amount of reported violations
-  -s --strict             Report all violations (and don't suppress similar ones)
-  -S --only-severe        Report only severe violations
+  -s --strict             Increase severity for less severe rules
+  -P --profile            Show profiling/benchmark results
   -v --verbose            Show diagnostic messages
   -h --help               Show program help
   --version               Show program version
+
+Options (non-compliant):
+  -e --only-severe        Only run checks for rules of high severity
+  -I --check=<rule>       Only run checks for specific rules
+  -E --except=<rule>      Don't run checks for specific rules
 """
 
 import os
@@ -34,13 +39,12 @@ from pkg_resources import parse_version
 from comply import (
     VERSION_PATTERN,
     EXIT_CODE_SUCCESS, EXIT_CODE_SUCCESS_WITH_SEVERE_VIOLATIONS,
-    PROFILING_IS_ENABLED,
     exit_if_not_compatible
 )
 
-from comply.reporting import Reporter, OneLineReporter, HumanReporter
-from comply.printing import printdiag, diagnostics, supports_unicode, is_windows_environment
-from comply.checking import check
+from comply.reporting import Reporter, OneLineReporter, HumanReporter, XcodeReporter
+from comply.printing import printdiag, diagnostics, supports_unicode, is_windows_environment, Colors
+from comply.checking import find_checkable_files, check
 from comply.version import __version__
 
 import comply.printing
@@ -72,8 +76,10 @@ def check_for_update():
                 remote_version_identifier = matches.group(1)
 
                 if parse_version(__version__) < parse_version(remote_version_identifier):
-                    printdiag('A newer version is available ({0})'.format(
-                        remote_version_identifier))
+                    printdiag(Colors.GOOD +
+                              'A newer version is available ({0})'.format(
+                                  remote_version_identifier) +
+                              Colors.RESET)
     except HTTPError:
         # fail silently
         pass
@@ -97,7 +103,7 @@ def expand_params(names: list) -> list:
     return expanded_names
 
 
-def validate_names(names: list, rules: list):
+def print_invalid_names(names: list, rules: list):
     """ Go through and determine whether any of the provided names do not exist as named rules. """
 
     for name in names:
@@ -123,33 +129,30 @@ def is_name_valid(name: str, rules: list) -> bool:
     return False
 
 
-def filter_rules(names: list, exceptions: list, severities: list) -> list:
+def filtered_rules(names: list, exceptions: list, severities: list) -> list:
     """ Return a list of rules to run checks on. """
 
-    rulesets = [comply.rules.standard,
-                comply.rules.experimental]
+    rulesets = [comply.rules.standard]
 
-    all_rules = make_rules(rulesets)
-
-    rules = all_rules
+    rules = Rule.rules_in(rulesets)
 
     if len(names) > 0:
-        validate_names(names, rules)
+        print_invalid_names(names, rules)
 
-        # only run checks for certain rules
-        # (note that --strict mode is overruled when --check has at least one rule)
+        # filter out any rule not explicitly listed in --check
         rules = [rule for rule
                  in rules
                  if rule.name in names]
-    else:
-        rules = [rule for rule
-                 in rules
-                 if rule.severity in severities]
+
+    # filter out any rule of unlisted severities
+    rules = [rule for rule
+             in rules
+             if rule.severity in severities]
 
     if len(exceptions) > 0:
-        validate_names(exceptions, rules)
+        print_invalid_names(exceptions, rules)
 
-        # don't run checks for certain rules
+        # filter out rules explicitly listed in --except
         rules = [rule for rule
                  in rules
                  if rule.name not in exceptions]
@@ -169,6 +172,8 @@ def make_reporter(reporting_mode: str) -> Reporter:
         return HumanReporter()
     elif reporting_mode == 'oneline':
         return OneLineReporter()
+    elif reporting_mode == 'xcode':
+        return XcodeReporter()
 
     printdiag('Reporting mode \'{0}\' not available.'.format(reporting_mode),
               as_error=True)
@@ -176,62 +181,126 @@ def make_reporter(reporting_mode: str) -> Reporter:
     return Reporter()
 
 
-def make_rules(modules: list) -> list:
-    """ Return a list of instances of all Rule-subclasses found in the provided modules. """
-
-    classes = []
-
-    def is_rule_implementation(cls):
-        """ Determine whether a class is a Rule implementation. """
-
-        return cls != Rule and type(cls) == type and issubclass(cls, Rule)
-
-    for module in modules:
-        for item in dir(module):
-            attr = getattr(module, item)
-
-            if is_rule_implementation(attr):
-                classes.append(attr)
-
-    instances = [c() for c in classes]
-
-    return instances
-
-
 def make_report(inputs: list, rules: list, reporter: Reporter) -> CheckResult:
     """ Run checks and print a report. """
 
+    def not_checked(path: str, type: str, reason: str):
+        """ Print a diagnostic stating when a file was not checked. """
+
+        if reason is not None:
+            printdiag('{type} \'{path}\' was not checked ({reason}).'.format(
+                type=type, path=path, reason=reason))
+        else:
+            printdiag('{type} \'{path}\' was not checked.'.format(
+                type=type, path=path))
+
+    checkable_inputs = []
+
+    # find all valid files from provided inputs
+    for path in inputs:
+        paths = find_checkable_files(path)
+
+        if len(paths) > 0:
+            # one or more valid files were found
+            checkable_inputs.extend(paths)
+        else:
+            # no valid files were found in this path
+            if os.path.isdir(path):
+                # the path was a directory, but no valid files were found inside
+                not_checked(path, type='Directory', reason='no files found')
+            else:
+                # the path was a single file, but not considered valid so it must not be supported
+                not_checked(path, type='File', reason='file not supported')
+
+    # sort paths for consistent output per identical run
+    checkable_inputs = sorted(checkable_inputs)
+
     result = CheckResult()
 
-    for path in inputs:
+    # set the total number of files we expect to report on
+    reporter.files_total = len(checkable_inputs)
+
+    # finally run the actual checks on each discovered file
+    for path in checkable_inputs:
         file_result, checked = check(path, rules, reporter)
 
         if checked == CheckResult.FILE_CHECKED:
+            # file was checked and results were reported if any
+            result += file_result
+        elif checked == CheckResult.FILE_SKIPPED:
+            # file was fine but not checked (it should still count toward the total)
             result += file_result
         else:
+            # file was not checked, for any number of reasons
             reason = None
-
-            file_or_directory = 'File'
 
             if checked == CheckResult.FILE_NOT_FOUND:
                 reason = 'file not found'
             elif checked == CheckResult.FILE_NOT_READ:
                 reason = 'file not read'
-            elif checked == CheckResult.NO_FILES_FOUND:
-                reason = 'no files found'
 
-                file_or_directory = 'Directory'
-            elif checked == CheckResult.FILE_NOT_SUPPORTED:
-                reason = 'file not supported'
-
-            if reason is not None:
-                printdiag('{type} \'{path}\' was not checked ({reason}).'.format(
-                    type=file_or_directory, path=os.path.abspath(path), reason=reason))
-            else:
-                printdiag('{type} \'{path}\' was not checked.'.format(
-                    type=file_or_directory, path=os.path.abspath(path)))
+            not_checked(path, type='File', reason=reason)
 
     return result
+
+
+def print_profiling_results(rules: list):
+    """ Print benchmarking results/time taken for each rule. """
+
+    num_rules_profiled = 0
+
+    for rule in rules:
+        time_taken = rule.total_time_spent_collecting
+
+        if time_taken >= 0.1:
+            printdiag(' [{0}] took {1:.1f} seconds'.format(
+                rule.name, rule.total_time_spent_collecting))
+
+            num_rules_profiled += 1
+
+    num_rules_not_profiled = len(rules) - num_rules_profiled
+
+    if num_rules_not_profiled > 0:
+        printdiag(' (...{0} rules took nearly no time and were not shown)'.format(
+            num_rules_not_profiled))
+
+
+def print_rules_checked(rules: list, since_starting):
+    """ Print the number of rules checked and time taken. """
+
+    time_since_report = datetime.datetime.now() - since_starting
+    report_in_seconds = time_since_report / datetime.timedelta(seconds=1)
+
+    total_time_taken = report_in_seconds
+
+    num_rules = len(rules)
+
+    rules_grammar = 'rule' if num_rules == 1 else 'rules'
+
+    printdiag('Checked {0} {1} in {2:.1f} seconds'.format(
+        num_rules, rules_grammar, total_time_taken))
+
+
+def print_report(report: CheckResult):
+    """ Print the number of violations found in a report. """
+
+    # note the whitespace; important for the full format later on
+    severe_format = '({0} severe) ' if report.num_severe_violations > 0 else ''
+    severe_format = severe_format.format(report.num_severe_violations)
+
+    total_violations = report.num_violations + report.num_severe_violations
+
+    violations_grammar = 'violation' if total_violations == 1 else 'violations'
+
+    files_format = '{1}/{0}' if report.num_files_with_violations > 0 else '{0}'
+    files_format = files_format.format(report.num_files, report.num_files_with_violations)
+
+    printdiag('Found {num_violations} {violations} {severe}'
+              'in {files} files'
+              .format(num_violations=total_violations,
+                      violations=violations_grammar,
+                      severe=severe_format,
+                      files=files_format))
 
 
 def main():
@@ -239,8 +308,9 @@ def main():
 
     exit_if_not_compatible()
 
-    if PROFILING_IS_ENABLED:
-        printdiag('Profiling is enabled; profiling should be disabled unless in development',
+    if comply.PROFILING_IS_ENABLED:
+        printdiag(('Profiling is enabled by default; '
+                   'profiling should only be enabled through --profile or for debugging purposes'),
                   as_error=True)
 
     if not supports_unicode():
@@ -254,23 +324,37 @@ def main():
 
     arguments = docopt(__doc__, version='comply ' + __version__)
 
+    enable_profiling = arguments['--profile']
+
+    comply.PROFILING_IS_ENABLED = enable_profiling
+
+    is_verbose = arguments['--verbose']
+
+    if enable_profiling and not is_verbose:
+        printdiag('Profiling is enabled; --verbose was set automatically')
+
+        is_verbose = True
+
     is_strict = arguments['--strict']
     only_severe = arguments['--only-severe']
-
     checks = expand_params(arguments['--check'])
     exceptions = expand_params(arguments['--except'])
 
     severities = ([RuleViolation.DENY] if only_severe else
-                  ([RuleViolation.DENY, RuleViolation.WARN] if not is_strict else
-                   [RuleViolation.DENY, RuleViolation.WARN, RuleViolation.ALLOW]))
+                  [RuleViolation.DENY, RuleViolation.WARN, RuleViolation.ALLOW])
 
-    rules = filter_rules(checks, exceptions, severities)
+    # remove potential duplicates
+    checks = list(set(checks))
+    exceptions = list(set(exceptions))
+
+    rules = filtered_rules(checks, exceptions, severities)
 
     reporting_mode = arguments['--reporter']
 
     reporter = make_reporter(reporting_mode)
     reporter.suppress_similar = not is_strict
-    reporter.is_verbose = arguments['--verbose']
+    reporter.is_strict = is_strict
+    reporter.is_verbose = is_verbose
 
     if arguments['--limit'] is not None:
         reporter.limit = int(arguments['--limit'])
@@ -286,51 +370,16 @@ def main():
 
     report = make_report(inputs, rules, reporter)
 
-    if reporter.is_verbose and report.num_files > 0:
-        time_since_report = datetime.datetime.now() - time_started_report
-        report_in_seconds = time_since_report / datetime.timedelta(seconds=1)
+    should_emit_verbose_diagnostics = reporter.is_verbose and report.num_files > 0
 
-        total_time_taken = report_in_seconds
+    if should_emit_verbose_diagnostics:
+        print_rules_checked(rules, since_starting=time_started_report)
 
-        num_rules = len(rules)
+    if comply.PROFILING_IS_ENABLED:
+        print_profiling_results(rules)
 
-        rules_grammar = 'rule' if num_rules == 1 else 'rules'
-
-        printdiag('Checked {0} {1} in {2:.1f} seconds'.format(
-            num_rules, rules_grammar, total_time_taken))
-
-        if comply.PROFILING_IS_ENABLED:
-            for rule in rules:
-                printdiag(' [{0}] took {1:.1f} seconds'.format(
-                    rule.name, rule.total_time_spent_collecting))
-
-        # note the whitespace; important for the full format later on
-        severe_format = '({0} severe) ' if report.num_severe_violations > 0 else ''
-        severe_format = severe_format.format(report.num_severe_violations)
-
-        total_violations = report.num_violations + report.num_severe_violations
-
-        violations_grammar = 'violation' if total_violations == 1 else 'violations'
-
-        files_format = '{1}/{0}' if report.num_files_with_violations > 0 else '{0}'
-        files_format = files_format.format(report.num_files, report.num_files_with_violations)
-
-        # again, note the whitespace- it's intended
-        use_strict_format = (' (set `--strict` to dig deeper)'
-                             if not is_strict and total_violations == 0
-                             else '')
-
-        printdiag('Found {num_violations} {violations} {severe}'
-                  'in {files} files'
-                  '{use_strict}'
-                  .format(num_violations=total_violations,
-                          violations=violations_grammar,
-                          severe=severe_format,
-                          files=files_format,
-                          use_strict=use_strict_format))
-
-    if not PROFILING_IS_ENABLED:
-        check_for_update()
+    if should_emit_verbose_diagnostics:
+        print_report(report)
 
     if report.num_severe_violations > 0:
         # everything went fine; severe violations were encountered
@@ -341,9 +390,11 @@ def main():
 
 
 if __name__ == '__main__':
-    if not PROFILING_IS_ENABLED:
-        main()
-    else:
+    # note that --profile does *not* cause PROFILING_IS_ENABLED to be True at this point!
+    # a developer must explicitly set PROFILING_IS_ENABLED to True to enable cProfile runs
+    # this allows users to run the included benchmarking utilities without also
+    # incurring the heavy duty cProfile runner, which is only interesting for developers
+    if comply.PROFILING_IS_ENABLED:
         import cProfile
         import pstats
 
@@ -366,3 +417,8 @@ if __name__ == '__main__':
 
         if os.path.exists(filename):
             os.remove(filename)
+    else:
+        # we don't want to run update checks when we're profiling
+        check_for_update()
+
+        main()

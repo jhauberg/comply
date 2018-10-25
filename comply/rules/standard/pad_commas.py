@@ -8,14 +8,16 @@ from comply.printing import Colors
 
 
 class PadCommas(Rule):
+    """ Always follow comma-separators by whitespace. """
+
     def __init__(self):
         Rule.__init__(self, name='pad-commas',
-                      description='Comma separators should be followed by a single space',
-                      suggestion='Add a single whitespace to the right of \',\'.')
+                      description='Comma separator not followed by whitespace',
+                      suggestion='Add a single whitespace or linebreak to the right of the comma.')
 
     pattern = re.compile(r',[^\s]')  # any comma followed by non-whitespace
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
 
         from_index, to_index = violation.meta['range']
@@ -49,3 +51,18 @@ class PadCommas(Rule):
             offenders.append(offender)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+            'func(int a↓,int b)',
+            '#define MACRO(a↓,b↓,c)',
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            'func(int a, int b)',
+            ('void func(int a,\n'
+             '          int b')
+        ]

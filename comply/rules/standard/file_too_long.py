@@ -2,48 +2,34 @@
 
 from comply.rules.rule import *
 
-from comply.printing import Colors
-
 
 class FileTooLong(Rule):
+    """ Avoid exceeding 600 lines per source file.
+
+    Files that are very long can be difficult to navigate and easily comprehend, and may indicate
+    that the file is too extensive and covering too many things.
+
+    Note that, as with <tt>func-too-long</tt>, this limit is completely arbitrary and only serves
+    as a general indicator of complexity. Whether or not a file is *actually* too long is highly
+    variable and can only be judged on a situational basis.
+    """
+
     def __init__(self):
         Rule.__init__(self, name='file-too-long',
-                      description='File has too many lines ({length} > {max})',
-                      suggestion='Consider refactoring and splitting to separate units.')
+                      description='File might be too complex ({length} > {max} lines)',
+                      suggestion='Consider refactoring or splitting into separate files.')
 
     MAX = 600
-
-    def augment(self, violation: RuleViolation):
-        # assume offending line is the second one
-        breaker_linenumber, breaker_line = violation.lines[1]
-        # add breaker just above offending line
-        violation.lines.insert(1, (breaker_linenumber, '---'))
-
-        for i, (linenumber, line) in enumerate(violation.lines):
-            if i > 0:
-                # mark breaker and everything below it
-                violation.lines[i] = (linenumber, Colors.BAD + line + Colors.RESET)
 
     def collect(self, file: CheckFile):
         offenders = []
 
-        text = file.original
-
         max_length = FileTooLong.MAX
 
-        length = text.count('\n')
+        length = file.original.count('\n')
 
         if length > max_length:
-            offending_line_index = max_length
-
-            assert len(file.lines) > offending_line_index + 1
-
-            offending_lines = [(offending_line_index, file.lines[offending_line_index - 1]),
-                               (offending_line_index + 1, file.lines[offending_line_index]),
-                               (offending_line_index + 2, file.lines[offending_line_index + 1])]
-
             offender = self.violate(at=file.line_number_at_top(),
-                                    lines=offending_lines,
                                     meta={'length': length,
                                           'max': max_length})
 
@@ -58,3 +44,30 @@ class FileTooLong(Rule):
     @property
     def collection_hint(self):
         return RuleViolation.ONCE_PER_FILE
+
+    @property
+    def triggers(self):
+        return [
+            '▶' + make_filebody(FileTooLong.MAX + 1)
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            make_filebody(FileTooLong.MAX),
+            make_filebody(FileTooLong.MAX - 1)
+        ]
+
+
+def make_filebody(number_of_lines: int) -> str:
+    """ Return a string representing the contents of a file with a given number of lines.
+
+        Only used for testing purposes.
+    """
+
+    body = ''
+
+    for i in range(0, number_of_lines):
+        body += '{n}/{c}: line\n'.format(n=i, c=number_of_lines)
+
+    return body

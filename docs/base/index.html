@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>comply</title>
+  <title>Compliant Style Guide</title>
 
   <link rel="stylesheet" type="text/css" href="index.css">
 
@@ -15,7 +15,7 @@
   <article>
     <img src="logo.svg" alt="comply" align="left" style="width: 2cm; margin-left: -1cm; margin-right: .25cm;">
     <h1><strong>comply</strong></h1>
-    <p class="subtitle">Strict style compliance</p>
+    <p class="subtitle">Compliant Style Guide</p>
 
     <section>
       <div class="example" style="width: 45%;">
@@ -25,10 +25,10 @@
       </div>
 
       <p>
-        <tt>comply</tt> is an open-source utility that helps you write better C.
+        <tt>comply</tt> is an open-source tool that helps you write better C99.
       </p>
       <p>
-        This page provides a listing of all the {{ rules_count }} rules that <tt>comply</tt> checks your code against when running its analysis.
+        This page provides a listing of the {{ rules_count }} rules that <tt>comply</tt> checks your code against when running its analysis.
       </p>
       <br/>
       <br/>
@@ -46,6 +46,11 @@
     <hr>
 
     <section>
+      <p style="float: right; margin-right: 6%; margin-top: 0%; margin-bottom: 6%;">
+        <tt class="deny">&nbsp;required&nbsp;</tt>
+        <tt class="warn">&nbsp;advisory&nbsp;</tt>
+        <tt class="allow">&nbsp;elective&nbsp;</tt>
+      </p>
       <table class="rules">
         <thead>
           <tr>

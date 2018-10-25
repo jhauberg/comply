@@ -8,9 +8,19 @@ from comply.printing import Colors
 
 
 class IdentifierTooLong(Rule):
+    """ Avoid exceeding 31 characters per identifier.
+
+    Identifiers should be kept as short as possible, while still retaining enough meaning that it
+    is immediately clear what it represents- or does.
+    <br/><br/>
+    An identifier that requires *more* than 31 characters to provide meaning is an indication that
+    complexity might be too high in the specific context and often presents a refactoring
+    opportunity.
+    """
+
     def __init__(self):
         Rule.__init__(self, name='identifier-too-long',
-                      description='Identifier is too long ({length} > {max})',
+                      description='Identifier is too long ({length} > {max} characters)',
                       suggestion='Use a shorter name.')
 
     MAX = 31
@@ -19,7 +29,7 @@ class IdentifierTooLong(Rule):
     def severity(self):
         return RuleViolation.ALLOW
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
 
         from_index, to_index = violation.meta['range'] if 'range' in violation.meta else (0, 0)
@@ -65,3 +75,15 @@ class IdentifierTooLong(Rule):
             check_identifier(identifier_match.group(), location)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+            'int ↓my_waaaaaaay_too_long_identifier;'
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            'int my_shorter_identifier;'
+        ]

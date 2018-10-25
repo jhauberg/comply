@@ -25,44 +25,39 @@ class Reporter:
         provides the base functions for specialized reporting modes.
     """
 
-    def __init__(self, suppress_similar: bool=True, limit: int=None, is_verbose: bool=False):
+    def __init__(self, suppress_similar: bool=True, limit: int=None, is_verbose: bool=False, is_strict: bool=False):
         self.suppress_similar = suppress_similar
         self.is_verbose = is_verbose
+        self.is_strict = is_strict
         self.limit = limit
-        self.results_count = 0
+        self.reports = 0
+        self.files_total = 0
+        self.files_encountered = 0
 
-    @staticmethod
-    def group_by_reason(violations: List[RuleViolation]):
-        """ Return an ordered dict with violations grouped by their reason. """
-
-        grouped = OrderedDict()
-
-        for violation in violations:
-            reason = violation.which.reason(violation)
-
-            if reason not in grouped:
-                grouped[reason] = []
-
-            grouped[reason].append(violation)
-
-        return grouped
-
-    def report_before_checking(self, path: str, encoding: str=None):
+    def report_before_checking(self, path: str, encoding: str=None, show_progress: bool=True):
         """ Print a diagnostic before initiating a check on a given file. """
 
         if self.is_verbose:
             normalized_path = os.path.normpath(path)
 
-            encoding = ' ({enc})'.format(
-                enc=encoding.upper()) if encoding is not None else ''
+            encoding = (' ({0})'.format(encoding.upper())
+                        if encoding is not None
+                        else '')
 
-            diag = 'Checking \'{path}\'{enc}'.format(
+            progress = (' [{n:0{width}d}/{total}]'.format(n=self.files_encountered,
+                                                          width=len(str(self.files_total)),
+                                                          total=self.files_total)
+                        if self.files_total > 1 and show_progress
+                        else '')
+
+            diag = 'Checking \'{path}\'{enc}{progress} '.format(
                 path=truncated(normalized_path),
-                enc=encoding)
+                enc=encoding,
+                progress=progress)
 
             printdiag(diag, end='')
 
-    def report_progress(self, count, total):
+    def report_progress(self, count: int, total: int):
         """ Print a progress indication. """
 
         if not self.is_verbose:
@@ -97,17 +92,12 @@ class Reporter:
         emitted = 0
 
         for result in results:
-            if self.limit is not None and self.results_count >= self.limit:
-                break
-
             printout(result)
 
             emitted += 1
 
-            self.results_count += 1
-
             # assuming each result is a violation "almost" identical to the rest
-            if self.suppress_similar and emitted >= self.suppress_after:
+            if self.suppress_similar and emitted >= self.suppresses_after:
                 remaining = len(results) - emitted
 
                 # if results are being piped or redirected, we don't need to emit a diagnostic
@@ -132,10 +122,32 @@ class Reporter:
         self.report_results(results)
 
     @property
-    def suppress_after(self) -> int:
+    def has_reached_reporting_limit(self) -> bool:
+        """ Determine whether the specified limit of reports has been reached. """
+
+        return self.limit is not None and self.reports == self.limit
+
+    @property
+    def suppresses_after(self) -> int:
         """ Return the number of similar violations emitted before being suppressed. """
 
         return 1
+
+    @staticmethod
+    def group_by_reason(violations: List[RuleViolation]):
+        """ Return an ordered dict with violations grouped by their reason. """
+
+        grouped = OrderedDict()
+
+        for violation in violations:
+            reason = violation.which.reason(violation)
+
+            if reason not in grouped:
+                grouped[reason] = []
+
+            grouped[reason].append(violation)
+
+        return grouped
 
     @staticmethod
     def determine_progress_ticks(count, total, number_of_ticks=3) -> int:

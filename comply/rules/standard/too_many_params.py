@@ -9,10 +9,30 @@ from comply.printing import Colors
 
 
 class TooManyParams(Rule):
+    """ Don't exceed 4 parameters per function.
+
+    When a function has many parameters, it is often a sign that it is doing too much and would
+    benefit from being refactored into smaller parts.
+
+    Each parameter adds to the complexity of a function, and the more it has, the harder it becomes
+    to understand (and use).
+    <br/><br/>
+    A common practice is to bundle parameters into a `struct` when many parameters are
+    absolutely necessary (a pattern commonly referred to as *Parameter Object*).
+    <br/><br/>
+    This practice, however, does *not* reduce the complexity of the function-
+    but it *does* improve its readability.
+
+    References:
+
+      * Stack Exchange discussion: [Are there guidelines on how many parameters a function should accept?](https://softwareengineering.stackexchange.com/a/145066)
+    """
+
     def __init__(self, only_check_implementations: bool=False):
         Rule.__init__(self, name='too-many-params',
-                      description='Too many function parameters ({count} > {max})',
-                      suggestion='This function may be taking on too much work. Consider refactoring.')
+                      description='Function might be too broad ({count} > {max} parameters)',
+                      suggestion='This function might be taking on too much work. '
+                                 'Consider refactoring.')
 
         # determine whether to only match implementations, or both prototypes and implementations
         # (prefer both, as e.g. inline functions won't be caught otherwise-
@@ -24,8 +44,8 @@ class TooManyParams(Rule):
 
     pattern = re.compile(FUNC_BOTH_PATTERN)
 
-    def augment(self, violation: RuleViolation):
-        line_index = violation.index_of_violating_line()
+    def augment_by_color(self, violation: RuleViolation):
+        line_index = violation.index_of_starting_line()
 
         function_line_number, function_line = violation.lines[line_index]
 
@@ -62,7 +82,7 @@ class TooManyParams(Rule):
                 character_range = (function_match.start(),
                                    function_match.end())
 
-                offending_lines = file.lines_in(character_range)
+                offending_lines = file.lines_in_character_range(character_range)
 
                 offender = self.violate(at=(offending_line_number, offending_column),
                                         lines=offending_lines,
@@ -74,3 +94,19 @@ class TooManyParams(Rule):
                 offenders.append(offender)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+            'void ↓func(int, int, int, unsigned short, long);',
+            'void ↓func(int a, int b, int c, unsigned short d, long f);',
+            'void ↓func(int a, int b, int c, unsigned short d, long f) { ... }'
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            'void func(int, int, int, unsigned short);',
+            'void func(int a, int b, int c, unsigned short d);',
+            'void func(int a, int b, int c, unsigned short d) { ... }'
+        ]

@@ -9,9 +9,15 @@ from comply.printing import Colors
 
 
 class PadKeywords(Rule):
+    """ Always pad control keywords (`if`, `else`, `for` etc.) with space on both sides.
+
+    Padding control keywords improves readability by clearly separating them from macros and
+    function calls.
+    """
+
     def __init__(self):
         Rule.__init__(self, name='pad-keywords',
-                      description='Keywords should be padded with space on both sides',
+                      description='Keyword not padded with whitespace on both sides',
                       suggestion='Add a single whitespace to the {left_or_right} of \'{keyword}\'.')
 
     neighbor_pattern = r'[;{}()]'
@@ -20,7 +26,7 @@ class PadKeywords(Rule):
         keywords=KEYWORDS,
         neighbors=neighbor_pattern))
 
-    def augment(self, violation: RuleViolation):
+    def augment_by_color(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
 
         from_index, to_index = violation.meta['range']
@@ -68,3 +74,24 @@ class PadKeywords(Rule):
             offenders.append(offender)
 
         return offenders
+
+    @property
+    def triggers(self):
+        return [
+            '↓if() { ... }',
+            '↓for() { ... }',
+            '↓while() { ... }',
+            '↓switch() { ... }',
+            'if () { ... }↓else{ }',  # only 1 non-overlapping match
+            'if (a == b) { ... }↓else if (a == c) { ... } ↓else{ ... }'
+        ]
+
+    @property
+    def nontriggers(self):
+        return [
+            'my_format = "switcheroo";',
+            'myformat = forx',
+            'myif();',
+            'myfunc(iflags);',
+            '#ifndef'
+        ]
