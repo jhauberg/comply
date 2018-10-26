@@ -33,7 +33,8 @@ def find_checkable_files(path: str) -> list:
         If path points to a non-supported file, it is *not* excluded.
     """
 
-    supported_extensions = ''.join([extension[1:].lower() for extension in supported_file_types()])
+    supported_extensions = ''.join([extension[1:] for extension in supported_file_types()])
+    supported_extensions = supported_extensions.lower() + supported_extensions.upper()
 
     # match file with supported extension in dir and all subdirs
     pattern = '/**/*.[{extensions}]'.format(extensions=supported_extensions)
