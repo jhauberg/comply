@@ -30,8 +30,8 @@ class LeftAlignedConst(Rule):
     def augment_by_color(self, violation: RuleViolation):
         line_number, line = violation.lines[0]
 
-        from_index, to_index = violation.meta['range'] if 'range' in violation.meta else (0, 0)
-        insertion_index = violation.meta['insertion'] if 'insertion' in violation.meta else 0
+        from_index, to_index = violation.meta['range']
+        insertion_index = violation.meta['insertion']
 
         augmented_line = line
 
@@ -51,8 +51,6 @@ class LeftAlignedConst(Rule):
         for match in self.pattern.finditer(file.stripped):
             line_number, column = file.line_number_at(match.start(1))
 
-            line = file.lines[line_number - 1]
-
             offending_index = column - 1
             offending_range = (offending_index, offending_index + len(match.group(1)))
 
@@ -60,10 +58,16 @@ class LeftAlignedConst(Rule):
 
             insertion_index = type_column - 1 + len(match.group(2))
 
-            offender = self.violate(at=(line_number, column),
-                                    lines=[(line_number, line)],
-                                    meta={'range': offending_range,
-                                          'insertion': insertion_index})
+            start = match.start(1)
+            end = match.end(1)
+
+            offender = self.violate_at_character_range(
+                file, starting=start, ending=end)
+
+            offender.meta = {
+                'range': offending_range,
+                'insertion': insertion_index
+            }
 
             offenders.append(offender)
 
