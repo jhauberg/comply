@@ -242,57 +242,55 @@ You can use this badge in your own project's `README.md`:
 
 ## FAQ
 
-### Is the *Compliant* style configurable?
+**Is the *Compliant* style configurable?**
 
-No. This is intentional.
+> No. This is intentional.
+>
+> The core idea behind this project is to define a single, ubiquitous style and guideline; it should not differ across *Compliant* codebases.
 
-The core idea behind this project is to define a single, ubiquitous style and guideline; it should not differ across *Compliant* codebases.
+*The arguments `--except` and `--check` (which allow you to exclude, or include, certain rules) contradict the philosophy of the project, but are made available for debugging purposes.*
 
-> The arguments `--except` and `--check` (which allow you to exclude, or include, certain rules) contradict the philosophy of the project, but are made available for debugging purposes.
+**Does `comply` find bugs in my code?**
 
-### Does `comply` find bugs in my code?
+> No. Unless you consider style issues as bugs, `comply` will not find bugs in your code.
+>
+> That kind of static code analysis is out of scope for this project and excellent tools already exist for the job ([cppcheck](http://cppcheck.sourceforge.net), [PC-lint](https://www.gimpel.com/html/pcl.htm) to name a few).
 
-No. Unless you consider style issues as bugs, `comply` will not find bugs in your code.
+**Will `comply` automatically "fix" my code?**
 
-That kind of static code analysis is out of scope for this project and excellent tools already exist for the job ([cppcheck](http://cppcheck.sourceforge.net), [PC-lint](https://www.gimpel.com/html/pcl.htm) to name a few).
+> No. This is left as a task for a human.
+>
+> While many rules are only related to the textual representation of code, some do require more thought, consideration and human judgment to fix- a larger task than simply applying a different formatting.
 
-### Will `comply` automatically "fix" my code?
+> There is a point to be made in the usefulness of automatic formatting, see [Black](https://github.com/ambv/black) or [gofmt](https://golang.org/cmd/gofmt/), but for the time being that is out of scope for this project.
 
-No. This is left as a task for a human.
+**Does `comply` apply any pre-processing?**
 
-While many rules are only related to the textual representation of code, some do require more thought, consideration and human judgment to fix- a larger task than simply applying a different formatting.
+> No. This is intentional.
+>
+> Pre-processing is difficult and is a project in its own. It is also a solved problem- but comes at the cost of adding a large dependency (and all the complexity it involves) for one of the *huge* compiler toolchains (`clang`, `gcc` etc.).
+> 
+> Avoiding dependencies, especially complex ones, makes `comply` much leaner, easier to use and more portable.
+> 
+> Because it does not even attempt to deal with the pre-processing, it does not need to know about any include paths, standard library or anything like that either. You can just point and shoot at any C source file.
+> 
+> However, the downside is that pre-processor directives (e.g. `#define`), which are widely and commonly used, won't be resolved properly when `comply` looks at it. This means that macros can cause a lot of trouble and very likely cause false-positives.
 
-There is a point to be made in the usefulness of automatic formatting, see [Black](https://github.com/ambv/black) or [gofmt](https://golang.org/cmd/gofmt/), but for the time being that is out of scope for this project.
+> If you feel like it, you can always run something like `clang -E` on your source to have it pre-processed before letting `comply` have a look. But that can be a whole deal in itself.
 
-### Does `comply` do any pre-processing of C sources?
+**How does `comply` parse the C-language?**
 
-No. This is intentional.
+> At its core, `comply` does *not* try to parse and tokenize the C-language.
+>
+> Like with the lack of pre-processing, this is deliberate. Instead, each rule apply pattern-matching (Regex) to find violations. This can be problematic for some edge-cases (of which C has a lot), but generally works out and makes it simple and clear to understand how a rule works and what it looks for.
 
-Pre-processing is difficult and is a project in its own. It is also a solved problem- but comes at the cost of adding a large dependency (and all the complexity it involves) for one of the *huge* compiler toolchains (`clang`, `gcc` etc.).
+**Why use `comply` when we have [`clang-tidy`](http://clang.llvm.org/extra/clang-tidy/) (among others)?**
 
-Avoiding dependencies, especially complex ones, makes `comply` much leaner, easier to use and more portable.
-
-Because it does not even attempt to deal with the pre-processing, it does not need to know about any include paths, standard library or anything like that either. You can just point and shoot at any C source file.
-
-However, the downside is that pre-processor directives (e.g. `#define`), which are widely and commonly used, won't be resolved properly when `comply` looks at it. This means that macros can cause a lot of trouble and very likely cause false-positives.
-
-If you feel like it, you can always run something like `clang -E` on your source to have it pre-processed before letting `comply` have a look. But that can be a whole deal in itself.
-
-### How does `comply` parse the C-language?
-
-At its core, `comply` does *not* try to parse and tokenize the C-language.
-
-Like with the lack of [pre-processing](#does-it-do-any-pre-processing), this is deliberate.
-
-Instead, each rule apply pattern-matching (Regex) to find violations. This can be problematic for some edge-cases (of which C has a lot), but generally works out and makes it simple and clear to understand how a rule works and what it looks for.
-
-### Why use `comply` when we have [`clang-tidy`](http://clang.llvm.org/extra/clang-tidy/) (among others)?
-
-The answer to that is simply to get a different perspective.
-
-These tools- while similar in nature- are not identical, and both will look at your codebase differently, offering unique insights. There's no reason why you couldn't just use both.
-
-However, objectively, `clang-tidy` and `clang-format` is without question the more mature and seasoned choices for general linting purposes. They are also much larger beasts, require configuration and can be daunting at first glance.
+> The answer to that is simply to get a different perspective.
+>
+> These tools- while similar in nature- are not identical, and both will look at your codebase differently, offering unique insights. There's no reason why you couldn't just use both.
+>
+> However, objectively, `clang-tidy` and `clang-format` are, without question, more mature and seasoned choices for general linting purposes. They are also much larger beasts, require configuration and can be daunting at first glance.
 
 ## License
 
