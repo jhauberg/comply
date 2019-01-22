@@ -16,15 +16,19 @@ class FunctionTooLong(Rule):
     <br/><br/>
     Basing this rule on a 40 line maximum may seem like an arbitrary number, and while it is
     certainly not a scientifically proven limit, it does represent a viable breaking point where
-    most displays will be able to keep every line visible.
+    most typical displays will be able to keep every line visible.
 
     Additionally, and similar to <tt>too-many-params</tt>, when a function is getting large and
-    increasingly complex, it is also often a sign that it is doing too much and would likely
+    increasingly complex, it is also often a sign that it is doing too much and would possibly
     benefit from being refactored into smaller parts.
+    <br/><br/>
+    However, **do not follow this rule blindly**. There are absolutely times where a long, but linear,
+    function is preferable.
 
     References:
 
       * Stack Exchange discussion: [What should be the maximum length of a function?](https://softwareengineering.stackexchange.com/a/27976)
+      * Hacker News discussion: [John Carmack on Inlined Code (2014)](https://news.ycombinator.com/item?id=18959636)
     """
 
     def __init__(self):
